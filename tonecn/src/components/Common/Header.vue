@@ -1,5 +1,41 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+const router = useRouter()
 
+interface MoreOptionsVisable {
+    moreOptions: HTMLElement | null;
+    show(): void;
+    hidden(): void;
+    toggle(): void;
+}
+
+const moreOptionsVisable: MoreOptionsVisable = {
+    moreOptions: null,
+    show() {
+        if (!this.moreOptions)
+            throw new Error('moreOptions元素不存在');
+        this.moreOptions.classList.remove('header-right-hidden');
+    },
+    hidden() {
+        if (!this.moreOptions)
+            throw new Error('moreOptions元素不存在');
+        this.moreOptions.classList.add('header-right-hidden');
+    },
+    toggle() {
+        if (!this.moreOptions)
+            throw new Error('moreOptions元素不存在');
+        this.moreOptions.classList.toggle('header-right-hidden')
+    }
+}
+
+onMounted(async () => {
+    moreOptionsVisable.moreOptions = document.querySelector("#header-right");
+});
+
+router.afterEach(() => {
+    moreOptionsVisable.hidden();
+});
 </script>
 <template>
     <div class="main-container">
@@ -13,7 +49,8 @@
                         <div class="title">特恩(TONE)</div>
                     </RouterLink>
                 </div>
-                <div class="more" tabindex="0" id="header-more">
+                <!-- 更多选项按钮，宽度小于800时出现 -->
+                <div class="more" tabindex="0" id="header-more" @click="moreOptionsVisable.toggle">
                     <svg t="1705913460674" class="icon" viewBox="0 0 1024 1024" version="1.1"
                         xmlns="http://www.w3.org/2000/svg" p-id="10513" width="20" height="20">
                         <path
@@ -34,7 +71,8 @@
                         <div class="link" :class="{ 'link-chosen': $route.name === 'blog' }">博客</div>
                     </RouterLink>
                     <RouterLink :to="{ name: 'login' }" v-show="true">
-                        <div class="link" :class="{ 'link-chosen': $route.name === 'login' || $route.name === 'dashboard'}">控制台</div>
+                        <div class="link"
+                            :class="{ 'link-chosen': $route.name === 'login' || $route.name === 'dashboard' }">控制台</div>
                     </RouterLink>
                 </div>
             </div>
