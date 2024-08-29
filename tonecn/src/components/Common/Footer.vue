@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import copyText from '@/lib/copyText';
+import { ElMessage } from 'element-plus'
 
 let copyTextwithMsg = (text : string) => {
     if(copyText(text)){
-        ElMessage({
-            message: '复制成功',
-            type: 'success',
-        })
+        ElMessage.success('复制成功')
     }else{
-        ElMessage({
-            message: '复制失败',
-            type: 'error',
-        })
+        ElMessage.error('复制失败')
     }
 }
 </script>
@@ -58,9 +53,9 @@ let copyTextwithMsg = (text : string) => {
                 </template>
             </el-popover>
             <el-popover trigger="click" placement="top" :width="180">
-                <p>邮箱号：3341154833@qq.com</p>
+                <p>邮箱号：tone@ctbu.net.cn</p>
                 <div style="text-align: center; margin: 0">
-                    <el-button size="small" type="primary" @click="copyTextwithMsg('3341154833@qq.com')">复制</el-button>
+                    <el-button size="small" type="primary" @click="copyTextwithMsg('tone@ctbu.net.cn')">复制</el-button>
                 </div>
                 <template #reference>
                     <div class="icon">
@@ -73,7 +68,7 @@ let copyTextwithMsg = (text : string) => {
                     </div>
                 </template>
             </el-popover>
-            <a class="icon" href="https://github.com/tonecn">
+            <a class="icon" href="https://github.com/tonecn" target="_blank">
                 <svg t="1705909977594" class="icon" viewBox="0 0 1024 1024" version="1.1"
                     xmlns="http://www.w3.org/2000/svg" p-id="9342" width="24" height="24">
                     <path
