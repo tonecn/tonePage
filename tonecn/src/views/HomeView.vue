@@ -7,21 +7,20 @@ onMounted(() => {
 
   // 界面特效字体
   let nameElement = document.getElementById("my-name");
-  if( nameElement == null){
+  if (nameElement == null) {
     console.error('未找到元素my-name')
     return;
   }
   let colorNum = 66;
   let colorNumReverse = false;
   setInterval(() => {
-    if(colorNumReverse)
-    {
+    if (colorNumReverse) {
       colorNum--;
-      if(colorNum<=66)
+      if (colorNum <= 66)
         colorNumReverse = !colorNumReverse;
-    }else{
+    } else {
       colorNum++;
-      if(colorNum>=255)
+      if (colorNum >= 255)
         colorNumReverse = !colorNumReverse;
     }
     nameElement.style.backgroundImage = `linear-gradient(45deg, rgb(${colorNum}, 66, ${255 - (66 - colorNum)}), rgb(${255 - (66 - colorNum)}, 66, ${colorNum}))`;
@@ -35,10 +34,10 @@ onMounted(() => {
     <div class="name" id="my-name">特恩(TONE)</div>
     <div class="self-introduction">一名计算机类专业在校本科大二学生</div>
     <div class="button-container">
-      <a href="https://space.bilibili.com/474156211">
+      <a href="https://space.bilibili.com/474156211" target="_blank">
         <button class="button" id="button-resource">哔哩哔哩</button>
       </a>
-      <a href="https://github.com/tonecn">
+      <a href="https://github.com/tonecn" target="_blank">
         <button class="button button-style2" id="button-code">GitHub</button>
       </a>
     </div>
@@ -146,6 +145,7 @@ onMounted(() => {
     height: 40px;
   }
 }
+
 @media screen and (max-width: 800px) {
   .main-container {
     height: calc(v-bind(containerHeight) + 15px);
