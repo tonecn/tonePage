@@ -7,12 +7,16 @@ let loadStatus = ref(0);// 0加载中 1加载成功 2加载失败
 let ResourceDatas: any[] = reactive([])
 onMounted(async () => {
   // 用于获取数据的函数
-  let res = await request.get('resource/list');
-  console.log(res)
-  if (res && res.code == 0) {
-    loadStatus.value = 1;
-    ResourceDatas.push(...res.data)
-  } else {
+  try {
+    let res: any = await request.get('/resourceList?type=resource');
+    if (res && res.code == 0) {
+      loadStatus.value = 1;
+      ResourceDatas.push(...res.data)
+    } else {
+      throw new Error(res.message)
+    }
+  } catch (error) {
+    console.error(error)
     loadStatus.value = 2;
   }
 })
@@ -26,7 +30,8 @@ onMounted(async () => {
     <div class="load-fail" v-if="loadStatus == 2">加载失败，请刷新界面重试。</div>
     <div class="load-fail" v-if="loadStatus == 0">加载中，请稍后...</div>
     <div class="content-container" v-if="loadStatus == 1">
-      <div class="content" v-for="item of ResourceDatas">
+      <!-- 资源项 -->
+      <a class="content" v-for="item of ResourceDatas" :href="item.src" target="_blank">
         <div class="icon-container">
           <img :src="item.icon_src" alt="" class="icon">
         </div>
@@ -42,7 +47,7 @@ onMounted(async () => {
           <div class="lable" :class="{ 'lable-2': (item.addition.lable.class.indexOf('lable-2') != -1) }">{{
             item.addition.lable.text }}</div>
         </div>
-      </div>
+      </a>
       <div class="content content-hidden"></div>
     </div>
   </div>

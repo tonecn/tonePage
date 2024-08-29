@@ -1,30 +1,25 @@
-<script setup>
-// import { onBeforeMount, reactive, ref } from 'vue';
-// import Agreement from '../components/agreement.vue'
-// import ServerAPI from '@/assets/ServerAPI';
-// let urlTo = (url) => {
-//     // window.location.href = url;
-//     window.open(url, '_blank');
-// }
-// let showAgreement = ref(false);
-// let ResourceDatas = reactive({});
-// let loadStatus = ref(0);// 0加载中，1加载成功，2加载失败
-// onBeforeMount(async ()=>{
-//     let res = await ServerAPI.async_getRequest('GetDownloadList');
-//     try {
-//         if(res.status == 'OK')
-//         {
-//             Object.assign(ResourceDatas, res.data);
-//             loadStatus.value = 1;
-//         }else{
-//             console.log("获取资源失败：" + res.data)
-//             loadStatus.value = 2;
-//         }
-//     } catch (error) {
-//         console.log("获取资源失败：" + error)
-//         loadStatus.value = 2;
-//     }
-// })
+<script setup lang="ts">
+import { request } from '@/lib/request';
+import Agreement from '@/components/Common/Agreement.vue';
+import { ref, onMounted, reactive } from 'vue';
+let showAgreement = ref(false);
+let loadStatus = ref(0);// 0加载中 1加载成功 2加载失败
+let ResourceDatas: any[] = reactive([])
+onMounted(async () => {
+  // 用于获取数据的函数
+  try {
+    let res: any = await request.get('/resourceList?type=download');
+    if (res && res.code == 0) {
+      loadStatus.value = 1;
+      ResourceDatas.push(...res.data)
+    } else {
+      throw new Error(res.message)
+    }
+  } catch (error) {
+    console.error(error)
+    loadStatus.value = 2;
+  }
+})
 </script>
 <template>
   <div class="main-container">
@@ -35,7 +30,8 @@
     <div class="load-fail" v-if="loadStatus == 2">加载失败，请刷新界面重试。</div>
     <div class="load-fail" v-if="loadStatus == 0">加载中，请稍后...</div>
     <div class="content-container" v-if="loadStatus == 1">
-      <div class="content" @click="urlTo(`${item.src}`)" v-for="item of ResourceDatas">
+      <!-- 资源项 -->
+      <a class="content" v-for="item of ResourceDatas" :href="item.src" target="_blank">
         <div class="icon-container">
           <img :src="item.icon_src" alt="" class="icon">
         </div>
@@ -51,7 +47,7 @@
           <div class="lable" :class="{ 'lable-2': (item.addition.lable.class.indexOf('lable-2') != -1) }">{{
             item.addition.lable.text }}</div>
         </div>
-      </div>
+      </a>
       <div class="content content-hidden"></div>
     </div>
   </div>
