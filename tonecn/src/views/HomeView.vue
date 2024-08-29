@@ -32,7 +32,7 @@ onMounted(() => {
   <div class="main-container" id="home-main">
     <img src="../assets/logo.jpg" alt="" class="logo">
     <div class="name" id="my-name">特恩(TONE)</div>
-    <div class="self-introduction">一名计算机类专业在校本科大二学生</div>
+    <div class="self-introduction">一名计算机类专业在校本科大三学生</div>
     <div class="button-container">
       <a href="https://space.bilibili.com/474156211" target="_blank">
         <button class="button" id="button-resource">哔哩哔哩</button>
