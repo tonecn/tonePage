@@ -1,67 +1,42 @@
 <script setup>
-// import ServerAPI from '@/assets/ServerAPI';
-// import router from '@/router';
-// import { nextTick, onBeforeMount, onMounted, reactive, ref } from 'vue';
-// let load_fail = ref(false);
-// let load_ok = ref(false);
+import { request } from '@/lib/request';
+import { onMounted, reactive, ref } from 'vue';
+import { timestampToString } from '../lib/timestampToString'
+const loadStatus = ref(0);
+const blogList = reactive([]);
 
-// let urlTo = (url) => {
-//     window.location.href = url;
-// }
-// let blog_list = reactive([])
-// onBeforeMount(async () => {
-//     let res = await ServerAPI.async_getRequest('GetBlogList');
-//     try {
-//         if(res.status == 'OK')
-//         {
-//             blog_list.push(...res.data);
-//             load_ok.value = true;
-//         }else{
-//             throw new Error('获取列表失败');
-//         }
-//     } catch (error) {
-//         console.log('获取列表发生错误：' + error)
-//         load_fail.value = true;
-//     }
-// })
-// let formatTimestamp = (timestamp) => {
-//     const date = new Date(timestamp);
-//     // 获取日期的各个部分
-//     const year = date.getFullYear();
-//     const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份是从0开始的
-//     const day = String(date.getDate()).padStart(2, '0');
-//     const hours = String(date.getHours()).padStart(2, '0');
-//     const minutes = String(date.getMinutes()).padStart(2, '0');
-//     const seconds = String(date.getSeconds()).padStart(2, '0');
-//     // 组装最终的字符串
-//     if(hours == '00' && minutes == '00' && seconds == '00')
-//         return `${year}/${month}/${day}`;
-//     else
-//         return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
-// }
-// let blogto = (uuid) => {
-//     // router.push({name:'blogcontent',params: { 'uuid': uuid }})
-//     let url = '/blogcontent/' + uuid;
-//     window.open(url, '_blank');
-// }
+onMounted(async () => {
+    try {
+        const blogListRes = await request.get('/blogList');
+        if (blogListRes.code == 0) {
+            blogList.push(...blogListRes.data);
+            loadStatus.value = 1;
+        } else {
+            throw new Error(blogListRes.message);
+        }
+    } catch (error) {
+        console.error(error)
+        loadStatus.value = -1;
+    }
+})
 </script>
 <template>
-<div class="bcc"></div>
-<div class="content-container">
-    <el-empty description="加载失败，刷新后重试" style="margin: 0 auto;" v-if="load_fail"/>
-    <div style="gap: 30px;display: flex;flex-direction: column;" v-else>
-        <div class="coding" v-if="!load_ok">加载中，请稍后...</div>
-        <el-empty description="暂无数据" style="margin: 0 auto;" v-if="load_ok && !blog_list.length"/>
-        <div class="blog-container" v-for="item of blog_list">
-            <div class="title" @click="blogto(item.uuid)">{{ item.title }}</div>
-            <div class="description">{{ item.description }}</div>
-            <div class="publish-time">{{ formatTimestamp(+item.publish_time) }}</div>
+    <div class="bcc"></div>
+    <div class="content-container">
+        <el-empty description="加载失败，刷新后重试" style="margin: 0 auto;" v-if="loadStatus == -1" />
+        <div style="gap: 30px;display: flex;flex-direction: column;" v-else>
+            <div class="coding" v-if="loadStatus == 0">加载中，请稍后...</div>
+            <el-empty description="暂无数据" style="margin: 0 auto;" v-if="loadStatus == 1 && blogList.length == 0" />
+            <div class="blog-container" v-for="item of blogList">
+                <a class="title" :href="`/blogContent/${item.uuid}`" target="_blank">{{ item.title }}</a>
+                <div class="description">{{ item.description }}</div>
+                <div class="publish-time">{{ timestampToString(+item.publish_time) }}</div>
+            </div>
         </div>
     </div>
-</div>
 </template>
 <style scoped>
-.bcc{
+.bcc {
     position: fixed;
     z-index: -1;
     background-color: #f6f8f9;
@@ -70,39 +45,46 @@
     width: 100%;
     height: 100%;
 }
-.content-container{
+
+.content-container {
     display: flex;
     flex-direction: column;
     max-width: 800px;
     margin: 50px auto;
     padding: 0 20px;
 }
-.coding{
+
+.coding {
     text-align: center;
     margin-top: 20px;
     margin-bottom: 300px;
 }
-.blog-container{
+
+.blog-container {
     margin: 0 auto;
     max-width: 400px;
     width: 100%;
     display: flex;
     flex-direction: column;
 }
-.blog-container .title{
+
+.blog-container .title {
     font-size: 26px;
     font-weight: 600;
     cursor: pointer;
     display: block;
 }
-.blog-container .title:hover{
+
+.blog-container .title:hover {
     text-decoration: underline;
     text-decoration-thickness: 3px;
 }
-.blog-container .description{
+
+.blog-container .description {
     color: #666;
 }
-.blog-container .publish-time{
+
+.blog-container .publish-time {
     color: #888;
     margin-top: 15px;
     font-size: 14px;
