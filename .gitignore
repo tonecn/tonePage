@@ -28,6 +28,4 @@ coverage
 *.sw?
 
 *.tsbuildinfo
-tonecn/pnpm-lock.yaml
-tonecn/pnpm-lock.yaml
-tonecn/pnpm-lock.yaml
+pnpm-lock.yaml
