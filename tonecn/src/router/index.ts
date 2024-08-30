@@ -25,6 +25,11 @@ const router = createRouter({
       component: () => import('../views/Blog.vue')
     },
     {
+      path: '/blogContent/:uuid',
+      name: 'blogContent',
+      component: () => import('../views/BlogContent.vue'),
+    },
+    {
       path: '/console',
       name: 'console',
       component: () => import('../views/Console/Console.vue'),

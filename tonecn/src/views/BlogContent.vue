@@ -1,0 +1,149 @@
+<script setup>
+import { request } from '@/lib/request';
+import { onMounted, reactive, ref, nextTick } from 'vue';
+import { timestampToString } from '../lib/timestampToString'
+import { useRoute } from 'vue-router'
+import { Marked } from 'marked';
+import { markedHighlight } from "marked-highlight";
+import hljs from 'highlight.js';
+import "highlight.js/styles/xcode.css";
+
+const loadStatus = ref(0);// 0加载中 -1加载失败 -2文章不存在或不可见 1加载成功
+const route = useRoute();
+const blogContent = ref('');
+const blogInfo = ref({});
+
+const marked = new Marked(
+    markedHighlight({
+        langPrefix: 'hljs language-',
+        highlight(code, lang, info) {
+            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+            return hljs.highlight(code, { language }).value;
+        }
+    })
+);
+
+onMounted(async () => {
+    const bloguuid = route.params.uuid;
+    if (bloguuid.length != 32) {
+        return loadStatus.value = -1;
+    }
+    try {
+        let blogContentRes = await request.get(`/blogContent?bloguuid=${bloguuid}`);
+        if (blogContentRes.code == 0) {
+            try {
+                blogContent.value = marked.parse(decodeURIComponent(escape(atob(blogContentRes.data.data))))
+                blogInfo.value = blogContentRes.data.info;
+                loadStatus.value = 1;
+            } catch (error) {
+                throw error
+            }
+        } else if (blogContentRes.code == -4001) {
+            // 不可见或不存在
+            loadStatus.value = -2;
+        } else {
+            throw new Error(blogContentRes.message);
+        }
+    } catch (error) {
+        console.error('请求博客内容发生错误 ', error);
+        loadStatus.value = -1;
+    }
+
+    // 处理iframe元素
+    let iframes = document.querySelectorAll('iframe');
+    for (let i = 0; i < iframes.length; i++) {
+        let iframe = iframes[i];
+        // 创建一个新的div元素
+        let wrapperDiv = document.createElement('div');
+        // 设置新div的类名
+        wrapperDiv.className = 'video-container';
+        // 获取iframe的父元素
+        let parent = iframe.parentNode;
+        // 将新的div插入到iframe之前
+        parent?.insertBefore(wrapperDiv, iframe);
+        // 将iframe移动到新创建的div内部
+        wrapperDiv.appendChild(iframe);
+    }
+})
+</script>
+<template>
+    <div class="bcc"></div>
+    <div class="content-container">
+        <div class="status" v-if="loadStatus == 0">加载中，请稍后...</div>
+        <el-empty v-if="loadStatus < 0" :description="loadStatus == -1 ? '加载失败，刷新后重试' : '文章不存在或不可见'" />
+        <div v-if="loadStatus == 1">
+            <div>
+                <h1 style="margin: 0 auto;text-align: center;">{{ blogInfo.title }}</h1>
+                <p style="margin: 15px auto;text-align: center;color: #888;font-size: 14px;">发布于 {{
+                    timestampToString(blogInfo.publish_time) }}</p>
+            </div>
+            <div v-html="blogContent" id="blogContentContainer"></div>
+        </div>
+    </div>
+</template>
+<style scoped>
+.bcc {
+    position: fixed;
+    z-index: -1;
+    background-color: #f6f8f9;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.content-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+.content-container .status {
+    margin: 0 auto;
+}
+</style>
+<style>
+/* markdown CSS */
+#blogContentContainer img {
+    width: 100%;
+}
+
+#blogContentContainer p {
+    color: #555;
+}
+
+#blogContentContainer p code {
+    background-color: #dedede;
+    padding: 2px 3px;
+}
+
+#blogContentContainer blockquote {
+    margin: 16px 0;
+    padding-left: 25px;
+    border-left: 4px solid #ddd;
+}
+
+#blogContentContainer blockquote p {
+    color: #888;
+}
+
+#blogContentContainer pre{
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#blogContentContainer pre code{
+    overflow-x: scroll;
+}
+
+#blogContentContainer h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    border-bottom: 1px solid #ddd;
+}
+</style>
