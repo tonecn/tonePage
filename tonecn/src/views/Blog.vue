@@ -30,7 +30,7 @@ onMounted(async () => {
             <div class="blog-container" v-for="item of blogList">
                 <a class="title" :href="`/blogContent/${item.uuid}`" target="_blank">{{ item.title }}</a>
                 <div class="description">{{ item.description }}</div>
-                <div class="publish-time">{{ timestampToString(+item.publish_time) }}</div>
+                <div class="publish-time">{{ timestampToString(+item.publish_time) }} ---- {{item.visit_count}}次访问</div>
             </div>
         </div>
     </div>
