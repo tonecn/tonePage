@@ -68,7 +68,7 @@ router.afterEach(() => {
                         <div class="link" :class="{ 'link-chosen': $route.name === 'download' }">下载</div>
                     </RouterLink>
                     <RouterLink :to="{ name: 'blog' }" v-show="true">
-                        <div class="link" :class="{ 'link-chosen': $route.name === 'blog' }">博客</div>
+                        <div class="link" :class="{ 'link-chosen': $route.name === 'blog' || $route.name === 'blogContent' }">博客</div>
                     </RouterLink>
                     <RouterLink :to="{ name: 'login' }" v-show="true">
                         <div class="link"
