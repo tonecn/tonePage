@@ -10,13 +10,13 @@ class MySQLConnectPool {
 
     constructor() {
         this.pool = this.createConnectPool();
-        this.logger.info("[MySQL] 数据库连接池已创建")
+        this.logger.info("数据库连接池已创建")
         setTimeout(async () => {
             let res = await this.testConnection();
             if (res)
-                this.logger.info("[MySQL] 数据库测试成功")
+                this.logger.info("数据库测试成功")
             else
-                this.logger.error("[MySQL] 数据库测试失败")
+                this.logger.error("数据库测试失败")
         }, 10);
     }
 
@@ -42,7 +42,7 @@ class MySQLConnectPool {
             else
                 return 0;
         } catch (error) {
-            this.logger.error(`[MySQL] 数据库测试发生了错误：` + error);
+            this.logger.error(`数据库测试发生了错误：` + error);
             return 0;
         }
 
@@ -62,7 +62,7 @@ class MySQLConnectPool {
             let [rows, fields] = await connection.execute(sql, values);
             return rows;
         } catch (error) {
-            this.logger.error("[MySQL] 数据库发生错误:" + error, '\n##', sql, '\n##', JSON.stringify(values));
+            this.logger.error("数据库发生错误:" + error, '\n##', sql, '\n##', JSON.stringify(values));
             return undefined;
         } finally {
             if (database)
