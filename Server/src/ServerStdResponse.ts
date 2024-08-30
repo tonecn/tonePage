@@ -11,42 +11,24 @@ const ServerStdResponse = {
         code: -2,
         message: 'Invalid parameters'
     },
-    INVALID_TOKEN: {
-        code: -3,
-        message: 'Invalid token'
-    },
     SERVER_ERROR: {
-        code: -4,
+        code: -3,
         message: 'Server error'
     },
     API_NOT_FOUND: {
-        code: -5,
+        code: -4,
         message: 'API not found'
     },
     AUTH_ERROR: {
-        code: -6,
+        code: -5,
         message: 'Authentication error'
     },
-    IDENTIFY_FAILED: {
-        code: -7,
-        message: 'Identify failed'
-    },
-    GOODS: {
+    BLOG: {
         NOTFOUND: {
             code: -4001,
-            message: 'Goods not found'
+            message: 'Blog not found'
         }
     },
-    ORDER: {
-        NOTFOUND: {
-            code: -5001,
-            message: 'Order not found'
-        },
-        ALREADY_CANCEL: {
-            code: -5002,
-            message: 'Order already canceled'
-        }
-    }
 } as const;
 
 export default ServerStdResponse;

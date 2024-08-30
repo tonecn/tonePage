@@ -5,6 +5,7 @@ import config from "../config";
 import GetTest from "../APIs/GetTest";
 import GetResourceList from "../APIs/GetResourceList";
 import GetBlogList from "../APIs/GetBlogList";
+import GetBlogContent from "../APIs/GetBlogContent";
 
 class Server {
     private logger = new Logger('Server');
@@ -20,6 +21,7 @@ class Server {
         this.apiLoader.add(GetTest);
         this.apiLoader.add(GetResourceList);
         this.apiLoader.add(GetBlogList);
+        this.apiLoader.add(GetBlogContent);
 
         this.apiLoader.start(config.apiPort);
     }
