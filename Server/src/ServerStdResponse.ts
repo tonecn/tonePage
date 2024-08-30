@@ -29,6 +29,20 @@ const ServerStdResponse = {
             message: 'Blog not found'
         }
     },
+    CAPTCHA: {
+        NOTFOUND: {
+            code: -5000,
+            message: 'captcha session not found'
+        },
+        MAX_TRY_COUNT: {
+            code: -5001,
+            message: 'captcha session try max count'
+        },
+        NOTRIGHT: {
+            code: -5002,
+            message: 'captcha is not right, please try again'
+        }
+    }
 } as const;
 
 export default ServerStdResponse;
