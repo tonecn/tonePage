@@ -7,6 +7,7 @@ import { Marked } from 'marked';
 import { markedHighlight } from "marked-highlight";
 import hljs from 'highlight.js';
 import "highlight.js/styles/xcode.css";
+import BlogContentToolBar from '@/components/Blog/BlogContentToolBar.vue';
 
 const loadStatus = ref(0);// 0加载中 -1加载失败 -2文章不存在或不可见 1加载成功
 const route = useRoute();
@@ -48,22 +49,6 @@ onMounted(async () => {
         console.error('请求博客内容发生错误 ', error);
         loadStatus.value = -1;
     }
-
-    // 处理iframe元素
-    let iframes = document.querySelectorAll('iframe');
-    for (let i = 0; i < iframes.length; i++) {
-        let iframe = iframes[i];
-        // 创建一个新的div元素
-        let wrapperDiv = document.createElement('div');
-        // 设置新div的类名
-        wrapperDiv.className = 'video-container';
-        // 获取iframe的父元素
-        let parent = iframe.parentNode;
-        // 将新的div插入到iframe之前
-        parent?.insertBefore(wrapperDiv, iframe);
-        // 将iframe移动到新创建的div内部
-        wrapperDiv.appendChild(iframe);
-    }
 })
 </script>
 <template>
@@ -80,6 +65,7 @@ onMounted(async () => {
             <div v-html="blogContent" id="blogContentContainer"></div>
         </div>
     </div>
+    <BlogContentToolBar />
 </template>
 <style scoped>
 .bcc {
