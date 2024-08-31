@@ -70,7 +70,7 @@ router.afterEach(() => {
                     <RouterLink :to="{ name: 'blog' }" v-show="true">
                         <div class="link" :class="{ 'link-chosen': $route.name === 'blog' || $route.name === 'blogContent' }">博客</div>
                     </RouterLink>
-                    <RouterLink :to="{ name: 'login' }" v-show="true">
+                    <RouterLink :to="{ name: 'dashboard' }" v-show="true">
                         <div class="link"
                             :class="{ 'link-chosen': $route.name === 'login' || $route.name === 'dashboard' }">控制台</div>
                     </RouterLink>
