@@ -12,6 +12,7 @@ import GetBlogList from "../APIs/GetBlogList";
 import GetBlogContent from "../APIs/GetBlogContent";
 import BlogLike from "../APIs/BlogLike";
 import BlogComment from "../APIs/BlogComment";
+import GetBlogComment from "../APIs/GetBlogComment";
 import GetCaptcha from "../APIs/GetCaptcha";
 import CheckCaptcha from "../APIs/CheckCaptcha";
 
@@ -32,6 +33,7 @@ class Server {
         this.apiLoader.add(GetBlogContent);
         this.apiLoader.add(BlogLike);
         this.apiLoader.add(BlogComment);
+        this.apiLoader.add(GetBlogComment);
         this.apiLoader.add(GetCaptcha);
         this.apiLoader.add(CheckCaptcha);
 
