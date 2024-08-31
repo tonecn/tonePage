@@ -42,6 +42,16 @@ const ServerStdResponse = {
             code: -5002,
             message: 'captcha is not right, please try again'
         }
+    },
+    USER: {
+        NOTFOUND: {
+            code: -6000,
+            message: 'user is not found'
+        },
+        PASSWORD_ERROR:{
+            code: -6001,
+            message: 'user password is error'
+        }
     }
 } as const;
 

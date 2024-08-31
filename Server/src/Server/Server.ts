@@ -15,6 +15,7 @@ import BlogComment from "../APIs/BlogComment";
 import GetBlogComment from "../APIs/GetBlogComment";
 import GetCaptcha from "../APIs/GetCaptcha";
 import CheckCaptcha from "../APIs/CheckCaptcha";
+import Login from "../APIs/Console/Login";
 
 class Server {
     private logger = new Logger('Server');
@@ -36,6 +37,8 @@ class Server {
         this.apiLoader.add(GetBlogComment);
         this.apiLoader.add(GetCaptcha);
         this.apiLoader.add(CheckCaptcha);
+
+        this.apiLoader.add(Login);
 
         this.apiLoader.start(config.apiPort);
     }
