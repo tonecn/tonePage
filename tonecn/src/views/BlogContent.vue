@@ -66,7 +66,7 @@ onMounted(async () => {
             <div v-html="blogContent" id="blogContentContainer"></div>
         </div>
 
-        <BlogComment />
+        <BlogComment v-if="loadStatus == 1" />
     </div>
     <BlogContentToolBar />
 </template>
@@ -128,11 +128,11 @@ onMounted(async () => {
 }
 
 #blogContentContainer h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+#blogContentContainer h2,
+#blogContentContainer h3,
+#blogContentContainer h4,
+#blogContentContainer h5,
+#blogContentContainer h6 {
     border-bottom: 1px solid #ddd;
 }
 </style>
