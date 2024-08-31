@@ -4,13 +4,14 @@ import { ElMessage } from 'element-plus';
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { request } from '@/lib/request';
+import RotationVerification from '../Common/RotationVerification.vue';
 const route = useRoute()
 const bloguuid = route.params.uuid;
 const inputComment = ref('')
-const inputCommentName = ref('')
-const commentDialogVisible = ref(false)
+let inputCommentName = '';
 const toolBarVisible = ref(true);
 const isLiked = ref(false)
+const isCaptchaViewShow = ref(false)
 let lastScrollTop = 0;
 const handleScrollMove = () => {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -45,6 +46,40 @@ onUnmounted(async () => {
     window.removeEventListener('scroll', handleScrollMove)
 })
 
+const commentHandle = () => {
+    if (inputComment.value == '' || inputComment.value.trim() == '') {
+        return ElMessage.warning('请先填写留言内容哟～')
+    }
+    ElMessageBox.prompt('请输入留言昵称（可留空）', 'Tip', {
+        confirmButtonText: '提交',
+        cancelButtonText: '取消',
+    }).then(({ value }) => {
+        inputCommentName = value ? value : '';
+        isCaptchaViewShow.value = true;
+    }).catch(() => {
+        ElMessage.info('已取消')
+    })
+}
+const submitComment = async () => {
+    isCaptchaViewShow.value = false;
+    ElMessage.info('正在提交，请稍后')
+    try {
+        let commentRes = await request.post('blogComment', {
+            bloguuid: bloguuid,
+            content: inputComment.value.trim(),
+            name: inputCommentName.trim() == '' ? '匿名' : inputCommentName.trim()
+        })
+        if (commentRes.code == 0) {
+            return ElMessage.success('评论成功～');
+        } else {
+            throw new Error(commentRes.message);
+        }
+    } catch (error) {
+        console.error('评论失败', error)
+        ElMessage.error('遇到了一些问题，稍后再来试试吧～')
+    }
+}
+
 </script>
 <template>
     <transition name="el-zoom-in-bottom">
@@ -52,25 +87,14 @@ onUnmounted(async () => {
             <div class="tool-bar">
                 <el-input v-model="inputComment" autosize type="textarea" class="input-comment" placeholder="快来留下你的评论吧～"
                     clearable />
-                <el-button type="primary" :icon="Edit" class="button" circle @click=""></el-button>
+                <el-button type="primary" :icon="Edit" class="button" circle @click="commentHandle"></el-button>
                 <el-button type="danger" :icon="isLiked ? StarFilled : Star" class="button" @click="likeBlog"
                     circle></el-button>
             </div>
-            <el-dialog v-model="commentDialogVisible" title="提示">
-                <div style="display: flex;flex-direction: column;gap: 5px;">
-                    <div>每篇文章最多可发布3条评论，确认要现在发布吗？</div>
-                    <div>另外，您可选择留下昵称：</div>
-                    <el-input v-model="inputCommentName" placeholder="昵称（可选）" />
-                </div>
-                <template #footer>
-                    <div class="dialog-footer">
-                        <el-button @click="CommentDialogVisible = false">取消</el-button>
-                        <el-button type="primary" @click="sendComment">确认</el-button>
-                    </div>
-                </template>
-            </el-dialog>
         </div>
     </transition>
+    <RotationVerification v-if="isCaptchaViewShow"
+        @fail="() => { isCaptchaViewShow = false; ElMessage.warning('验证失败') }" @success="submitComment" />
 </template>
 <style scoped>
 .tool-bar-container {
