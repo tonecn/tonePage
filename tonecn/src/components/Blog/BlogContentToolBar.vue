@@ -65,6 +65,7 @@ const submitComment = async () => {
     ElMessage.info('正在提交，请稍后')
     try {
         let commentRes = await request.post('blogComment', {
+            session: localStorage.getItem('captcha-session'),
             bloguuid: bloguuid,
             content: inputComment.value.trim(),
             name: inputCommentName.trim() == '' ? '匿名' : inputCommentName.trim()

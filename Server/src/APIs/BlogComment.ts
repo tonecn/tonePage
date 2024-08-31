@@ -1,15 +1,15 @@
 import { API } from "../Plugs/API/API";
 import ServerStdResponse from "../ServerStdResponse";
 import MySQLConnection from '../Plugs/MySQLConnection'
-import MountUserAgent from "../Plugs/Middleware/mountUserAgent";
+import MountUserAgent from "../Plugs/Middleware/MountUserAgent";
 import axios from "axios";
-import MountIP from "../Plugs/Middleware/mountIP";
-
+import MountIP from "../Plugs/Middleware/MountIP";
+import CheckCaptchaPassed from "../Plugs/Middleware/CheckCaptchaPassed";
 
 // 提交博客评论
 class BlogComment extends API {
     constructor() {
-        super('POST', '/blogComment', MountUserAgent, MountIP);
+        super('POST', '/blogComment', CheckCaptchaPassed, MountUserAgent, MountIP);
     }
 
     public async onRequset(data: any, res: any) {
