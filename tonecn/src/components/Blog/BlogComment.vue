@@ -45,7 +45,7 @@ const loadComment = async () => {
             <div class="name">{{ blogcomment.name }}</div>
             <div style="font-size: 12px;color: #888;">IP属地：{{ blogcomment.ip_address }}</div>
             <div class="time">{{ timestampToString(blogcomment.time) }}</div>
-            <div class="content">{{ blogcomment.content }}</div>
+            <div class="content">「{{ blogcomment.content }}」</div>
         </div>
         <div class="status">—— {{ getStatusText }} ——</div>
     </div>
