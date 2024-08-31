@@ -8,6 +8,7 @@ import { markedHighlight } from "marked-highlight";
 import hljs from 'highlight.js';
 import "highlight.js/styles/xcode.css";
 import BlogContentToolBar from '@/components/Blog/BlogContentToolBar.vue';
+import BlogComment from '@/components/Blog/BlogComment.vue';
 
 const loadStatus = ref(0);// 0加载中 -1加载失败 -2文章不存在或不可见 1加载成功
 const route = useRoute();
@@ -64,6 +65,8 @@ onMounted(async () => {
             </div>
             <div v-html="blogContent" id="blogContentContainer"></div>
         </div>
+
+        <BlogComment />
     </div>
     <BlogContentToolBar />
 </template>
