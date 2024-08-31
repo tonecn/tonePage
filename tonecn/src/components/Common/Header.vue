@@ -112,6 +112,7 @@ router.afterEach(() => {
 .header-left .emoji {
     font-size: 25px;
     cursor: pointer;
+    height: 35px;
 }
 
 .header-left .title {
