@@ -39,9 +39,25 @@ const router = createRouter({
           name: 'login',
           component: () => import('../views/Console/Login.vue')
         },
+        {
+          path: 'dashboard',
+          name: 'dashboard',
+          component: () => import('../views/Console/Dashboard.vue')
+        }
       ],
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = !!localStorage.getItem('jwtToken');
+  if (to.name === 'dashboard' && !isAuthenticated) {
+    next({ name: 'login' });
+  } else if (to.name === 'login' && isAuthenticated) {
+    next({ name: 'dashboard' });
+  }
+  next()
+})
+
 
 export default router
