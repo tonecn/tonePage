@@ -52,7 +52,7 @@ onMounted(async () => {
     display: flex;
     flex-direction: column;
     max-width: 800px;
-    margin: 50px auto;
+    margin: 30px auto;
     padding: 0 20px;
 }
 
