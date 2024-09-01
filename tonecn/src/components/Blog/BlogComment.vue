@@ -1,8 +1,9 @@
 <script setup>
 import { request } from '@/lib/request';
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { timestampToString } from '@/lib/timestampToString';
+const model = defineModel();
 const route = useRoute()
 const bloguuid = route.params.uuid;
 const blogCommentList = reactive([]);
@@ -26,6 +27,7 @@ const loadComment = async () => {
     try {
         let commentRes = await request.get(`/blogComment?bloguuid=${bloguuid}`);
         if (commentRes.code == 0) {
+            blogCommentList.splice(0, blogCommentList.length);
             blogCommentList.push(...commentRes.data);
             loadStatus.value = 1;
         } else {
@@ -36,6 +38,12 @@ const loadComment = async () => {
         loadStatus.value = -1;
     }
 }
+
+watch(model, (newValue, oldValue) => {
+    if (newValue) {
+        loadComment();
+    }
+})
 </script>
 <template>
     <el-divider></el-divider>

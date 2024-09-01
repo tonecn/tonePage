@@ -1,6 +1,6 @@
 <script setup>
 import { request } from '@/lib/request';
-import { onMounted, reactive, ref, nextTick } from 'vue';
+import { onMounted, ref } from 'vue';
 import { timestampToString } from '../lib/timestampToString'
 import { useRoute } from 'vue-router'
 import { Marked } from 'marked';
@@ -14,6 +14,7 @@ const loadStatus = ref(0);// 0加载中 -1加载失败 -2文章不存在或不�
 const route = useRoute();
 const blogContent = ref('');
 const blogInfo = ref({});
+const blogCommentReload = ref(false);
 
 const marked = new Marked(
     markedHighlight({
@@ -66,9 +67,9 @@ onMounted(async () => {
             <div v-html="blogContent" id="blogContentContainer"></div>
         </div>
 
-        <BlogComment v-if="loadStatus == 1" />
+        <BlogComment v-if="loadStatus == 1" v-model="blogCommentReload"/>
     </div>
-    <BlogContentToolBar />
+    <BlogContentToolBar @comment-success="blogCommentReload = true;"/>
 </template>
 <style scoped>
 .bcc {

@@ -1,12 +1,13 @@
 <script setup>
 import { Star, Edit, StarFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, defineEmits } from 'vue';
 import { useRoute } from 'vue-router';
 import { request } from '@/lib/request';
 import RotationVerification from '../Common/RotationVerification.vue';
 const route = useRoute()
 const bloguuid = route.params.uuid;
+const emit = defineEmits(['comment-success'])
 const inputComment = ref('')
 let inputCommentName = '';
 const toolBarVisible = ref(true);
@@ -71,6 +72,7 @@ const submitComment = async () => {
             name: inputCommentName.trim() == '' ? '匿名' : inputCommentName.trim()
         })
         if (commentRes.code == 0) {
+            emit('comment-success');
             return ElMessage.success('评论成功～');
         } else {
             throw new Error(commentRes.message);
