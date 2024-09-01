@@ -1,7 +1,7 @@
 <script setup>
 import { Star, Edit, StarFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus';
-import { ref, onMounted, onUnmounted, defineEmits } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { request } from '@/lib/request';
 import RotationVerification from '../Common/RotationVerification.vue';

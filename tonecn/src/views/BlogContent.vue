@@ -1,6 +1,6 @@
 <script setup>
 import { request } from '@/lib/request';
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { timestampToString } from '../lib/timestampToString'
 import { useRoute } from 'vue-router'
 import { Marked } from 'marked';
@@ -38,6 +38,9 @@ onMounted(async () => {
                 blogContent.value = marked.parse(decodeURIComponent(escape(atob(blogContentRes.data.data))))
                 blogInfo.value = blogContentRes.data.info;
                 loadStatus.value = 1;
+
+                // 标题
+                document.title = blogContentRes.data.info.title + ' —— 特恩(TONE)';
             } catch (error) {
                 throw error
             }
@@ -51,6 +54,9 @@ onMounted(async () => {
         console.error('请求博客内容发生错误 ', error);
         loadStatus.value = -1;
     }
+})
+onUnmounted(()=>{
+    document.title = '特恩(TONE)';
 })
 </script>
 <template>
