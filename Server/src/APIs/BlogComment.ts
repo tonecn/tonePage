@@ -26,9 +26,10 @@ class BlogComment extends API {
         // 获取IPAddress
         let ip_address = '未知'
         try {
-            let ipAddressRes = await axios.get(`http://ip-api.com/json/${_ip}?lang=zh-CN`);
-            if (ipAddressRes.data && ipAddressRes.data.status == 'success') {
-                ip_address = ipAddressRes.data.country == '中国' ? ipAddressRes.data.city : ipAddressRes.data.country;
+            let ipAddressRes = await axios.get(`https://mesh.if.iqiyi.com/aid/ip/info?version=1.1.1&ip=`+_ip);
+            if (ipAddressRes.data && ipAddressRes.data.msg == 'success') {
+                
+                ip_address = ipAddressRes.data.data.countryCN == '中国' ? ipAddressRes.data.data.provinceCN : ipAddressRes.data.data.countryCN;
             }
         } catch (error) {
             this.logger.warn('获取IP属地失败', error);
