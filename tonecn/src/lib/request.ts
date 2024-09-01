@@ -7,4 +7,11 @@ axios.interceptors.response.use((response) => {
   return response.data;
 });
 
+axios.interceptors.request.use((request) => {
+  if (localStorage.getItem('jwtToken')) {
+    request.headers['Authorization'] = 'Bearer ' + localStorage.getItem('jwtToken');
+  }
+  return request;
+})
+
 export { axios as request };
