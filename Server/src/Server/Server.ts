@@ -15,7 +15,12 @@ import BlogComment from "../APIs/BlogComment";
 import GetBlogComment from "../APIs/GetBlogComment";
 import GetCaptcha from "../APIs/GetCaptcha";
 import CheckCaptcha from "../APIs/CheckCaptcha";
+
 import Login from "../APIs/Console/Login";
+import GetResources from "../APIs/Console/GetResources";
+import GetBlogs from '../APIs/Console/GetBlogs'
+import SaveResource from '../APIs/Console/SaveResource'
+import DelResource from '../APIs/Console/DelResource'
 
 class Server {
     private logger = new Logger('Server');
@@ -39,6 +44,10 @@ class Server {
         this.apiLoader.add(CheckCaptcha);
 
         this.apiLoader.add(Login);
+        this.apiLoader.add(GetResources);
+        this.apiLoader.add(GetBlogs)
+        this.apiLoader.add(SaveResource);
+        this.apiLoader.add(DelResource);
 
         this.apiLoader.start(config.apiPort);
     }
