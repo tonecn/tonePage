@@ -21,6 +21,8 @@ import GetResources from "../APIs/Console/GetResources";
 import GetBlogs from '../APIs/Console/GetBlogs'
 import SaveResource from '../APIs/Console/SaveResource'
 import DelResource from '../APIs/Console/DelResource'
+import SaveBlog from '../APIs/Console/SaveBlog'
+import DelBlog from '../APIs/Console/DelBlog'
 
 class Server {
     private logger = new Logger('Server');
@@ -45,9 +47,11 @@ class Server {
 
         this.apiLoader.add(Login);
         this.apiLoader.add(GetResources);
-        this.apiLoader.add(GetBlogs)
         this.apiLoader.add(SaveResource);
         this.apiLoader.add(DelResource);
+        this.apiLoader.add(GetBlogs)
+        this.apiLoader.add(SaveBlog);
+        this.apiLoader.add(DelBlog);
 
         this.apiLoader.start(config.apiPort);
     }

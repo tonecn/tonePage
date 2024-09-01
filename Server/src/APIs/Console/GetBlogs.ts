@@ -11,7 +11,7 @@ class GetBlogs extends API {
 
     public async onRequset(data: any, res: any) {
         // const { uuid } = data._jwt;
-        let resourcesRes = await MySQLConnection.execute("SELECT * FROM blog");
+        let resourcesRes = await MySQLConnection.execute("SELECT * FROM blog ORDER BY id DESC");
         if (!resourcesRes) {
             return res.json(ServerStdResponse.SERVER_ERROR);
         }
