@@ -12,7 +12,7 @@ class APILoader {
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cors({
             origin: ['http://localhost:5173', 'http://note.ctbu.net.cn', 'http://124.223.5.195:23501'],
-            methods: ['GET', 'POST'],
+            methods: ['GET', 'POST', 'DELETE'],
             allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin', ''],
         }));
     }
