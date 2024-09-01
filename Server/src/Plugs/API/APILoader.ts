@@ -11,7 +11,7 @@ class APILoader {
         this.app.use(express.json({ limit: '50mb' }));
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cors({
-            origin: ['http://localhost:5173', 'http://note.ctbu.net.cn', 'http://124.223.5.195:23501'],
+            origin: ['http://localhost:5173', 'http://www.tonesc.cn', 'https://www.tonesc.cn', 'http://tonesc.cn', 'https://tonesc.cn'],
             methods: ['GET', 'POST', 'DELETE'],
             allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin', ''],
         }));
