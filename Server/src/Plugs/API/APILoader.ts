@@ -20,19 +20,19 @@ class APILoader {
     add(api: { new(): API }) {
         const instance = new api();
         for (let func of instance.middlewareFunc) {
-            this.app[instance.method.toLowerCase() as keyof express.Application](instance.uri, (req: Request, res: Response, next: NextFunction) => {
+            this.app[instance.method.toLowerCase() as keyof express.Application](instance.path, (req: Request, res: Response, next: NextFunction) => {
                 func(req, res, next);
             });
-            this.logger.info(`[${instance.method}][${instance.uri}] 已启用中间件[${func.name}]`);
+            this.logger.info(`[${instance.method}][${instance.path}] 已启用中间件[${func.name}]`);
         }
 
-        this.app[instance.method.toLowerCase() as keyof express.Application](instance.uri, (req: Request, res: Response) => {
+        this.app[instance.method.toLowerCase() as keyof express.Application](instance.path, (req: Request, res: Response) => {
             let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip;
-            this.logger.info(`[${instance.method}][${instance.uri}] 被请求[${(ip as string).replace('::ffff:', '')}]`);
+            this.logger.info(`[${instance.method}][${instance.path}] 被请求[${(ip as string).replace('::ffff:', '')}]`);
             const data = Object.assign({}, req.query, req.body);
             instance.onRequset(data, res);
         });
-        this.logger.info(`[${instance.method}][${instance.uri}] 加载成功`);
+        this.logger.info(`[${instance.method}][${instance.path}] 加载成功`);
     }
 
     start(port?: number) {
