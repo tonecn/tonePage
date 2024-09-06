@@ -1,21 +1,31 @@
+/**
+ * @file captchaSession.ts
+ * @version 1.0.0
+ * @description 旋转图像验证服务
+ */
 import Logger from '../Logger';
 import RedisConnection from '../RedisConnection';
+type CaptchaSessionDataJSON = {
+    rotateDeg: number,
+    tryCount: number,
+    isPassed: boolean
+}
 
 class _captchaSession {
-    private logger = new Logger('Service][captchaSession');
-    private AllowMaxTryCount: number = 5;
-    private AllowMaxAngleDiff: number = 8;
-    private ExpriedTimeSec: number = 60;
-    private RedisCommonKey: string = 'Service:captchaSession:';
+    private readonly logger = new Logger('Service][captchaSession');
+    private readonly AllowMaxTryCount: number = 5;
+    private readonly AllowMaxAngleDiff: number = 8;
+    private readonly ExpriedTimeSec: number = 60;
+    private readonly RedisCommonKey: string = 'Service:captchaSession:';
 
     constructor() {
         this.logger.info('旋转图像验证服务已启动');
     }
 
-    private async get(session: string) {
+    private async get(session: string): Promise<CaptchaSessionDataJSON | undefined> {
         try {
             const result = await RedisConnection.get(this.RedisCommonKey + session);
-            if(result === null)
+            if (result === null)
                 return;
             return JSON.parse(result);
         } catch (error) {
@@ -23,8 +33,8 @@ class _captchaSession {
             return;
         }
     }
-    
-    private async remove(session: string) {
+
+    private async remove(session: string): Promise<void> {
         try {
             await RedisConnection.del(this.RedisCommonKey + session);
         } catch (error) {
@@ -39,14 +49,14 @@ class _captchaSession {
      * @returns true存储成功 false存储失败
      */
     public async add(session: string, rotateDeg: number): Promise<boolean> {
-        const result = {
+        const result: CaptchaSessionDataJSON = {
             rotateDeg: rotateDeg,
             tryCount: 0,
             isPassed: false
         }
         try {
             const res = await RedisConnection.set(this.RedisCommonKey + session, JSON.stringify(result));
-            if(res && res === 'OK') {
+            if (res && res === 'OK') {
                 RedisConnection.expire(this.RedisCommonKey + session, this.ExpriedTimeSec);
                 this.logger.info(`session[${session}]及角度[${rotateDeg}]已存储`);
                 return true;
@@ -66,9 +76,9 @@ class _captchaSession {
      */
     public async isPassed(session: string): Promise<boolean> {
         const result = await this.get(session);
-        if(!result)
+        if (!result)
             return false;
-        if(result.isPassed)
+        if (result.isPassed)
             this.remove(session);
         return result.isPassed;
     }
@@ -82,14 +92,14 @@ class _captchaSession {
     public async check(session: string, rotateDeg: number): Promise<number> {
         try {
             let result = await this.get(session);
-            if(!result){
+            if (!result) {
                 return 0;
             }
-            if(result.isPassed){
+            if (result.isPassed) {
                 this.logger.info(`session[${session}]已通过验证，无需重复验证`);
                 return 1;
             }
-            if(Math.abs(result.rotateDeg - rotateDeg) <= this.AllowMaxAngleDiff) {
+            if (Math.abs(result.rotateDeg - rotateDeg) <= this.AllowMaxAngleDiff) {
                 result.isPassed = true;
                 await RedisConnection.del(this.RedisCommonKey + session);
                 await RedisConnection.set(this.RedisCommonKey + session, JSON.stringify(result));
@@ -97,7 +107,7 @@ class _captchaSession {
                 return 1;
             }
             result.tryCount++;
-            if(result.tryCount >= this.AllowMaxTryCount) {
+            if (result.tryCount >= this.AllowMaxTryCount) {
                 this.remove(session);
                 return -1;
             }
