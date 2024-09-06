@@ -1,8 +1,8 @@
-<script setup>
+<script setup lang='ts'>
 import { ElMessage } from 'element-plus';
 import { reactive, ref } from 'vue';
 import RotationVerification from '@/components/Common/RotationVerification.vue';
-import { request } from '@/lib/request';
+import { request, type BaseResponseData } from '@/lib/request';
 
 const isCaptchaShow = ref(false);
 const loginStatus = ref(false);
@@ -19,7 +19,7 @@ const loginHandle = () => {
 const login = async () => {
     loginStatus.value = true;
     try {
-        let loginRes = await request.post('/console/login', {
+        let loginRes: BaseResponseData = await request.post('/console/login', {
             username: formData.username,
             password: formData.password,
             session: localStorage.getItem('captcha-session')
@@ -60,7 +60,7 @@ const login = async () => {
         <h1>登录到控制台</h1>
         <el-popover placement="bottom" :width="300" trigger="click">
             <p>控制台是特恩(TONE)网页中的一个控制器界面，如果您是管理员，可通过登录后编辑本网页中的内容（资源、工具、日记等），详情请见<strong style="cursor: pointer;"
-                    @click="onDev">《特恩(TONE)控制台使用协议》</strong></p>
+                    @click="">《特恩(TONE)控制台使用协议》</strong></p>
             <template #reference>
                 <h3>控制台是什么？</h3>
             </template>
@@ -68,7 +68,7 @@ const login = async () => {
         <div class="form-container">
             <el-input v-model="formData.username" class="input" placeholder="请输入账户名" clearable>
             </el-input>
-            <el-input v-model="formData.password" show-password class="input" placeholder="密码">
+            <el-input v-model="formData.password" show-password class="input" placeholder="密码" @keyup.enter="loginHandle">
             </el-input>
             <el-button class="login-botton" @click="loginHandle" :loading="loginStatus">登录</el-button>
         </div>
