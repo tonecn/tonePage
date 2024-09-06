@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { request } from '@/lib/request';
+import { request, type BaseResponseData } from '@/lib/request';
 import Agreement from '@/components/Common/Agreement.vue';
 import { ref, onMounted, reactive } from 'vue';
 let showAgreement = ref(false);
@@ -8,7 +8,7 @@ let ResourceDatas: any[] = reactive([])
 onMounted(async () => {
   // 用于获取数据的函数
   try {
-    let res: any = await request.get('/resourceList?type=resource');
+    let res: BaseResponseData = await request.get('/resourceList?type=resource');
     if (res && res.code == 0) {
       loadStatus.value = 1;
       ResourceDatas.push(...res.data)

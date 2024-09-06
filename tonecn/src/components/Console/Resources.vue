@@ -1,13 +1,25 @@
-<script setup>
-import { onMounted, reactive, ref } from 'vue';
-import { request } from '../../lib/request'
+<script setup lang='ts'>
+import { onMounted, reactive, ref, type Ref } from 'vue';
+import { request, type BaseResponseData } from '../../lib/request'
 import { ElMessage } from 'element-plus';
+type ResourceData = {
+    id: string,
+    type: string,
+    recommand: number,
+    title: string,
+    describe: string,
+    icon_src: string,
+    addition: string,
+    src: string,
+}
 onMounted(async () => {
     await loadTableData();
 })
+const tableData: Ref<any[]> = ref([])
+const dialogEditFormVisible = ref(false);
 const loadTableData = async () => {
     try {
-        let resourcesRes = await request.get('/console/resources')
+        let resourcesRes: BaseResponseData = await request.get('/console/resources')
         if (resourcesRes.code == 0) {
             tableData.value = [];
             tableData.value.push(...resourcesRes.data);
@@ -18,9 +30,7 @@ const loadTableData = async () => {
         ElMessage.error(`加载失败 ${error}`)
     }
 }
-const tableData = ref([])
-const dialogEditFormVisible = ref(false);
-const editForm = reactive({
+const editForm: ResourceData = reactive({
     id: '',
     type: '',
     recommand: 1,
@@ -30,7 +40,7 @@ const editForm = reactive({
     addition: '',
     src: '',
 })
-const editHandle = (data) => {
+const editHandle = (data: ResourceData) => {
     editForm.id = data.id;
     editForm.type = data.type;
     editForm.recommand = +data.recommand;
@@ -58,7 +68,7 @@ const saveHandle = async () => {
         return ElMessage.warning('请先完成表单')
     }
     try {
-        let res = await request.post('/console/saveResource', {
+        let res: BaseResponseData = await request.post('/console/saveResource', {
             id: editForm.id,
             type: editForm.type,
             recommand: editForm.recommand,
@@ -79,10 +89,10 @@ const saveHandle = async () => {
         return ElMessage.error(`保存失败 ${error}`);
     }
 }
-const delHandle = async (data) => {
+const delHandle = async (data: { id: string, [key: string]: any }) => {
     let { id } = data;
     try {
-        let res = await request.delete('/console/resource?id=' + id);
+        let res: BaseResponseData = await request.delete('/console/resource?id=' + id);
         if (res.code == 0) {
             ElMessage.success('删除成功');
             loadTableData();

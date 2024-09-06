@@ -1,10 +1,14 @@
 import axios from "axios";
-
+type BaseResponseData = {
+  code: number,
+  message: string,
+  data: any
+};
 // axios.defaults.baseURL = "http://localhost:23500";
 axios.defaults.baseURL = "https://tonesc.cn/apis";
 
 axios.interceptors.response.use((response) => {
-  if(response.data && response.data.code == -5){
+  if (response.data && response.data.code == -5) {
     // auth error
     localStorage.removeItem('jwtToken');
     window.location.reload()
@@ -20,4 +24,5 @@ axios.interceptors.request.use((request) => {
   return request;
 })
 
+export type { BaseResponseData };
 export { axios as request };

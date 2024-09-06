@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang='ts'>
 import { Star, Edit, StarFilled } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { request } from '@/lib/request';
+import { request, type BaseResponseData } from '@/lib/request';
 import RotationVerification from '../Common/RotationVerification.vue';
 const route = useRoute()
 const bloguuid = route.params.uuid;
@@ -28,7 +28,7 @@ const likeBlog = async () => {
         return ElMessage.success('已经点过赞啦～')
     }
     try {
-        let likeRes = await request.post('/blogLike?bloguuid=' + bloguuid)
+        let likeRes: BaseResponseData = await request.post('/blogLike?bloguuid=' + bloguuid)
         if (likeRes.code == 0) {
             isLiked.value = true;
             return ElMessage.success('点赞成功～')
@@ -65,7 +65,7 @@ const submitComment = async () => {
     isCaptchaViewShow.value = false;
     ElMessage.info('正在提交，请稍后')
     try {
-        let commentRes = await request.post('blogComment', {
+        let commentRes: BaseResponseData = await request.post('blogComment', {
             session: localStorage.getItem('captcha-session'),
             bloguuid: bloguuid,
             content: inputComment.value.trim(),

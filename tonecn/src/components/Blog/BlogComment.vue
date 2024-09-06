@@ -1,12 +1,12 @@
-<script setup>
-import { request } from '@/lib/request';
+<script setup lang='ts'>
+import { request, type BaseResponseData } from '@/lib/request';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { timestampToString } from '@/lib/timestampToString';
 const model = defineModel();
 const route = useRoute()
 const bloguuid = route.params.uuid;
-const blogCommentList = reactive([]);
+const blogCommentList: any[] = reactive([]);
 const loadStatus = ref(0)// 0加载中 1已加载全部评论 -1加载失败
 onMounted(async () => {
     await loadComment();
@@ -25,7 +25,7 @@ const getStatusText = computed(() => {
 
 const loadComment = async () => {
     try {
-        let commentRes = await request.get(`/blogComment?bloguuid=${bloguuid}`);
+        let commentRes:BaseResponseData = await request.get(`/blogComment?bloguuid=${bloguuid}`);
         if (commentRes.code == 0) {
             blogCommentList.splice(0, blogCommentList.length);
             blogCommentList.push(...commentRes.data);

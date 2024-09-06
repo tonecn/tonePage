@@ -1,14 +1,27 @@
-<script setup>
-import { onMounted, reactive, ref } from 'vue';
-import { request } from '../../lib/request'
+<script setup lang='ts'>
+import { onMounted, reactive, ref, type Ref } from 'vue';
+import { request, type BaseResponseData } from '../../lib/request'
 import { ElMessage } from 'element-plus';
 import { timestampToString } from '@/lib/timestampToString';
+const tableData: Ref<any[]> = ref([])
+const dialogEditFormVisible = ref(false);
+type BlogContentData = {
+    id: string,
+    uuid: string,
+    title: string,
+    description: string,
+    publish_time: Date,
+    src: string,
+    access_level: number,
+    visit_count: number,
+    like_count: number
+}
 onMounted(async () => {
     await loadTableData();
 })
 const loadTableData = async () => {
     try {
-        let resourcesRes = await request.get('/console/blogs')
+        let resourcesRes: BaseResponseData = await request.get('/console/blogs')
         if (resourcesRes.code == 0) {
             tableData.value = [];
             tableData.value.push(...resourcesRes.data);
@@ -19,20 +32,18 @@ const loadTableData = async () => {
         ElMessage.error(`加载失败 ${error}`)
     }
 }
-const tableData = ref([])
-const dialogEditFormVisible = ref(false);
-const editForm = reactive({
+const editForm: BlogContentData = reactive({
     id: '',
     uuid: '',
     title: '',
     description: '',
-    publish_time: '',
+    publish_time: new Date(),
     src: '',
-    access_level: '',
-    visit_count: '',
-    like_count: ''
+    access_level: 0,
+    visit_count: 0,
+    like_count: 0
 })
-const editHandle = (data) => {
+const editHandle = (data: any) => {
     editForm.id = data.id;
     editForm.uuid = data.uuid;
     editForm.title = data.title;
@@ -48,7 +59,7 @@ const addHandle = () => {
     editForm.uuid = '';
     editForm.title = '';
     editForm.description = '';
-    editForm.publish_time = '';
+    editForm.publish_time = new Date();
     editForm.src = '';
     editForm.access_level = 10;
     editForm.visit_count = 0;
@@ -61,7 +72,7 @@ const saveHandle = async () => {
         return ElMessage.warning('请先完成表单')
     }
     try {
-        let res = await request.post('/console/saveBlog', {
+        let res: BaseResponseData = await request.post('/console/saveBlog', {
             id: editForm.id,
             uuid: editForm.uuid,
             title: editForm.title,
@@ -81,10 +92,10 @@ const saveHandle = async () => {
         return ElMessage.error(`保存失败 ${error}`);
     }
 }
-const delHandle = async (data) => {
+const delHandle = async (data: { id: string, [key: string]: any }) => {
     let { id } = data;
     try {
-        let res = await request.delete('/console/blog?id=' + id);
+        let res: BaseResponseData = await request.delete('/console/blog?id=' + id);
         if (res.code == 0) {
             ElMessage.success('删除成功');
             loadTableData();
@@ -95,7 +106,7 @@ const delHandle = async (data) => {
         return ElMessage.error(`删除失败 ${error}`);
     }
 }
-const formatTime = (row, column, cellValue, index) => {
+const formatTime = (row: any, _column: any, _cellValue: any, _index: any) => {
     return timestampToString(row.publish_time);
 }
 </script>
@@ -146,10 +157,10 @@ const formatTime = (row, column, cellValue, index) => {
                 <el-text style="margin-left: 20px;" size="small">默认可访问大于6的项</el-text>
             </el-form-item>
             <el-form-item label="访问量">
-                <el-input-number v-model="editForm.visit_count" :min="0" disabled/>
+                <el-input-number v-model="editForm.visit_count" :min="0" disabled />
             </el-form-item>
             <el-form-item label="点赞量">
-                <el-input-number v-model="editForm.like_count" :min="0" disabled/>
+                <el-input-number v-model="editForm.like_count" :min="0" disabled />
             </el-form-item>
         </el-form>
         <template #footer>

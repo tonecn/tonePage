@@ -1,14 +1,14 @@
-<script setup>
-import { request } from '@/lib/request';
+<script setup lang='ts'>
+import { request, type BaseResponseData } from '@/lib/request';
 import { onMounted, reactive, ref } from 'vue';
 import { timestampToString } from '../lib/timestampToString'
 import { formateTimes } from '@/lib/formateTimes';
 const loadStatus = ref(0);
-const blogList = reactive([]);
+const blogList: any[] = reactive([]);
 
 onMounted(async () => {
     try {
-        const blogListRes = await request.get('/blogList');
+        const blogListRes:BaseResponseData = await request.get('/blogList');
         if (blogListRes.code == 0) {
             blogList.push(...blogListRes.data);
             loadStatus.value = 1;

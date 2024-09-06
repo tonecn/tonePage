@@ -1,6 +1,6 @@
-<script setup>
-import { request } from '@/lib/request';
-import { onMounted, onUnmounted, ref } from 'vue';
+<script setup lang='ts'>
+import { request, type BaseResponseData } from '@/lib/request';
+import { onMounted, onUnmounted, ref, type Ref } from 'vue';
 import { timestampToString } from '../lib/timestampToString'
 import { useRoute } from 'vue-router'
 import { Marked } from 'marked';
@@ -9,11 +9,23 @@ import hljs from 'highlight.js';
 import "highlight.js/styles/xcode.css";
 import BlogContentToolBar from '@/components/Blog/BlogContentToolBar.vue';
 import BlogComment from '@/components/Blog/BlogComment.vue';
-
+type BlogInfo = {
+    visit_count: number,
+    title: string,
+    publish_time: string,
+    like_count: number,
+    description: string
+}
 const loadStatus = ref(0);// 0加载中 -1加载失败 -2文章不存在或不可见 1加载成功
 const route = useRoute();
 const blogContent = ref('');
-const blogInfo = ref({});
+const blogInfo: Ref<BlogInfo> = ref({
+    visit_count: 0,
+    title: '',
+    publish_time: '',
+    like_count: 0,
+    description: ''
+});
 const blogCommentReload = ref(false);
 
 const marked = new Marked(
@@ -32,10 +44,10 @@ onMounted(async () => {
         return loadStatus.value = -1;
     }
     try {
-        let blogContentRes = await request.get(`/blogContent?bloguuid=${bloguuid}`);
+        let blogContentRes: BaseResponseData = await request.get(`/blogContent?bloguuid=${bloguuid}`);
         if (blogContentRes.code == 0) {
             try {
-                blogContent.value = marked.parse(decodeURIComponent(escape(atob(blogContentRes.data.data))))
+                blogContent.value = await marked.parse(decodeURIComponent(escape(atob(blogContentRes.data.data))))
                 blogInfo.value = blogContentRes.data.info;
                 loadStatus.value = 1;
 
@@ -55,7 +67,7 @@ onMounted(async () => {
         loadStatus.value = -1;
     }
 })
-onUnmounted(()=>{
+onUnmounted(() => {
     document.title = '特恩(TONE)';
 })
 </script>
@@ -73,9 +85,9 @@ onUnmounted(()=>{
             <div v-html="blogContent" id="blogContentContainer"></div>
         </div>
 
-        <BlogComment v-if="loadStatus == 1" v-model="blogCommentReload"/>
+        <BlogComment v-if="loadStatus == 1" v-model="blogCommentReload" />
     </div>
-    <BlogContentToolBar @comment-success="blogCommentReload = true;"/>
+    <BlogContentToolBar @comment-success="blogCommentReload = true;" />
 </template>
 <style scoped>
 .bcc {
@@ -125,12 +137,12 @@ onUnmounted(()=>{
     color: #888;
 }
 
-#blogContentContainer pre{
+#blogContentContainer pre {
     border-radius: 5px;
     overflow: hidden;
 }
 
-#blogContentContainer pre code{
+#blogContentContainer pre code {
     overflow-x: scroll;
 }
 

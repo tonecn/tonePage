@@ -1,12 +1,12 @@
-<script setup>
+<script setup lang='ts'>
 /**
  * 旋转图像验证码组件
  * @event success 验证成功
  * @event fail 验证失败
  * @requires ServerSDK
- * @since 1.0.1
+ * @since 1.0.2
  */
-import { request } from '@/lib/request';
+import { request, type BaseResponseData } from '@/lib/request';
 import { onBeforeMount, onMounted, ref } from 'vue';
 let imageBase64 = ref('');
 const emit = defineEmits(['fail', 'success'])
@@ -14,7 +14,7 @@ let onVerifying = ref(false);
 let onVerifyFail = ref(false);
 onBeforeMount(async () => {
     try {
-        let res = await request.get('captcha')
+        let res: BaseResponseData = await request.get('captcha')
         localStorage.setItem('captcha-session', res.data.session)
         imageBase64.value = res.data.imgPreStr + res.data.img;
     } catch (error) {
@@ -27,8 +27,11 @@ onMounted(() => {
     let imageEle = document.getElementById('RV-image');
     let isDragging = false;// 正在移动标志位
     let silderMoveable = true;// 是否可以开始移动标识位
-    let startX;
-    let deltaX;// 拖动距离
+    let startX: number;
+    let deltaX: number;// 拖动距离
+    if(!slider || !imageEle){
+        throw new Error('element is null')
+    }
     slider.addEventListener('mousedown', function (e) {
         if (silderMoveable) {
             isDragging = true;
@@ -83,7 +86,7 @@ onMounted(() => {
             } else {
                 try {
                     onVerifying.value = true;
-                    let res = await request.post('checkCaptcha', {
+                    let res: BaseResponseData = await request.post('checkCaptcha', {
                         session: localStorage.getItem('captcha-session'),
                         rotateDeg: deltaX * 9 / 5
                     })
@@ -129,7 +132,7 @@ onMounted(() => {
             } else {
                 try {
                     onVerifying.value = true;
-                    let res = await request.post('checkCaptcha', {
+                    let res: BaseResponseData = await request.post('checkCaptcha', {
                         session: localStorage.getItem('captcha-session'),
                         rotateDeg: deltaX * 9 / 5
                     })
