@@ -1,8 +1,0 @@
-{
-    "mysql":{
-        "host":"server.tonesc.cn",
-        "user":"root",
-        "password":"245565",
-        "database":"tonecn"
-    }
-}
