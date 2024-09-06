@@ -1,5 +1,8 @@
-// MYSQL数据库连接池
-// 版本：v0.1
+/**
+ * @file MySQLConnection.ts
+ * @version 1.0.0
+ * @description MySQL数据库连接池
+ */
 import mysql from "mysql2/promise";
 import Logger from "./Logger";
 import config from "../config";
@@ -20,8 +23,7 @@ class MySQLConnectPool {
         }, 10);
     }
 
-    // 内部函数，无需手动调用
-    createConnectPool() {
+    private createConnectPool() {
         return mysql.createPool({
             host: config.mysql.host,
             database: config.mysql.database,
@@ -33,8 +35,7 @@ class MySQLConnectPool {
         })
     }
 
-    // 内部函数，无需手动调用
-    async testConnection() {
+    private async testConnection() {
         try {
             let res = await this.execute("SELECT 1 + 1 As result");
             if (res[0].result == 2)
@@ -48,8 +49,14 @@ class MySQLConnectPool {
 
     }
 
-    // 执行SQL语句
-    async execute(sql: string, values?: any[], database?: string) {
+    /**
+     * 执行SQL查询
+     * @param sql SQL语句
+     * @param values 可选的查询参数列表
+     * @param database 可选的数据库
+     * @returns Promise<any | undefined> 查询结果
+     */
+    public async execute(sql: string, values?: any[], database?: string): Promise<any | undefined> {
         let connection: any;
         try {
             connection = await this.pool.getConnection();
@@ -73,5 +80,5 @@ class MySQLConnectPool {
     }
 }
 
-let MySQLConnection = new MySQLConnectPool();
+const MySQLConnection = new MySQLConnectPool();
 export default MySQLConnection;
