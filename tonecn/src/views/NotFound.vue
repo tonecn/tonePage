@@ -3,7 +3,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 const containerHeight = ref('800px');
 onMounted(async () => {
     document.title = '404 不存在的页面';
-    containerHeight.value = window.innerHeight > 500 ? window.innerHeight -85 + 'px' : '390px';
+    containerHeight.value = window.innerHeight > 500 ? window.innerHeight - 90 + 'px' : '390px';
 })
 onUnmounted(() => {
     document.title = '特恩(TONE)';
@@ -34,5 +34,11 @@ onUnmounted(() => {
     margin: 0px auto;
     padding: 0 20px;
     height: v-bind(containerHeight);
+}
+
+@media screen and (max-width: 800px) {
+  .content-container {
+    height: calc(v-bind(containerHeight) + 15px);
+  }
 }
 </style>
