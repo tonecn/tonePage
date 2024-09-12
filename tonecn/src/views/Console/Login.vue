@@ -1,9 +1,10 @@
 <script setup lang='ts'>
 import { ElMessage } from 'element-plus';
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import RotationVerification from '@/components/Common/RotationVerification.vue';
 import { request, type BaseResponseData } from '@/lib/request';
 
+const containerHeight = ref('800px');
 const isCaptchaShow = ref(false);
 const loginStatus = ref(false);
 const formData = reactive({
@@ -53,6 +54,9 @@ const login = async () => {
         return ElMessage.error(`未知错误 ${error}`)
     }
 }
+onMounted(async() => {
+    containerHeight.value = window.innerHeight > 500 ? window.innerHeight - 90 + 'px' : '390px';
+})
 </script>
 <template>
     <div class="bcc"></div>
@@ -88,16 +92,19 @@ const login = async () => {
 }
 
 .main-container {
-    padding: 30px;
-    margin-bottom: 160px;
+    height: v-bind(containerHeight);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .main-container>h1 {
     text-align: center;
-    font-size: 42px;
+    font-size: 36px;
     font-weight: 400;
-    margin-top: 50px;
     cursor: default;
+    margin: 0 0;
 }
 
 .main-container>h3 {
@@ -120,7 +127,7 @@ const login = async () => {
 }
 
 .login-botton {
-    margin-top: 10px;
+    margin: 10px 0 120px 0;
     width: 260px;
     height: 35px;
     font-weight: 500;
@@ -136,5 +143,11 @@ const login = async () => {
     background-color: #fff;
     border-color: rgb(220, 223, 230);
     color: #606266;
+}
+@media screen and (max-width: 800px){
+    /* 因为屏幕宽度小于800时，head的高度会减少15px */
+    .main-container{
+        height: calc(v-bind(containerHeight) + 15px);
+    }
 }
 </style>
