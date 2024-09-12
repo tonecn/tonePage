@@ -8,8 +8,7 @@ onMounted(() => {
   // 界面特效字体
   let nameElement = document.getElementById("my-name");
   if (nameElement == null) {
-    console.error('未找到元素my-name')
-    return;
+    return console.error('未找到元素my-name')
   }
   let colorNum = 66;
   let colorNumReverse = false;
