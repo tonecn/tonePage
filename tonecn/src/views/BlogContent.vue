@@ -87,7 +87,7 @@ onUnmounted(() => {
 
         <BlogComment v-if="loadStatus == 1" v-model="blogCommentReload" />
     </div>
-    <BlogContentToolBar @comment-success="blogCommentReload = true;" />
+    <BlogContentToolBar v-if="loadStatus == 1" @comment-success="blogCommentReload = true;" />
 </template>
 <style scoped>
 .bcc {
