@@ -13,7 +13,7 @@ class Logger {
             }
             return arg;
         })
-        console.log(`[${this.getTime()}][INFO][${this.namespace}]${info[0] == '[' ? '' : ' '}${info} ` + args.join(' '));
+        console.log(`\x1b[32m[${this.getTime()}][INFO][${this.namespace}]${info[0] == '[' ? '' : ' '}${info} ` + args.join(' ') + '\x1b[0m');
     }
 
     public warn(info: string, ...args: any): void {
@@ -23,7 +23,7 @@ class Logger {
             }
             return arg;
         })
-        console.log(`[${this.getTime()}][WARN][${this.namespace}]${info[0] == '[' ? '' : ' '}${info} ` + args.join(' '));
+        console.log(`\x1b[33m[${this.getTime()}][WARN][${this.namespace}]${info[0] == '[' ? '' : ' '}${info} ` + args.join(' ') + '\x1b[0m');
     }
 
     public error(info: string, ...args: any): void {
@@ -33,7 +33,7 @@ class Logger {
             }
             return arg;
         })
-        console.log(`[${this.getTime()}][ERROR][${this.namespace}]${info[0] == '[' ? '' : ' '}${info} ` + args.join(' '));
+        console.log(`\x1b[31m[${this.getTime()}][ERROR][${this.namespace}]${info[0] == '[' ? '' : ' '}${info} ` + args.join(' ') + '\x1b[0m');
     }
 }
 
