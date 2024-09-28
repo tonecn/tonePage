@@ -1,56 +1,58 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 const router = useRouter()
-
-interface MoreOptionsVisable {
-    moreOptions: HTMLElement | null;
-    show(): void;
-    hidden(): void;
-    toggle(): void;
+const showMoreOptions = ref(false);
+const moreOptionsButton = ref<HTMLElement | null>(null);
+const handleMoreOptionsButtonClick = () => {
+    showMoreOptions.value = !showMoreOptions.value;
 }
-
-const moreOptionsVisable: MoreOptionsVisable = {
-    moreOptions: null,
-    show() {
-        if (!this.moreOptions)
-            throw new Error('moreOptions元素不存在');
-        this.moreOptions.classList.remove('header-right-hidden');
-    },
-    hidden() {
-        if (!this.moreOptions)
-            throw new Error('moreOptions元素不存在');
-        this.moreOptions.classList.add('header-right-hidden');
-    },
-    toggle() {
-        if (!this.moreOptions)
-            throw new Error('moreOptions元素不存在');
-        this.moreOptions.classList.toggle('header-right-hidden')
-    }
+const handleScreenResize = (e: MediaQueryListEvent) => {
+    if (e.matches)
+        showMoreOptions.value = false;
 }
-
 onMounted(async () => {
-    moreOptionsVisable.moreOptions = document.querySelector("#header-right");
+    if (moreOptionsButton.value) {
+        moreOptionsButton.value.addEventListener('click', handleMoreOptionsButtonClick)
+    }
+
+    const mediaQueryList = window.matchMedia('(min-width: 640px)');
+    mediaQueryList.addEventListener('change', handleScreenResize);
+    if (mediaQueryList.matches)
+        showMoreOptions.value = false;
 });
+onUnmounted(async () => {
+    if (moreOptionsButton.value) {
+        moreOptionsButton.value.removeEventListener('click', handleMoreOptionsButtonClick);
+    }
+
+    const mediaQueryList = window.matchMedia('(min-width: 640px)');
+    mediaQueryList.removeEventListener('change', handleScreenResize);
+})
 
 router.afterEach(() => {
-    moreOptionsVisable.hidden();
+    showMoreOptions.value = false;
 });
+
+
 </script>
 <template>
-    <div class="main-container">
-        <div class="header-container">
-            <div class="header-left">
+    <div class="z-[500] w-full fixed backdrop-blur-sm bg-white/60">
+        <div class="w-full box-content mx-auto py-[15px] sm:py-[22px] max-w-[1170px] flex justify-between items-center transition-all duration-200 border-b-[1px] border-b-[#eee]"
+            :class="[{ 'flex-col': showMoreOptions }]">
+            <!-- left header -->
+            <div class="px-[25px] flex items-center w-full justify-between sm:block">
                 <div>
                     <RouterLink :to="{ name: 'home' }" v-if="$route.name == 'home'">
-                        <div class="emoji">🍭</div>
+                        <div class="h-[35px] text-[25px] cursor-pointer]">🍭</div>
                     </RouterLink>
                     <RouterLink :to="{ name: 'home' }" v-else>
-                        <div class="title">特恩(TONE)</div>
+                        <div class="h-[35px] leading-[35px] font-semibold tracking-[5px] text-[#333] text-nowrap">
+                            特恩(TONE)</div>
                     </RouterLink>
                 </div>
                 <!-- 更多选项按钮，宽度小于800时出现 -->
-                <div class="more" tabindex="0" id="header-more" @click="moreOptionsVisable.toggle">
+                <div class="sm:hidden block" tabindex="0" id="header-more" ref="moreOptionsButton">
                     <svg t="1705913460674" class="icon" viewBox="0 0 1024 1024" version="1.1"
                         xmlns="http://www.w3.org/2000/svg" p-id="10513" width="20" height="20">
                         <path
@@ -59,161 +61,33 @@ router.afterEach(() => {
                     </svg>
                 </div>
             </div>
-            <div class="header-right header-right-hidden" id="header-right">
-                <div class="link-list">
-                    <RouterLink :to="{ name: 'resource' }" v-show="true">
-                        <div class="link" :class="{ 'link-chosen': $route.name === 'resource' }">资源</div>
+            <!-- right header -->
+            <div class="sm:block" :class="[{ 'hidden': !showMoreOptions }, { 'mt-[25px]': showMoreOptions }]"
+                id="header-right">
+                <div class="flex justify-end items-center">
+                    <RouterLink :to="{ name: 'resource' }">
+                        <div class="text-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-b-transparent hover:text-black"
+                            :class="{ 'border-b-[#e03ebf] text-black': $route.name === 'resource' }">资源</div>
                     </RouterLink>
-                    <RouterLink :to="{ name: 'download' }" v-show="true">
-                        <div class="link" :class="{ 'link-chosen': $route.name === 'download' }">下载</div>
+                    <RouterLink :to="{ name: 'download' }">
+                        <div class="text-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-b-transparent hover:text-black"
+                            :class="{ 'border-b-[#e03ebf] text-black': $route.name === 'download' }">下载</div>
                     </RouterLink>
-                    <RouterLink :to="{ name: 'blog' }" v-show="true">
-                        <div class="link" :class="{ 'link-chosen': $route.name === 'blog' || $route.name === 'blogContent' }">博客</div>
+                    <RouterLink :to="{ name: 'blog' }">
+                        <div class="text-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-b-transparent hover:text-black"
+                            :class="{ 'border-b-[#e03ebf] text-black': $route.name === 'blog' || $route.name === 'blogContent' }">
+                            博客</div>
                     </RouterLink>
-                    <RouterLink :to="{ name: 'dashboard' }" v-show="true">
-                        <div class="link"
-                            :class="{ 'link-chosen': $route.name === 'login' || $route.name === 'dashboard' }">控制台</div>
+                    <RouterLink :to="{ name: 'dashboard' }">
+                        <div class="text-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-b-transparent hover:text-black"
+                            :class="{ 'border-b-[#e03ebf] text-black': $route.name === 'login' || $route.name === 'dashboard' }">
+                            控制台</div>
                     </RouterLink>
                 </div>
             </div>
         </div>
-        <div class="header-divider"></div>
     </div>
-    <div class="main-container-block"></div>
+    <!-- 占位盒，用于解决fixed布局导致的文档流异常 -->
+    <div class="h-[66px] sm:h-[80px] w-full transition-all duration-200"></div>
 </template>
-<style scoped>
-.main-container {
-    /* height: 69px; */
-    z-index: 500;
-    width: 100%;
-    position: fixed;
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    background-color: rgba(255, 255, 255, 0.6);
-}
-
-.header-container {
-    /* height: 100%; */
-    width: 100%;
-    margin: 0 auto;
-    padding: 22px 0;
-    max-width: 1170px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: padding 0.2s;
-}
-
-.header-left,
-.header-right {
-    margin: 0 25px;
-}
-
-.header-left .emoji {
-    font-size: 25px;
-    cursor: pointer;
-    height: 35px;
-}
-
-.header-left .title {
-    /* 因为棒棒糖的高度为35，需要保持统一 */
-    height: 35px;
-    line-height: 35px;
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: 5px;
-    cursor: pointer;
-    color: #333;
-}
-
-.header-left .more {
-    /* 因为棒棒糖的高度为35，需要保持统一 */
-    height: 35px;
-    display: none;
-}
-
-.link-list {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-}
-
-.link-list .link {
-    margin: 0 20px;
-    cursor: pointer;
-    color: #666;
-    transition: color 0.2s;
-    border-bottom: 3px solid rgba(0, 0, 0, 0);
-}
-
-.link-list .link:hover {
-    color: #000;
-}
-
-.link-list .link-chosen {
-    border-bottom: 3px solid #e03ebf;
-}
-
-.header-divider {
-    height: 1px;
-    width: 100%;
-    background-color: #eee;
-}
-
-.main-container-block {
-    height: 80px;
-    width: 100%;
-    transition: height 0.2s;
-    /* background-color: #fff; */
-}
-
-@media screen and (max-width: 800px) {
-    .header-container {
-        padding: 15px 0;
-    }
-
-    .main-container-block {
-        height: 65px;
-    }
-
-    .header-container {
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-    }
-
-    .header-left {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .header-left .more {
-        display: flex;
-        align-content: center;
-        flex-wrap: wrap;
-        margin-right: 50px;
-        cursor: pointer;
-    }
-
-    .header-right-hidden {
-        display: none;
-    }
-
-    .header-right {
-        /* width: 100%; */
-        margin-top: 15px;
-    }
-
-    .link-list {
-        display: flex;
-        flex-direction: column;
-        margin: 20px 10px;
-    }
-
-    .link-list .link {
-        font-size: 23px;
-        margin-top: 10px;
-    }
-}
-</style>
+<style scoped></style>
