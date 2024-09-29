@@ -72,14 +72,14 @@ onUnmounted(() => {
 })
 </script>
 <template>
-    <div class="bcc"></div>
-    <div class="content-container">
-        <div class="status" v-if="loadStatus == 0">加载中，请稍后...</div>
+    <div class="bg-default-bg fixed inset-0 w-full h-full -z-10"></div>
+    <div class="flex flex-col max-w-[600px] my-[50px] mx-auto px-[20px]">
+        <div class="mx-auto" v-if="loadStatus == 0">加载中，请稍后...</div>
         <el-empty v-if="loadStatus < 0" :description="loadStatus == -1 ? '加载失败，刷新后重试' : '文章不存在或不可见'" />
         <div v-if="loadStatus == 1">
             <div>
-                <h1 style="margin: 0 auto;text-align: center;">{{ blogInfo.title }}</h1>
-                <p style="margin: 15px auto;text-align: center;color: #888;font-size: 14px;">发布于 {{
+                <h1 class="text-center text-[28px] font-semibold">{{ blogInfo.title }}</h1>
+                <p class="my-[15px] mx-auto text-[14px] text-[#888] text-center">发布于 {{
                     timestampToString(blogInfo.publish_time) }}</p>
             </div>
             <div v-html="blogContent" id="blogContentContainer"></div>
@@ -89,29 +89,6 @@ onUnmounted(() => {
     </div>
     <BlogContentToolBar v-if="loadStatus == 1" @comment-success="blogCommentReload = true;" />
 </template>
-<style scoped>
-.bcc {
-    position: fixed;
-    z-index: -1;
-    background-color: #f6f8f9;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.content-container {
-    display: flex;
-    flex-direction: column;
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 0 20px;
-}
-
-.content-container .status {
-    margin: 0 auto;
-}
-</style>
 <style>
 /* markdown CSS */
 #blogContentContainer img {
@@ -137,6 +114,11 @@ onUnmounted(() => {
     color: #888;
 }
 
+#blogContentContainer p {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 #blogContentContainer pre {
     border-radius: 5px;
     overflow: hidden;
@@ -152,6 +134,38 @@ onUnmounted(() => {
 #blogContentContainer h4,
 #blogContentContainer h5,
 #blogContentContainer h6 {
+    font-weight: 600;
+}
+
+#blogContentContainer h1 {
+    font-size: 28px;
     border-bottom: 1px solid #ddd;
+}
+
+#blogContentContainer h2 {
+    font-size: 24px;
+    border-bottom: 1px solid #ddd;
+}
+
+#blogContentContainer h3 {
+    font-size: 22px;
+}
+
+#blogContentContainer h4 {
+    font-size: 20px;
+}
+
+#blogContentContainer h5 {
+    font-size: 18px;
+}
+
+#blogContentContainer h6 {
+    font-size: 16px;
+}
+
+#blogContentContainer pre {
+    font-size: 12px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px -2px rgba(0, 0, 0, 0.3);
 }
 </style>
