@@ -174,18 +174,18 @@ onMounted(() => {
 </script>
 <template>
     <transition name="el-fade-in-linear">
-        <div class="verification-bcc" @click="$emit('fail')">
-            <div class="verification-container" onclick="event.stopPropagation()">
-                <div class="title">安全验证</div>
-                <div class="subtitle">{{ onVerifying ? "正在验证，请稍后..." : (onVerifyFail ? "验证失败，请再试一次" : "拖动滑块，使图片角度为水平")
+        <div class="fixed w-full h-full inset-0 bg-[#00000022] z-[2000] flex justify-center items-center" @click="$emit('fail')">
+            <div class="w-[300px] h-[400px] bg-white flex flex-col items-center rounded-[15px]" onclick="event.stopPropagation()">
+                <div class="mt-[25px] text-[#888]">安全验证</div>
+                <div class="mt-[8px]">{{ onVerifying ? "正在验证，请稍后..." : (onVerifyFail ? "验证失败，请再试一次" : "拖动滑块，使图片角度为水平")
                     }}
                 </div>
-                <div class="image-container">
-                    <img :src="imageBase64" alt="" id="RV-image">
+                <div class="mt-[28px] w-[160px] h-[160px] rounded-full flex justify-center items-center overflow-hidden">
+                    <img class="w-[226px] h-[226px] bg-gray-400 object-cover" :src="imageBase64" alt="" id="RV-image">
                 </div>
-                <div class="slide-container">
-                    <div class="slider" id="RV-slider">
-                        <svg t="1706696449802" class="icon" viewBox="0 0 1024 1024" fill="#666" version="1.1"
+                <div class="w-[240px] h-[40px] rounded-[20px] bg-slate-200 mt-[25px] flex items-center">
+                    <div class="w-[45px] h-[45px] leading-[45px] bg-white rounded-full shadow-md text-center cursor-pointer relative translate-x-0" id="RV-slider">
+                        <svg t="1706696449802" class="absolute left-[14px] top-[14px]" viewBox="0 0 1024 1024" fill="#666" version="1.1"
                             xmlns="http://www.w3.org/2000/svg" p-id="1924" width="18" height="18">
                             <path
                                 d="M567.32505 547.18536c20.970614-21.479197 20.970614-56.307424 0-77.790714L185.251168 77.115332c-20.971637-21.47715-54.975079-21.47715-75.948763 0-20.973684 21.484314-20.973684 56.30947 0 77.793784l344.188016 353.383446-344.188016 353.384469c-20.973684 21.484314-20.973684 56.311517 0 77.79276 20.971637 21.482267 54.975079 21.482267 75.948763 0l382.072858-392.280337 0.001024-0.004094zM440.60802 154.908092l344.18597 353.383446-344.18597 353.385493c-20.973684 21.484314-20.973684 56.311517 0 77.79276 20.972661 21.482267 54.975079 21.482267 75.949786 0l382.074905-392.281361c20.966521-21.478174 20.966521-56.307424 0-77.790714L516.555759 77.115332c-20.972661-21.47715-54.975079-21.47715-75.949786 0-20.971637 21.48329-20.971637 56.30947 0.002047 77.79276z"
@@ -197,78 +197,3 @@ onMounted(() => {
         </div>
     </transition>
 </template>
-<style scoped>
-.verification-bcc {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    background-color: #00000022;
-    z-index: 2000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.verification-container {
-    width: 300px;
-    height: 400px;
-    background-color: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border-radius: 15px;
-}
-
-.verification-container>.title {
-    margin-top: 25px;
-    color: #888;
-}
-
-.verification-container>.subtitle {
-    margin-top: 8px;
-}
-
-.verification-container>.image-container {
-    display: flex;
-    margin-top: 28px;
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.verification-container>.image-container>img {
-    width: 226px;
-    height: 226px;
-    transform: rotate(0deg);
-    background-color: gray;
-}
-
-.verification-container>.slide-container {
-    width: 240px;
-    height: 40px;
-    border-radius: 20px;
-    background-color: #eeeeee;
-    margin-top: 25px;
-    display: flex;
-    align-items: center;
-}
-
-.verification-container>.slide-container>.slider {
-    width: 45px;
-    height: 45px;
-    background-color: #fff;
-    border-radius: 50%;
-    box-shadow: 0px 1px 5px 3px #ccc;
-    text-align: center;
-    line-height: 50px;
-    cursor: pointer;
-    position: relative;
-    transform: translateX(0);
-}
-</style>
