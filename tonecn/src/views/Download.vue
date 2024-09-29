@@ -25,7 +25,8 @@ onMounted(async () => {
 <template>
   <div class="mx-auto flex flex-col items-center">
     <div class="bg-default-bg fixed inset-0 w-full h-full -z-10"></div>
-    <div class="mt-[30px] sm:mt-[80px] text-[30px] sm:text-[42px] cursor-default transition-all duration-500">一些可以直接下载的工具
+    <div class="mt-[30px] sm:mt-[80px] text-[30px] sm:text-[42px] cursor-default transition-all duration-500">
+      一些可以直接下载的工具
     </div>
     <div class="mt-[20px] text-[#666] cursor-default text-[12px] px-[20px]" v-if="loadStatus != 2">请在浏览此部分内容前阅读并同意
       <a class="text-[#222] cursor-pointer underline]" @click="showAgreement = true">《网站使用协议》</a>，继续使用或浏览表示您接受协议条款。
@@ -48,8 +49,9 @@ onMounted(async () => {
           <div class="text-[14px] text-[#666] mt-[5px]">{{ item.describe }}</div>
           <!-- 下方的标签 -->
           <div class="flex gap-[5px] mt-[10px] flex-wrap">
-            <div class="text-[10px] font-semibold text-[#666] bg-[#eceef1] py-[1px] px-[6px] rounded-[20px]"
-              :class="[{ 'bg-[#d6eeff]': lable.type === 'OS' }]" v-for="lable of item.addition.lables">{{
+            <div class="text-[10px] text-[#666] py-[1px] px-[6px] rounded-[20px]"
+              :class="[{ 'bg-[#d6eeff]': lable.type === 'OS' }, { 'bg-[#eceef1]': lable.type !== 'OS' }]"
+              v-for="lable of item.addition.lables">{{
                 lable.text }}</div>
           </div>
         </div>

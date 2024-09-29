@@ -47,8 +47,9 @@ onMounted(async () => {
           <div class="text-[14px] text-[#666] mt-[5px]">{{ item.describe }}</div>
           <!-- 下方的标签 -->
           <div class="flex gap-[5px] mt-[10px] flex-wrap">
-            <div class="text-[10px] font-semibold text-[#666] bg-[#eceef1] py-[1px] px-[6px] rounded-[20px]"
-              :class="[{ 'bg-[#d6eeff]': lable.type === 'OS' }]" v-for="lable of item.addition.lables">{{
+            <div class="text-[10px] text-[#666] py-[1px] px-[6px] rounded-[20px]"
+              :class="[{ 'bg-[#d6eeff]': lable.type === 'OS' }, { 'bg-[#eceef1]': lable.type !== 'OS' }]"
+              v-for="lable of item.addition.lables">{{
                 lable.text }}</div>
           </div>
         </div>
