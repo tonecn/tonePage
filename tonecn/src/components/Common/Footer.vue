@@ -11,23 +11,23 @@ let copyTextwithMsg = (text : string) => {
 }
 </script>
 <template>
-    <div class="footer-divider"></div>
-    <div class="footer-container">
-        <div class="left-container">
+    <div class="h-[1px] w-full bg-[#eee]"></div>
+    <div class="h-[100px] w-full mx-auto max-w-[1170px] flex justify-between items-center sm:flex-row flex-col" >
+        <div class="text-[12px] ml-0 sm:ml-[25px] cursor-default my-[22px] sm:my-0 mb-[10px] text-center sm:text-left">
             <a href="https://beian.miit.gov.cn/">
-                <div class="fillings">备案号：渝ICP备2023009516号-1</div>
+                <div class="mt-[5px] cursor-pointer">备案号：渝ICP备2023009516号-1</div>
             </a>
-            <div class="copyright">Copyright ©2020-2024 TONE All Rights Reserved.</div>
+            <div class="mt-[6px] sm:mt-0">Copyright ©2020-2024 TONE All Rights Reserved.</div>
         </div>
-        <div class="right-container">
+        <div class="mr-0 sm:mr-[25px] flex sm:pb-0 pb-[20px]">
             <el-popover trigger="click" placement="top" :width="160">
                 <p>QQ号：3341154833</p>
                 <div style="text-align: center; margin: 0">
                     <el-button size="small" type="primary" @click="copyTextwithMsg('3341154833')">复制</el-button>
                 </div>
                 <template #reference>
-                    <div class="icon">
-                        <svg t="1705909811918" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                    <div class="mx-[8px] w-[30px] h-[30px] cursor-pointer border-[1.5px] border-[#eee] flex justify-center items-center rounded-[10px] transition-all duration-300 hover:bg-[#eee]">
+                        <svg t="1705909811918" class="w-[20px] h-[20px]" viewBox="0 0 1024 1024" version="1.1"
                             xmlns="http://www.w3.org/2000/svg" p-id="5851" width="24" height="24">
                             <path
                                 d="M824.8 613.2c-16-51.4-34.4-94.6-62.7-165.3C766.5 262.2 689.3 112 511.5 112 331.7 112 256.2 265.2 261 447.9c-28.4 70.8-46.7 113.7-62.7 165.3-34 109.5-23 154.8-14.6 155.8 18 2.2 70.1-82.4 70.1-82.4 0 49 25.2 112.9 79.8 159-26.4 8.1-85.7 29.9-71.6 53.8 11.4 19.3 196.2 12.3 249.5 6.3 53.3 6 238.1 13 249.5-6.3 14.1-23.8-45.3-45.7-71.6-53.8 54.6-46.2 79.8-110.1 79.8-159 0 0 52.1 84.6 70.1 82.4 8.5-1.1 19.5-46.4-14.5-155.8z"
@@ -42,7 +42,7 @@ let copyTextwithMsg = (text : string) => {
                     <el-button size="small" type="primary" @click="copyTextwithMsg('tone0121')">复制</el-button>
                 </div>
                 <template #reference>
-                    <div class="icon">
+                    <div class="mx-[8px] w-[30px] h-[30px] cursor-pointer border-[1.5px] border-[#eee] flex justify-center items-center rounded-[10px] transition-all duration-300 hover:bg-[#eee]">
                         <svg t="1705909888071" class="icon" viewBox="0 0 1024 1024" version="1.1"
                             xmlns="http://www.w3.org/2000/svg" p-id="7135" width="24" height="24">
                             <path
@@ -58,7 +58,7 @@ let copyTextwithMsg = (text : string) => {
                     <el-button size="small" type="primary" @click="copyTextwithMsg('tone@ctbu.net.cn')">复制</el-button>
                 </div>
                 <template #reference>
-                    <div class="icon">
+                    <div class="mx-[8px] w-[30px] h-[30px] cursor-pointer border-[1.5px] border-[#eee] flex justify-center items-center rounded-[10px] transition-all duration-300 hover:bg-[#eee]">
                         <svg t="1705909952800" class="icon" viewBox="0 0 1024 1024" version="1.1"
                             xmlns="http://www.w3.org/2000/svg" p-id="8336" width="24" height="24">
                             <path
@@ -68,7 +68,7 @@ let copyTextwithMsg = (text : string) => {
                     </div>
                 </template>
             </el-popover>
-            <a class="icon" href="https://github.com/tonecn" target="_blank">
+            <a class="mx-[8px] w-[30px] h-[30px] cursor-pointer border-[1.5px] border-[#eee] flex justify-center items-center rounded-[10px] transition-all duration-300 hover:bg-[#eee]" href="https://github.com/tonecn" target="_blank">
                 <svg t="1705909977594" class="icon" viewBox="0 0 1024 1024" version="1.1"
                     xmlns="http://www.w3.org/2000/svg" p-id="9342" width="24" height="24">
                     <path
@@ -80,78 +80,5 @@ let copyTextwithMsg = (text : string) => {
     </div>
 </template>
 <style scoped>
-.footer-divider {
-    height: 1px;
-    width: 100%;
-    background-color: #eee;
-}
 
-.footer-container {
-    /* height: 100%; */
-    height: 100px;
-    width: 100%;
-    margin: 0 auto;
-    max-width: 1170px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.left-container {
-    font-size: 12px;
-    margin-left: 25px;
-    cursor: default;
-}
-
-.fillings {
-    margin-bottom: 5px;
-    cursor: pointer;
-}
-
-.right-container {
-    margin-right: 25px;
-    display: flex;
-}
-
-.right-container>.icon {
-    cursor: pointer;
-    margin: 0 8px;
-    width: 30px;
-    height: 30px;
-    /* background-color: #aaa; */
-    border: 1.5px solid #eee;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    transition: background-color 0.3s;
-}
-
-.right-container>.icon:hover {
-    background-color: #eee;
-}
-
-.right-container>.icon>.icon {
-    width: 20px;
-    height: 20px;
-}
-
-@media screen and (max-width: 550px) {
-    .footer-container {
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        margin-bottom: 20px;
-    }
-
-    .left-container {
-        margin: 20px 0px;
-        margin-bottom: 10px;
-        text-align: center;
-    }
-
-    .right-container {
-        margin: 0 0;
-    }
-}
 </style>
