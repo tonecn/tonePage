@@ -22,73 +22,18 @@ onMounted(async () => {
 })
 </script>
 <template>
-    <div class="bcc"></div>
-    <div class="content-container">
+    <div class="bg-default-bg fixed inset-0 w-full h-full -z-10"></div>
+    <div class="flex flex-col max-w-[800px] my-[30px] mx-auto px-[20px]">
         <el-empty description="加载失败，刷新后重试" style="margin: 0 auto;" v-if="loadStatus == -1" />
-        <div style="gap: 30px;display: flex;flex-direction: column;" v-else>
-            <div class="coding" v-if="loadStatus == 0">加载中，请稍后...</div>
+        <div class="gap-[30px] flex flex-col" v-else>
+            <div class="text-center mt-[20px] mb-[300px]" v-if="loadStatus == 0">加载中，请稍后...</div>
             <el-empty description="暂无数据" style="margin: 0 auto;" v-if="loadStatus == 1 && blogList.length == 0" />
-            <div class="blog-container" v-for="item of blogList">
-                <a class="title" :href="`/blogContent/${item.uuid}`" target="_blank">{{ item.title }}</a>
-                <div class="description">{{ item.description }}</div>
-                <div class="publish-time">{{ timestampToString(+item.publish_time) }} ——
+            <div class="mx-auto max-w-[400px] w-full flex flex-col" v-for="item of blogList">
+                <a class="text-[26px] font-semibold cursor-pointer block hover:underline" :href="`/blogContent/${item.uuid}`" target="_blank">{{ item.title }}</a>
+                <div class="text-[#666]">{{ item.description }}</div>
+                <div class="text-[#888] mt-[15px] text-[14px]">{{ timestampToString(+item.publish_time) }} ——
                     {{ formateTimes(item.visit_count) }} 次访问</div>
             </div>
         </div>
     </div>
 </template>
-<style scoped>
-.bcc {
-    position: fixed;
-    z-index: -1;
-    background-color: #f6f8f9;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.content-container {
-    display: flex;
-    flex-direction: column;
-    max-width: 800px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-.coding {
-    text-align: center;
-    margin-top: 20px;
-    margin-bottom: 300px;
-}
-
-.blog-container {
-    margin: 0 auto;
-    max-width: 400px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.blog-container .title {
-    font-size: 26px;
-    font-weight: 600;
-    cursor: pointer;
-    display: block;
-}
-
-.blog-container .title:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 3px;
-}
-
-.blog-container .description {
-    color: #666;
-}
-
-.blog-container .publish-time {
-    color: #888;
-    margin-top: 15px;
-    font-size: 14px;
-}
-</style>
