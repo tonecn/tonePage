@@ -66,20 +66,20 @@ router.afterEach(() => {
                 id="header-right">
                 <div class="flex justify-end items-center">
                     <RouterLink :to="{ name: 'resource' }">
-                        <div class="text-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-b-transparent hover:text-black"
+                        <div class="text-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-transparent hover:text-black"
                             :class="{ 'border-b-[#e03ebf] text-black': $route.name === 'resource' }">资源</div>
                     </RouterLink>
                     <RouterLink :to="{ name: 'download' }">
-                        <div class="text-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-b-transparent hover:text-black"
+                        <div class="text-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-transparent hover:text-black"
                             :class="{ 'border-b-[#e03ebf] text-black': $route.name === 'download' }">下载</div>
                     </RouterLink>
                     <RouterLink :to="{ name: 'blog' }">
-                        <div class="text-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-b-transparent hover:text-black"
+                        <div class="text-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-transparent hover:text-black"
                             :class="{ 'border-b-[#e03ebf] text-black': $route.name === 'blog' || $route.name === 'blogContent' }">
                             博客</div>
                     </RouterLink>
                     <RouterLink :to="{ name: 'dashboard' }">
-                        <div class="text-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-b-transparent hover:text-black"
+                        <div class="text-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-transparent hover:text-black"
                             :class="{ 'border-b-[#e03ebf] text-black': $route.name === 'login' || $route.name === 'dashboard' }">
                             控制台</div>
                     </RouterLink>
