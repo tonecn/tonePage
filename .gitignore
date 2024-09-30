@@ -29,5 +29,3 @@ coverage
 
 *.tsbuildinfo
 pnpm-lock.yaml
-Server/pnpm-lock.yaml
-tonecn/pnpm-lock.yaml
