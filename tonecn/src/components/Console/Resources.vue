@@ -40,6 +40,7 @@ const editForm: ResourceData = reactive({
     addition: '',
     src: '',
 })
+const openEditFormSrc = () => { window.open(editForm.src); }
 const editHandle = (data: ResourceData) => {
     editForm.id = data.id;
     editForm.type = data.type;
@@ -111,12 +112,12 @@ const delHandle = async (data: { id: string, [key: string]: any }) => {
     </div>
     <el-table :data="tableData" border style="width: 100%">
         <el-table-column prop="id" label="id" width="50" />
-        <el-table-column prop="type" label="类型" width="60">
+        <el-table-column prop="type" label="类型" width="80" sortable>
             <template #default="scope">
                 {{ scope.row.type == 'resource' ? '资源' : scope.row.type == 'download' ? '下载' : '未知' }}
             </template>
         </el-table-column>
-        <el-table-column prop="recommand" label="推荐" width="50" />
+        <el-table-column prop="recommand" label="推荐" width="60" />
         <el-table-column prop="title" label="标题" width="130" />
         <el-table-column prop="describe" label="描述" width="200" />
         <el-table-column prop="icon_src" label="图标" width="110">
@@ -162,9 +163,12 @@ const delHandle = async (data: { id: string, [key: string]: any }) => {
             </el-form-item>
             <el-form-item label="图标链接">
                 <el-input v-model="editForm.icon_src" />
+                <img :src="editForm.icon_src" class="w-[80px] h-[80px] mt-2 shadow rounded-[4px] bg-gray-100"
+                    alt="链接无效">
             </el-form-item>
             <el-form-item label="资源链接">
                 <el-input v-model="editForm.src" />
+                <el-button class="mt-2" @click="openEditFormSrc">前往链接</el-button>
             </el-form-item>
             <el-form-item label="附加样式">
                 <el-input v-model="editForm.addition" type="textarea" autosize />
