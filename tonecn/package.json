@@ -22,10 +22,12 @@
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",
+    "@types/ali-oss": "^6.16.11",
     "@types/md5": "^2.3.5",
     "@types/node": "^20.12.5",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vue/tsconfig": "^0.5.1",
+    "ali-oss": "^6.21.0",
     "autoprefixer": "^10.4.20",
     "element-plus": "^2.7.3",
     "npm": "^10.8.3",

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { Menu as IconMenu, Document, Back, Tools } from '@element-plus/icons-vue'
+import { Menu as IconMenu, Document, Back, Tools, Files } from '@element-plus/icons-vue'
 import Resources from '../../components/Console/Resources.vue'
 import Blogs from '../../components/Console/Blogs.vue'
 import Utils from '../../components/Console/Utils.vue'
+import FileOnline from '../../components/Console/FileOnline.vue'
 import { shallowRef, ref, onMounted, onUnmounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 const tabComponent = shallowRef(Resources);
@@ -51,7 +52,13 @@ onUnmounted(async () => {
                 </el-icon>
                 <span>博客管理</span>
             </el-menu-item>
-            <el-menu-item index="3" @click="tabComponent = Utils">
+            <el-menu-item index="3" @click="tabComponent = FileOnline">
+                <el-icon>
+                    <Files />
+                </el-icon>
+                <span>文件管理</span>
+            </el-menu-item>
+            <el-menu-item index="4" @click="tabComponent = Utils">
                 <el-icon>
                     <Tools />
                 </el-icon>

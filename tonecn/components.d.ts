@@ -33,6 +33,8 @@ declare module 'vue' {
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElText: typeof import('element-plus/es')['ElText']
+    ElUpload: typeof import('element-plus/es')['ElUpload']
+    FileOnline: typeof import('./src/components/Console/FileOnline.vue')['default']
     Footer: typeof import('./src/components/Common/Footer.vue')['default']
     Header: typeof import('./src/components/Common/Header.vue')['default']
     Resources: typeof import('./src/components/Console/Resources.vue')['default']
