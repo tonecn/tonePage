@@ -23,6 +23,7 @@ import SaveResource from '../APIs/Console/SaveResource'
 import DelResource from '../APIs/Console/DelResource'
 import SaveBlog from '../APIs/Console/SaveBlog'
 import DelBlog from '../APIs/Console/DelBlog'
+import GetOSSToken from "../APIs/Console/GetOSSToken";
 
 class Server {
     private logger = new Logger('Server');
@@ -52,6 +53,7 @@ class Server {
         this.apiLoader.add(GetBlogs)
         this.apiLoader.add(SaveBlog);
         this.apiLoader.add(DelBlog);
+        this.apiLoader.add(GetOSSToken);
 
         this.apiLoader.start(config.apiPort);
     }
