@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { request } from '@/lib/request';
-import { Refresh, Back, House, UploadFilled } from '@element-plus/icons-vue';
+import { Refresh, Back, House, UploadFilled, Close } from '@element-plus/icons-vue';
 import OSS, { type ObjectMeta, type PutObjectOptions } from 'ali-oss'
 import { ElMessage, ElMessageBox, ElSubMenu, type UploadFile, type UploadFiles } from 'element-plus';
 import { ref, onMounted, reactive, unref } from 'vue';
@@ -205,24 +205,6 @@ const fileListHandleDelete = async (row: any) => {
 }
 // 文件列表操作：下载某个文件
 const fileListHandleDownload = async (row: any) => {
-    // try {
-    //     const res = await fetch(row.url);
-    //     if(!res.ok){
-    //         return ElMessage.error('请求失败')
-    //     }
-    //     ElMessage.info('开始下载')
-    //     const blob = await res.blob();
-    //     const urlObj = window.URL.createObjectURL(blob);
-    //     const a = document.createElement('a');
-    //     a.href = urlObj;
-    //     a.download = row.name.split('/').pop()
-    //     a.click();
-    //     a.remove();
-    //     window.URL.revokeObjectURL(urlObj);
-    // } catch (error) {
-    //     console.log(error)
-    //     ElMessage.error('下载失败')
-    // }
     window.open(row.url);
 }
 // 文件列表操作：重命名某个文件
@@ -246,20 +228,95 @@ const fileListHandleRename = async (row: any) => {
     })
 }
 // 文件列表操作：编辑某个文件
+const editableFileTypes = new Map([
+    ['.txt', 'textplain'],
+    ['.md', 'markdown'],
+    ['.json', 'json'],
+    ['.html', 'html'],
+    ['.htm', 'html'],
+    ['.css', 'css'],
+    ['.js', 'javascript'],
+]);
 const fileListHandleEdit = async (row: ObjectMeta) => {
-    const allowedFileType = ['.md'];
-    let fileType = ''
-    for (let i of allowedFileType) {
-        if (row.name.endsWith(i)) {
-            fileType = i;
+    aceEditorConfig.lang = '';
+    for (let [key, value] of editableFileTypes) {
+        if (row.name.endsWith(key)) {
+            aceEditorConfig.lang = value;
             break;
         }
     }
-    if (!fileType)
+    if (!aceEditorConfig.lang)
         return ElMessage.warning('不支持的文件格式')
+
+    aceEditorFileInfo.url = row.url;
+    aceEditorFileInfo.name = row.name;
+    try {
+        const res = await fetch(row.url);
+        if (!res.ok)
+            return ElMessage.error('请求失败')
+        const blob = await res.blob();
+        const text = await blob.text();
+        aceEditorContent.text = text;
+        aceEditorContent.textBak = text;
+        aceEditorContent.type = blob.type;
+        aceEditorShow.value = true;
+    } catch (error) {
+        ElMessage.error('打开失败')
+    }
 }
+
 const dialogUploadFileShow = ref(false);
 const isUploading = ref(false);
+
+import { VAceEditor } from 'vue3-ace-editor';
+import 'ace-builds/src-noconflict/mode-json'; // Load the language definition file used below
+import 'ace-builds/src-noconflict/theme-chrome'; // Load the theme definition file used below
+const aceEditorContent = reactive({
+    text: '',
+    textBak: '',
+    type: ''
+});
+const aceEditorShow = ref(false);
+const aceEditorFileInfo = reactive({ url: "", name: "" })
+const aceEditorConfig = reactive({
+    lang: 'textplain',
+})
+const closeAceEditor = () => {
+    if (aceEditorContent.text == aceEditorContent.textBak)
+        return aceEditorShow.value = false;
+    ElMessageBox.confirm('文件未保存，是否退出？', '警告', {
+        confirmButtonText: '退出',
+        cancelButtonText: '取消',
+        type: 'warning'
+    }).then(() => {
+        aceEditorShow.value = false;
+    }).catch(() => {
+
+    })
+}
+const resetAceEditorContent = () => {
+    if (aceEditorContent.text == aceEditorContent.textBak)
+        return ElMessage.info('文件未修改')
+    aceEditorContent.text = aceEditorContent.textBak;
+    ElMessage.success('重置完成')
+}
+const saveAceEditorContentLoading = ref(false);
+const saveAceEditorContent = async () => {
+    if (aceEditorContent.text == aceEditorContent.textBak)
+        return ElMessage.info('文件未修改')
+    saveAceEditorContentLoading.value = true;
+    try {
+        const blob = new Blob([aceEditorContent.text], { type: aceEditorContent.type });
+        const file = new File([blob], aceEditorFileInfo.name, { type: aceEditorContent.type });
+        await OSSClient.put(aceEditorFileInfo.name, file);
+        ElMessage.success('保存成功');
+        aceEditorContent.textBak = aceEditorContent.text;
+    } catch (error) {
+        ElMessage.success('保存失败');
+    } finally {
+        saveAceEditorContentLoading.value = false;
+    }
+}
 </script>
 <template>
     <div class="container w-full">
@@ -339,4 +396,34 @@ const isUploading = ref(false);
         </el-upload>
         <el-button @click="uploadFile" :loading="isUploading" class="mt-[10px]">开始上传</el-button>
     </el-dialog>
+    <!-- 在线文本编辑 -->
+    <div v-if="aceEditorShow"
+        class="fixed w-full h-full inset-0 z-[2000] bg-[#00000066] flex justify-center items-center"
+        @click="closeAceEditor">
+        <div class="w-3/4 h-3/4 bg-white p-[15px] rounded-[5px] flex flex-col" @click.stop>
+            <div class="w-full flex items-center justify-between">
+                <span>正在编辑 - /{{ aceEditorFileInfo.name }}</span>
+                <el-button circle text @click="closeAceEditor">
+                    <el-icon>
+                        <Close />
+                    </el-icon>
+                </el-button>
+            </div>
+            <div class="w-full flex items-center gap-[15px] pb-[15px]">
+                <span>语言
+                    <el-select v-model="aceEditorConfig.lang" style="width: 130px;margin-left: 8px;">
+                        <el-option v-for="[key, value] of editableFileTypes" :key="value" :label="value"
+                            :value="value"></el-option>
+                    </el-select>
+                </span>
+            </div>
+            <v-ace-editor v-model:value="aceEditorContent.text" :lang="aceEditorConfig.lang" theme="chrome"
+                class="w-full flex-1" />
+            <div class="flex justify-end">
+                <el-button @click="resetAceEditorContent">重置</el-button>
+                <el-button @click="saveAceEditorContent" :loading="saveAceEditorContentLoading"
+                    type="primary">保存</el-button>
+            </div>
+        </div>
+    </div>
 </template>
