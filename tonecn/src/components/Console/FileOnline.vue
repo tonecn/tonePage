@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { request } from '@/lib/request';
 import { Refresh, Back, House, UploadFilled } from '@element-plus/icons-vue';
-import OSS, { type PutObjectOptions } from 'ali-oss'
+import OSS, { type ObjectMeta, type PutObjectOptions } from 'ali-oss'
 import { ElMessage, ElMessageBox, ElSubMenu, type UploadFile, type UploadFiles } from 'element-plus';
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted, reactive, unref } from 'vue';
 let OSSClient: OSS;
 onMounted(async () => {
     // 请求sts token，初始化OSSClient
@@ -157,7 +157,7 @@ const uploadFile = async () => {
                 // 获取分片上传进度、断点和返回值。
                 progress: (p: any, cpt: any, res: any) => {
                     // console.log(p, cpt, res);
-                    i.percentage = Math.floor(p * 100);
+                    i.percentage = +(p * 100).toFixed(2);
                     if (p == 1) {
                         i.status = 'success';
                         uploadSuccessCount++;
@@ -166,8 +166,12 @@ const uploadFile = async () => {
                 // 设置并发上传的分片数量。
                 parallel: 4,
                 // 设置分片大小。默认值为256 KB，最小值为100 KB。
-                partSize: 1024 * 256,
+                partSize: 256 * 1024,
             }
+            if (i.raw!.size > 10 * 1024 * 1024 * 1024)// 大于10GB的文件，分成50M
+                options.partSize = 50 * 1024 * 1024;
+            else if (i.raw!.size > 10 * 1024 * 1024)// 大于100MB的文件，分成1MB
+                options.partSize = 1 * 1024 * 1024;
             await OSSClient.multipartUpload(name, i.raw, options);
         } catch (error) {
             i.status = 'fail';
@@ -201,24 +205,25 @@ const fileListHandleDelete = async (row: any) => {
 }
 // 文件列表操作：下载某个文件
 const fileListHandleDownload = async (row: any) => {
-    try {
-        const res = await fetch(row.url);
-        if(!res.ok){
-            return ElMessage.error('请求失败')
-        }
-        ElMessage.info('开始下载')
-        const blob = await res.blob();
-        const urlObj = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = urlObj;
-        a.download = row.name.split('/').pop()
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(urlObj);
-    } catch (error) {
-        console.log(error)
-        ElMessage.error('下载失败')
-    }
+    // try {
+    //     const res = await fetch(row.url);
+    //     if(!res.ok){
+    //         return ElMessage.error('请求失败')
+    //     }
+    //     ElMessage.info('开始下载')
+    //     const blob = await res.blob();
+    //     const urlObj = window.URL.createObjectURL(blob);
+    //     const a = document.createElement('a');
+    //     a.href = urlObj;
+    //     a.download = row.name.split('/').pop()
+    //     a.click();
+    //     a.remove();
+    //     window.URL.revokeObjectURL(urlObj);
+    // } catch (error) {
+    //     console.log(error)
+    //     ElMessage.error('下载失败')
+    // }
+    window.open(row.url);
 }
 // 文件列表操作：重命名某个文件
 const fileListHandleRename = async (row: any) => {
@@ -239,6 +244,19 @@ const fileListHandleRename = async (row: any) => {
     }).catch(() => {
         // 已取消
     })
+}
+// 文件列表操作：编辑某个文件
+const fileListHandleEdit = async (row: ObjectMeta) => {
+    const allowedFileType = ['.md'];
+    let fileType = ''
+    for (let i of allowedFileType) {
+        if (row.name.endsWith(i)) {
+            fileType = i;
+            break;
+        }
+    }
+    if (!fileType)
+        return ElMessage.warning('不支持的文件格式')
 }
 const dialogUploadFileShow = ref(false);
 const isUploading = ref(false);
@@ -275,19 +293,35 @@ const isUploading = ref(false);
             <el-button type="danger" :disabled="false" @click="deleteChosenFile">删除</el-button>
         </el-button-group>
     </div>
-    <el-table :data="fileListShow" @cell-click="fileClick" @selection-change="fileListSelectionChange">
+    <el-table :data="fileListShow" @cell-click="fileClick" @selection-change="fileListSelectionChange" border
+        class="mt-[10px]">
         <el-table-column type="selection" width="55" />
         <el-table-column prop="name" label="文件名" :formatter="fileListTableNameFormatter" />
-        <el-table-column prop="lastModified" :formatter="fileListTableLastModifiedFormatter" label="最后修改时间" />
-        <el-table-column prop="size" :formatter="fileListTableSizeFormatter" label="文件大小" />
+        <el-table-column prop="lastModified" :formatter="fileListTableLastModifiedFormatter" label="最后修改时间"
+            width="180" />
+        <el-table-column prop="size" :formatter="fileListTableSizeFormatter" label="文件大小" width="130" />
         <el-table-column label="操作" width="200">
             <template #default="scope">
-                <el-button v-if="!scope.row.dir" size="small"
+                <el-button v-if="!scope.row.dir" size="small" text
+                    @click.prevent="fileListHandleEdit(scope.row)">编辑</el-button>
+                <el-button v-if="!scope.row.dir" size="small" text style="margin-left: 0;"
                     @click.prevent="fileListHandleDownload(scope.row)">下载</el-button>
-                <!-- <el-button v-if="!scope.row.dir" size="small"
-                    @click.prevent="fileListHandleRename(scope.row)">重命名</el-button> -->
-                <el-button v-if="!scope.row.dir" size="small" type="danger"
-                    @click.prevent="fileListHandleDelete(scope.row)">删除</el-button>
+
+                <el-dropdown placement="bottom-end" v-if="!scope.row.dir">
+                    <el-button size="small" text>更多</el-button>
+                    <template #dropdown>
+                        <el-dropdown-menu>
+                            <el-dropdown-item>
+                                <el-button v-if="!scope.row.dir" size="small" text
+                                    @click.prevent="fileListHandleRename(scope.row)">重命名</el-button>
+                            </el-dropdown-item>
+                            <el-dropdown-item>
+                                <el-button v-if="!scope.row.dir" size="small" text type="danger" style="margin-left: 0;"
+                                    @click.prevent="fileListHandleDelete(scope.row)">删除</el-button>
+                            </el-dropdown-item>
+                        </el-dropdown-menu>
+                    </template>
+                </el-dropdown>
             </template>
         </el-table-column>
     </el-table>
