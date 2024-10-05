@@ -3,7 +3,28 @@ import { request } from '@/lib/request';
 import { Refresh, Back, House, UploadFilled, Close } from '@element-plus/icons-vue';
 import OSS, { type ObjectMeta, type PutObjectOptions } from 'ali-oss'
 import { ElMessage, ElMessageBox, ElSubMenu, type UploadFile, type UploadFiles } from 'element-plus';
-import { ref, onMounted, reactive, unref } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
+// ace Editor
+import ace from 'ace-builds';
+import { VAceEditor } from 'vue3-ace-editor';
+import 'ace-builds/src-noconflict/mode-plain_text'
+import 'ace-builds/src-noconflict/mode-json'; // Load the language definition file used below
+import 'ace-builds/src-noconflict/mode-markdown'
+import 'ace-builds/src-noconflict/mode-javascript'
+import 'ace-builds/src-noconflict/mode-typescript'
+import 'ace-builds/src-noconflict/mode-html'
+import 'ace-builds/src-noconflict/mode-css'
+import 'ace-builds/src-noconflict/mode-vue'
+import 'ace-builds/src-noconflict/theme-chrome';
+import modeJsonUrl from 'ace-builds/src-noconflict/mode-json?url';
+ace.config.setModuleUrl('ace/mode/json', modeJsonUrl);
+import themeChromeUrl from 'ace-builds/src-noconflict/theme-chrome?url';
+ace.config.setModuleUrl('ace/theme/chrome', themeChromeUrl);
+import extSearchboxUrl from 'ace-builds/src-noconflict/ext-searchbox?url';
+ace.config.setModuleUrl('ace/ext/searchbox', extSearchboxUrl);// searchBox
+import workerJsonUrl from 'ace-builds/src-noconflict/worker-json?url'; // For vite
+ace.config.setModuleUrl('ace/mode/json_worker', workerJsonUrl);
+
 let OSSClient: OSS;
 onMounted(async () => {
     // 请求sts token，初始化OSSClient
@@ -229,13 +250,14 @@ const fileListHandleRename = async (row: any) => {
 }
 // 文件列表操作：编辑某个文件
 const editableFileTypes = new Map([
-    ['.txt', 'textplain'],
+    ['.txt', 'text'],
     ['.md', 'markdown'],
     ['.json', 'json'],
-    ['.html', 'html'],
-    ['.htm', 'html'],
-    ['.css', 'css'],
     ['.js', 'javascript'],
+    ['.ts', 'typescript'],
+    ['.vue', 'vue'],
+    ['.html', 'html'],
+    ['.css', 'css'],
 ]);
 const fileListHandleEdit = async (row: ObjectMeta) => {
     aceEditorConfig.lang = '';
@@ -268,9 +290,6 @@ const fileListHandleEdit = async (row: ObjectMeta) => {
 const dialogUploadFileShow = ref(false);
 const isUploading = ref(false);
 
-import { VAceEditor } from 'vue3-ace-editor';
-import 'ace-builds/src-noconflict/mode-json'; // Load the language definition file used below
-import 'ace-builds/src-noconflict/theme-chrome'; // Load the theme definition file used below
 const aceEditorContent = reactive({
     text: '',
     textBak: '',
