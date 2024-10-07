@@ -23,32 +23,32 @@ onMounted(async () => {
 </script>
 <template>
   <div class="mx-auto flex flex-col items-center">
-    <div class="bg-default-bg fixed inset-0 w-full h-full -z-10"></div>
-    <div class="mt-[30px] sm:mt-[80px] text-[30px] sm:text-[42px] cursor-default transition-all duration-500">精心挑选并收藏的资源
+    <div class="bg-default-bg fixed inset-0 w-full h-full -z-10 dark:bg-[#222]"></div>
+    <div class="mt-[30px] sm:mt-[80px] text-[30px] sm:text-[42px] cursor-default transition-all duration-500 dark:text-[#ddd]">精心挑选并收藏的资源
     </div>
-    <div class="mt-[20px] text-[#666] cursor-default text-[12px] px-[20px]" v-if="loadStatus != 2">请在浏览此部分内容前阅读并同意
-      <a class="text-[#222] cursor-pointer underline]" @click="showAgreement = true">《网站使用协议》</a>，继续使用或浏览表示您接受协议条款。
+    <div class="mt-[20px] text-[#666] cursor-default text-[12px] px-[20px] dark:text-[#ccc]" v-if="loadStatus != 2">请在浏览此部分内容前阅读并同意
+      <a class="text-[#222] cursor-pointer underline] dark:text-[#fff]" @click="showAgreement = true">《网站使用协议》</a>，继续使用或浏览表示您接受协议条款。
     </div>
-    <div class="mt-[80px] cursor-default mb-[380px] text-center" v-if="loadStatus == 2">加载失败，请刷新界面重试</div>
-    <div class="mt-[80px] cursor-default mb-[380px] text-center" v-if="loadStatus == 0">加载中，请稍后...</div>
+    <div class="mt-[80px] cursor-default mb-[380px] text-center dark:text-[#ddd]" v-if="loadStatus == 2">加载失败，请刷新界面重试</div>
+    <div class="mt-[80px] cursor-default mb-[380px] text-center dark:text-[#ddd]" v-if="loadStatus == 0">加载中，请稍后...</div>
     <div
       class="mt-[25px] sm:mt-[50px] mx-auto flex justify-center items-start flex-wrap max-w-[1000px] transition-all duration-500"
       v-if="loadStatus == 1">
       <!-- 资源项 -->
-      <a class="w-full xs:w-[380px] lg:w-[420px] sm:mb-[40px] mb-[20px] mx-0 xs:mx-[30px] p-[30px] bg-white rounded-0 xs:rounded-[15px] flex justify-between shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden"
+      <a class="w-full xs:w-[380px] lg:w-[420px] sm:mb-[40px] mb-[20px] mx-0 xs:mx-[30px] p-[30px] bg-white dark:bg-transparent dark:border-[1px] dark:border-[#aaa] rounded-0 xs:rounded-[15px] flex justify-between shadow-xl hover:shadow-2xl dark:hover:shadow-[#666] transition-all duration-500 overflow-hidden"
         v-for="item of ResourceDatas" :href="item.src" target="_blank">
         <!-- 左侧图标 -->
-        <div class="w-[80px] h-[80px] overflow-hidden shadow-md rounded-[10px] transition-all duration-300">
+        <div class="w-[80px] h-[80px] overflow-hidden shadow-md rounded-[10px] transition-all duration-300 dark:border-[1px]">
           <img :src="item.icon_src" alt="" class="w-[80px] h-[80px]">
         </div>
         <!-- 右侧描述 -->
         <div class="ml-[20px] flex-1 cursor-default">
-          <div class="text-[23px] font-semibold">{{ item.title }}</div>
-          <div class="text-[14px] text-[#666] mt-[5px]">{{ item.describe }}</div>
+          <div class="text-[23px] font-semibold dark:text-white">{{ item.title }}</div>
+          <div class="text-[14px] text-[#666] mt-[5px] dark:text-[#ccc]">{{ item.describe }}</div>
           <!-- 下方的标签 -->
           <div class="flex gap-[5px] mt-[10px] flex-wrap">
-            <div class="text-[10px] text-[#666] py-[1px] px-[6px] rounded-[20px]"
-              :class="[{ 'bg-[#d6eeff]': lable.type === 'OS' }, { 'bg-[#eceef1]': lable.type !== 'OS' }]"
+            <div class="text-[10px] text-[#666] dark:text-[#ccc] py-[1px] px-[6px] rounded-[20px] dark:bg-transparent dark:border-[1px] dark:border-[#999]"
+              :class="[{ 'bg-[#d6eeff] dark:bg-[#ffffff22]': lable.type === 'OS' }, { 'bg-[#eceef1]': lable.type !== 'OS' }]"
               v-for="lable of item.addition.lables">{{
                 lable.text }}</div>
           </div>

@@ -10,7 +10,7 @@ onUnmounted(() => {
 })
 </script>
 <template>
-    <div class="bcc"></div>
+    <div class="bcc dark:bg-[#222]"></div>
     <div class="content-container">
         <el-empty id="404-notfound-el-empty" style="margin-bottom: 200px;" description="404 不存在的页面" />
     </div>

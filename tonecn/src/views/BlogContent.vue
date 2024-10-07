@@ -72,14 +72,14 @@ onUnmounted(() => {
 })
 </script>
 <template>
-    <div class="bg-default-bg fixed inset-0 w-full h-full -z-10"></div>
+    <div class="bg-default-bg fixed inset-0 w-full h-full -z-10 dark:bg-[#222]"></div>
     <div class="flex flex-col max-w-[600px] my-[50px] mx-auto px-[20px]">
-        <div class="mx-auto" v-if="loadStatus == 0">加载中，请稍后...</div>
+        <div class="mx-auto dark:text-white" v-if="loadStatus == 0">加载中，请稍后...</div>
         <el-empty v-if="loadStatus < 0" :description="loadStatus == -1 ? '加载失败，刷新后重试' : '文章不存在或不可见'" />
         <div v-if="loadStatus == 1">
             <div>
-                <h1 class="text-center text-[28px] font-semibold">{{ blogInfo.title }}</h1>
-                <p class="my-[15px] mx-auto text-[14px] text-[#888] text-center">发布于 {{
+                <h1 class="text-center text-[28px] font-semibold dark:text-white">{{ blogInfo.title }}</h1>
+                <p class="my-[15px] mx-auto text-[14px] text-[#888] dark:text-[#ccc] text-center">发布于 {{
                     timestampToString(blogInfo.publish_time) }}</p>
             </div>
             <div v-html="blogContent" id="blogContentContainer"></div>

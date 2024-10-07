@@ -23,13 +23,14 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div class="bg-default-bg fixed inset-0 w-full h-full -z-10"></div>
+  <div class="bg-default-bg fixed inset-0 w-full h-full -z-10 dark:bg-[#222]"></div>
   <div
     class="flex max-w-[800px] flex-col items-center justify-center mx-auto min-h-[420px] sm:h-[calc(100vh-90px)] h-[calc(100vh-77px)]"
     id="home-main">
     <img src="../assets/logo.jpg" alt="" class="w-[150px] rounded-full">
     <div class="name text-[34px] sm:text-[42px]" id="my-name">特恩(TONE)</div>
-    <div class="mt-[10px] sm:text-[23px] text-[16px] cursor-default text-[#888] transition-all duration-200">
+    <div
+      class="mt-[10px] sm:text-[23px] text-[16px] cursor-default text-[#888] transition-all duration-200 dark:text-[#ccc]">
       一名计算机类专业在校本科大三学生</div>
     <div class="mt-[28px] mb-[30px] flex items-center justify-center flex-wrap sm:flex-row flex-col gap-[10px]">
       <a href="https://space.bilibili.com/474156211" target="_blank">

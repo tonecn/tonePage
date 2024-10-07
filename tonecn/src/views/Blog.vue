@@ -22,15 +22,15 @@ onMounted(async () => {
 })
 </script>
 <template>
-    <div class="bg-default-bg fixed inset-0 w-full h-full -z-10"></div>
+    <div class="bg-default-bg fixed inset-0 w-full h-full -z-10 dark:bg-[#222]"></div>
     <div class="flex flex-col max-w-[800px] my-[30px] mx-auto px-[20px]">
         <el-empty description="加载失败，刷新后重试" style="margin: 0 auto;" v-if="loadStatus == -1" />
         <div class="gap-[30px] flex flex-col" v-else>
-            <div class="text-center mt-[20px] mb-[300px]" v-if="loadStatus == 0">加载中，请稍后...</div>
+            <div class="text-center mt-[20px] mb-[300px] dark:text-white" v-if="loadStatus == 0">加载中，请稍后...</div>
             <el-empty description="暂无数据" style="margin: 0 auto;" v-if="loadStatus == 1 && blogList.length == 0" />
             <div class="mx-auto max-w-[400px] w-full flex flex-col" v-for="item of blogList">
-                <a class="text-[26px] font-semibold cursor-pointer block hover:underline" :href="`/blogContent/${item.uuid}`" target="_blank">{{ item.title }}</a>
-                <div class="text-[#666]">{{ item.description }}</div>
+                <a class="text-[26px] font-semibold cursor-pointer block hover:underline dark:text-white" :href="`/blogContent/${item.uuid}`" target="_blank">{{ item.title }}</a>
+                <div class="text-[#666] dark:text-[#ccc]">{{ item.description }}</div>
                 <div class="text-[#888] mt-[15px] text-[14px]">{{ timestampToString(+item.publish_time) }} ——
                     {{ formateTimes(item.visit_count) }} 次访问</div>
             </div>
