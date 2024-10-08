@@ -199,10 +199,13 @@ const uploadFile = async () => {
             ElMessage.error(`上传失败 ${error}`)
         }
     }
-    ElMessage.success(`${uploadSuccessCount} 个文件上传完成`);
+    if (uploadSuccessCount) {
+        ElMessage.success(`${uploadSuccessCount} 个文件上传完成`);
+        await loadFullFileList();
+        loadFileListShow();
+    } else
+        ElMessage.error(`文件上传失败`)
     isUploading.value = false;
-    await loadFullFileList();
-    loadFileListShow();
 }
 // 文件列表操作：删除某个文件
 const fileListHandleDelete = async (row: any) => {
