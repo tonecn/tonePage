@@ -196,6 +196,7 @@ const uploadFile = async () => {
             await OSSClient.multipartUpload(name, i.raw, options);
         } catch (error) {
             i.status = 'fail';
+            ElMessage.error(`上传失败 ${error}`)
         }
     }
     ElMessage.success(`${uploadSuccessCount} 个文件上传完成`);
