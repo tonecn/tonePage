@@ -77,17 +77,10 @@ onMounted(async () => {
             <el-input v-model="formData.password" show-password class="w-full h-[35px] text-[16px] mt-[10px]"
                 placeholder="密码" @keyup.enter="loginHandle">
             </el-input>
-            <el-button class="mt-[12px] mb-[120px] w-full h-[35px] font-bold login-button" @click="loginHandle"
+            <el-button class="mt-[12px] mb-[120px] w-full h-[35px] font-bold login-button hover:!bg-white hover:!border-gray-300 hover:!text-gray-800" @click="loginHandle"
                 :loading="loginStatus">登录</el-button>
         </div>
     </div>
     <RotationVerification v-if="isCaptchaShow" @fail="() => { isCaptchaShow = false; ElMessage.warning('验证失败') }"
         @success="() => { isCaptchaShow = false; login() }" />
 </template>
-<style scoped>
-.login-button:hover {
-    background-color: #fff;
-    border-color: rgb(220, 223, 230);
-    color: #333;
-}
-</style>
