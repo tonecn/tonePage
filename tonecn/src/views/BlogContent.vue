@@ -80,7 +80,11 @@ onUnmounted(() => {
             <div>
                 <h1 class="text-center text-[28px] font-semibold dark:text-white text-[#222]">{{ blogInfo.title }}</h1>
                 <p class="my-[15px] mx-auto text-[14px] text-[#888] dark:text-[#ccc] text-center">发布于 {{
-                    timestampToString(blogInfo.publish_time) }}</p>
+                    timestampToString(blogInfo.publish_time) }} ｜ {{ blogInfo.like_count }} 点赞</p>
+                <!-- TODO <p class="mt-[-10px] mx-auto text-[14px] text-[#888] dark:text-[#ccc] text-center whitespace-pre">
+                    {{ blogInfo.visit_count }} 访问
+                    {{ blogInfo.like_count }} 点赞
+                </p> -->
             </div>
             <div v-html="blogContent" id="blogContentContainer"></div>
         </div>
@@ -92,7 +96,7 @@ onUnmounted(() => {
 <style>
 /* markdown CSS */
 #blogContentContainer img {
-    @apply w-full;
+    @apply w-full my-[5px];
 }
 
 #blogContentContainer p {
@@ -100,7 +104,7 @@ onUnmounted(() => {
 }
 
 #blogContentContainer p code {
-    @apply bg-[#dedede] py-[2px] px-[3px];
+    @apply bg-[#dedede] dark:bg-[#ffffff44] py-[1px] px-[3px] rounded-[3px];
 }
 
 #blogContentContainer blockquote {
@@ -129,11 +133,11 @@ onUnmounted(() => {
 }
 
 #blogContentContainer h1 {
-    @apply text-[28px] border-b-[#ddd] border-b;
+    @apply text-[28px] border-b-[#ddd] dark:border-b-[#999] border-b;
 }
 
 #blogContentContainer h2 {
-    @apply text-[24px] border-b-[#ddd] border-b;
+    @apply text-[24px] border-b-[#ddd] dark:border-b-[#999] border-b;
 
 }
 
