@@ -29,7 +29,7 @@ onMounted(async () => {
             <div class="text-center mt-[20px] mb-[300px] dark:text-white" v-if="loadStatus == 0">加载中，请稍后...</div>
             <el-empty description="暂无数据" style="margin: 0 auto;" v-if="loadStatus == 1 && blogList.length == 0" />
             <div class="mx-auto max-w-[400px] w-full flex flex-col" v-for="item of blogList">
-                <a class="text-[26px] font-semibold cursor-pointer block hover:underline dark:text-white" :href="`/blogContent/${item.uuid}`" target="_blank">{{ item.title }}</a>
+                <a class="text-[26px] font-semibold cursor-pointer block hover:underline dark:text-white text-[#333]" :href="`/blogContent/${item.uuid}`" target="_blank">{{ item.title }}</a>
                 <div class="text-[#666] dark:text-[#ccc]">{{ item.description }}</div>
                 <div class="text-[#888] mt-[15px] text-[14px]">{{ timestampToString(+item.publish_time) }} ——
                     {{ formateTimes(item.visit_count) }} 次访问</div>

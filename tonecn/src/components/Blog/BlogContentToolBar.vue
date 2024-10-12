@@ -86,12 +86,12 @@ const submitComment = async () => {
 </script>
 <template>
     <transition name="el-zoom-in-bottom">
-        <div class="tool-bar-container" v-show="toolBarVisible">
-            <div class="tool-bar">
-                <el-input v-model="inputComment" autosize type="textarea" class="input-comment" placeholder="快来留下你的评论吧～"
+        <div class="fixed bottom-0 left-0 w-full bg-white dark:bg-[#111] shadow flex justify-center items-center" v-show="toolBarVisible">
+            <div class="w-full max-w-[600px] flex items-center justify-center py-[12px] px-[20px]">
+                <el-input v-model="inputComment" autosize type="textarea" class="mr-[12px]" placeholder="快来留下你的评论吧～"
                     clearable />
-                <el-button type="primary" :icon="Edit" class="button" circle @click="commentHandle"></el-button>
-                <el-button type="danger" :icon="isLiked ? StarFilled : Star" class="button" @click="likeBlog"
+                <el-button type="primary" :icon="Edit" circle @click="commentHandle"></el-button>
+                <el-button type="danger" :icon="isLiked ? StarFilled : Star" @click="likeBlog"
                     circle></el-button>
             </div>
         </div>
@@ -99,36 +99,3 @@ const submitComment = async () => {
     <RotationVerification v-if="isCaptchaViewShow"
         @fail="() => { isCaptchaViewShow = false; ElMessage.warning('验证失败') }" @success="submitComment" />
 </template>
-<style scoped>
-.tool-bar-container {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    /* height: 60px; */
-    background-color: #ffffff;
-    box-shadow: 0px 0px 9px 1px #ddd;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.tool-bar {
-    width: 100%;
-    max-width: 600px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 20px;
-}
-
-.input-comment {
-    margin-right: 12px;
-}
-
-@media screen and (max-width: 570px) {
-    .button {
-        background-color: none;
-    }
-}
-</style>

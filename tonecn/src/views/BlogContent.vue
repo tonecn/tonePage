@@ -72,13 +72,13 @@ onUnmounted(() => {
 })
 </script>
 <template>
-    <div class="bg-default-bg fixed inset-0 w-full h-full -z-10 dark:bg-[#222]"></div>
+    <div class="bg-default-bg dark:bg-[#222] fixed inset-0 w-full h-full -z-10"></div>
     <div class="flex flex-col max-w-[600px] my-[50px] mx-auto px-[20px]">
         <div class="mx-auto dark:text-white" v-if="loadStatus == 0">加载中，请稍后...</div>
         <el-empty v-if="loadStatus < 0" :description="loadStatus == -1 ? '加载失败，刷新后重试' : '文章不存在或不可见'" />
         <div v-if="loadStatus == 1">
             <div>
-                <h1 class="text-center text-[28px] font-semibold dark:text-white">{{ blogInfo.title }}</h1>
+                <h1 class="text-center text-[28px] font-semibold dark:text-white text-[#222]">{{ blogInfo.title }}</h1>
                 <p class="my-[15px] mx-auto text-[14px] text-[#888] dark:text-[#ccc] text-center">发布于 {{
                     timestampToString(blogInfo.publish_time) }}</p>
             </div>
@@ -92,40 +92,31 @@ onUnmounted(() => {
 <style>
 /* markdown CSS */
 #blogContentContainer img {
-    width: 100%;
+    @apply w-full;
 }
 
 #blogContentContainer p {
-    color: #555;
+    @apply text-[#555] dark:text-[#ddd] my-[10px];
 }
 
 #blogContentContainer p code {
-    background-color: #dedede;
-    padding: 2px 3px;
+    @apply bg-[#dedede] py-[2px] px-[3px];
 }
 
 #blogContentContainer blockquote {
-    margin: 16px 0;
-    padding-left: 25px;
-    border-left: 4px solid #ddd;
+    @apply my-[16px] pl-[25px] border-[4px_solid_#ddd];
 }
 
 #blogContentContainer blockquote p {
-    color: #888;
-}
-
-#blogContentContainer p {
-    margin-top: 10px;
-    margin-bottom: 10px;
+    @apply text-[#888];
 }
 
 #blogContentContainer pre {
-    border-radius: 5px;
-    overflow: hidden;
+    @apply rounded-[5px] overflow-hidden;
 }
 
 #blogContentContainer pre code {
-    overflow-x: scroll;
+    @apply overflow-x-scroll;
 }
 
 #blogContentContainer h1,
@@ -134,38 +125,35 @@ onUnmounted(() => {
 #blogContentContainer h4,
 #blogContentContainer h5,
 #blogContentContainer h6 {
-    font-weight: 600;
+    @apply font-[800] text-[#333] dark:text-[#fff] mt-[20px];
 }
 
 #blogContentContainer h1 {
-    font-size: 28px;
-    border-bottom: 1px solid #ddd;
+    @apply text-[28px] border-b-[#ddd] border-b;
 }
 
 #blogContentContainer h2 {
-    font-size: 24px;
-    border-bottom: 1px solid #ddd;
+    @apply text-[24px] border-b-[#ddd] border-b;
+
 }
 
 #blogContentContainer h3 {
-    font-size: 22px;
+    @apply text-[22px];
 }
 
 #blogContentContainer h4 {
-    font-size: 20px;
+    @apply text-[20px];
 }
 
 #blogContentContainer h5 {
-    font-size: 18px;
+    @apply text-[18px];
 }
 
 #blogContentContainer h6 {
-    font-size: 16px;
+    @apply text-[16px];
 }
 
 #blogContentContainer pre {
-    font-size: 12px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 10px -2px rgba(0, 0, 0, 0.3);
+    @apply text-[12px] rounded-[8px] shadow;
 }
 </style>

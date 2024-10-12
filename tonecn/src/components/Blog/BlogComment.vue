@@ -25,7 +25,7 @@ const getStatusText = computed(() => {
 
 const loadComment = async () => {
     try {
-        let commentRes:BaseResponseData = await request.get(`/blogComment?bloguuid=${bloguuid}`);
+        let commentRes: BaseResponseData = await request.get(`/blogComment?bloguuid=${bloguuid}`);
         if (commentRes.code == 0) {
             blogCommentList.splice(0, blogCommentList.length);
             blogCommentList.push(...commentRes.data);
@@ -47,49 +47,16 @@ watch(model, (newValue, oldValue) => {
 </script>
 <template>
     <el-divider></el-divider>
-    <div class="blogcomment-container">
-        <div class="title">评论</div>
-        <div class="comment" v-for="blogcomment of blogCommentList">
-            <div class="name">{{ blogcomment.name }}</div>
-            <div style="font-size: 12px;color: #888;">IP属地：{{ blogcomment.ip_address }}</div>
-            <div class="time">{{ timestampToString(blogcomment.time) }}</div>
-            <div class="content">「{{ blogcomment.content }}」</div>
+    <div class="w-full">
+        <div
+            class="border-l-[4px] border-l-[#ccc] text-[18px] pl-[15px] mb-[10px] text-[#444] dark:text-[#fff] cursor-default">
+            评论</div>
+        <div class="my-[10px]" v-for="blogcomment of blogCommentList">
+            <div class=" text-[#555] dark:text-[#fff]">{{ blogcomment.name }}</div>
+            <div class="text-[12px] text-[#888] dark:text-[#aaa]">IP属地：{{ blogcomment.ip_address }}</div>
+            <div class="text-[12px] text-[#888] dark:text-[#aaa]">{{ timestampToString(blogcomment.time) }}</div>
+            <div class="py-[10px] border-b border-b-[#ddd] text-[#333] dark:text-[#fff]">「{{ blogcomment.content }}」</div>
         </div>
-        <div class="status">—— {{ getStatusText }} ——</div>
+        <div class="text-[14px] text-[#666] dark:text-[#fff] my-[15px]">—— {{ getStatusText }} ——</div>
     </div>
 </template>
-<style scoped>
-.blogcomment-container .title {
-    border-left: 4px solid #ccc;
-    font-size: 18px;
-    padding-left: 15px;
-    margin-bottom: 10px;
-    color: #444;
-    cursor: default;
-}
-
-.blogcomment-container .comment {
-    margin: 10px 0px;
-}
-
-.blogcomment-container .comment .name {
-    color: #555;
-}
-
-.blogcomment-container .comment .time {
-    font-size: 12px;
-    color: #888;
-}
-
-.blogcomment-container .comment .content {
-    color: #333;
-    padding: 10px 0px;
-    border-bottom: 1px solid #ddd;
-}
-
-.blogcomment-container .status {
-    margin: 15px 0px;
-    color: #666;
-    font-size: 14px;
-}
-</style>
