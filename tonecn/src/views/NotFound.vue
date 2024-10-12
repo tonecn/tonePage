@@ -1,8 +1,13 @@
 <script setup lang='ts'>
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 onMounted(async () => {
     document.title = '404 不存在的页面';
 })
+
+onUnmounted(async () => {
+    document.title = '特恩(TONE)'
+})
+
 </script>
 <template>
     <div class="bg-default-bg fixed inset-0 w-full h-full -z-10 dark:bg-[#222]"></div>
