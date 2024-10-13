@@ -62,12 +62,12 @@ onMounted(async () => {
     <div class="bg-default-bg fixed inset-0 w-full h-full -z-10 dark:bg-[#222]"></div>
     <div
         class="flex flex-col items-center justify-center mx-auto sm:h-[calc(100vh-90px)] h-[calc(100vh-77px)] px-[20px] max-w-[280px] min-h-[400px]">
-        <h1 class="text-center text-[36px] font-medium cursor-default dark:text-white">登录到控制台</h1>
+        <h1 class="text-center text-[36px] font-medium cursor-default text-black dark:text-white">登录到控制台</h1>
         <el-popover placement="bottom" :width="300" trigger="click">
             <p>控制台是特恩(TONE)网页中的一个控制器界面，如果您是管理员，可通过登录后编辑本网页中的内容（资源、工具、日记等），详情请见<strong style="cursor: pointer;"
                     @click="">《特恩(TONE)控制台使用协议》</strong></p>
             <template #reference>
-                <h3 class="text-center cursor-pointer font-semibold mt-[10px] dark:text-[#ccc]">控制台是什么？</h3>
+                <h3 class="text-center cursor-pointer font-semibold mt-[10px] text-[#333] dark:text-[#ccc]">控制台是什么？</h3>
             </template>
         </el-popover>
         <div class="w-full flex flex-col items-center">

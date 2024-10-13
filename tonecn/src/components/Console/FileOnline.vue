@@ -15,7 +15,8 @@ import 'ace-builds/src-noconflict/mode-typescript'
 import 'ace-builds/src-noconflict/mode-html'
 import 'ace-builds/src-noconflict/mode-css'
 import 'ace-builds/src-noconflict/mode-vue'
-import 'ace-builds/src-noconflict/theme-chrome';
+import 'ace-builds/src-noconflict/theme-github';
+import 'ace-builds/src-noconflict/theme-github_dark'
 import modeJsonUrl from 'ace-builds/src-noconflict/mode-json?url';
 ace.config.setModuleUrl('ace/mode/json', modeJsonUrl);
 import themeChromeUrl from 'ace-builds/src-noconflict/theme-chrome?url';
@@ -56,6 +57,24 @@ onMounted(async () => {
 
     await loadFullFileList();
     loadFileListShow();
+
+    // aceEditor 深色模式监听
+    // 监听主题变化
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', checkTheme);
+    // 初始检查
+    checkTheme();
+})
+
+const checkTheme = () => {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        aceEditorTheme.value = 'github_dark'
+    } else {
+        aceEditorTheme.value = 'github'
+    }
+};
+
+onMounted(() => {
+    window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', checkTheme);
 })
 
 // 当前目录
@@ -340,6 +359,7 @@ const saveAceEditorContent = async () => {
         saveAceEditorContentLoading.value = false;
     }
 }
+const aceEditorTheme = ref('github');
 </script>
 <template>
     <div class="container w-full">
@@ -358,9 +378,10 @@ const saveAceEditorContent = async () => {
             <el-icon @click="Dirto(0)" class="cursor-pointer hover:text-[#222] mr-[5px]">
                 <House />
             </el-icon>
-            <span v-for="i, key of prefix.split('/')" class="text-[#666]">
+            <span v-for="i, key of prefix.split('/')" class="text-[#666] dark:text-[#bbb]">
                 <span v-if="i != ''" class="mx-[3px]">/</span>
-                <span @click="Dirto(key + 1)" class="cursor-pointer hover:text-[#222]">{{ i }}</span>
+                <span @click="Dirto(key + 1)" class="cursor-pointer hover:text-[#222] dark:hover:text-[#fff]">{{ i
+                    }}</span>
             </span>
             <span class="mx-[3px] text-[#666]">/</span>
         </div>
@@ -420,33 +441,35 @@ const saveAceEditorContent = async () => {
         <el-button @click="uploadFile" :loading="isUploading" class="mt-[10px]">开始上传</el-button>
     </el-dialog>
     <!-- 在线文本编辑 -->
-    <div v-if="aceEditorShow"
-        class="fixed w-full h-full inset-0 z-[2000] bg-[#00000066] flex justify-center items-center"
-        @click="closeAceEditor">
-        <div class="w-3/4 h-3/4 bg-white p-[15px] rounded-[5px] flex flex-col" @click.stop>
-            <div class="w-full flex items-center justify-between">
-                <span>正在编辑 - /{{ aceEditorFileInfo.name }}</span>
-                <el-button circle text @click="closeAceEditor">
-                    <el-icon>
-                        <Close />
-                    </el-icon>
-                </el-button>
-            </div>
-            <div class="w-full flex items-center gap-[15px] pb-[15px]">
-                <span>语言
-                    <el-select v-model="aceEditorConfig.lang" style="width: 130px;margin-left: 8px;">
-                        <el-option v-for="[key, value] of editableFileTypes" :key="value" :label="value"
-                            :value="value"></el-option>
-                    </el-select>
-                </span>
-            </div>
-            <v-ace-editor v-model:value="aceEditorContent.text" :lang="aceEditorConfig.lang" theme="chrome"
-                class="w-full flex-1" />
-            <div class="flex justify-end">
-                <el-button @click="resetAceEditorContent">重置</el-button>
-                <el-button @click="saveAceEditorContent" :loading="saveAceEditorContentLoading"
-                    type="primary">保存</el-button>
+    <transition name="el-fade-in-linear">
+        <div v-if="aceEditorShow"
+            class="fixed w-full h-full inset-0 z-[2000] bg-[#00000066] flex justify-center items-center"
+            @click="closeAceEditor">
+            <div class="w-3/4 h-3/4 bg-white dark:bg-[#141414] p-[15px] rounded-[5px] flex flex-col" @click.stop>
+                <div class="w-full flex items-center justify-between">
+                    <span>正在编辑 - /{{ aceEditorFileInfo.name }}</span>
+                    <el-button circle text @click="closeAceEditor">
+                        <el-icon>
+                            <Close />
+                        </el-icon>
+                    </el-button>
+                </div>
+                <div class="w-full flex items-center gap-[15px] pb-[15px]">
+                    <span>语言
+                        <el-select v-model="aceEditorConfig.lang" style="width: 130px;margin-left: 8px;">
+                            <el-option v-for="[key, value] of editableFileTypes" :key="value" :label="value"
+                                :value="value"></el-option>
+                        </el-select>
+                    </span>
+                </div>
+                <v-ace-editor v-model:value="aceEditorContent.text" :lang="aceEditorConfig.lang" :theme="aceEditorTheme"
+                    class="w-full flex-1" />
+                <div class="flex justify-end mt-[10px]">
+                    <el-button @click="resetAceEditorContent">重置</el-button>
+                    <el-button @click="saveAceEditorContent" :loading="saveAceEditorContentLoading"
+                        type="primary">保存</el-button>
+                </div>
             </div>
         </div>
-    </div>
+    </transition>
 </template>
