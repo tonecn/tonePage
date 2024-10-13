@@ -10,5 +10,20 @@
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
+    <script>
+      // 检查用户的主题偏好
+      const checkTheme = () => {
+        const htmlElement = document.documentElement;
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          htmlElement.classList.add('dark');
+        } else {
+          htmlElement.classList.remove('dark');
+        }
+      };
+      // 监听主题变化
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', checkTheme);
+      // 初始检查
+      checkTheme();
+    </script>
   </body>
 </html>
