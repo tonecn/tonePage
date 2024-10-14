@@ -40,7 +40,7 @@ onUnmounted(async () => {
 })
 </script>
 <template>
-    <div class="dashboard-container">
+    <div class="flex">
         <el-menu default-active="1" :collapse="menuCollapse" class="menu">
             <el-menu-item index="1" @click="tabComponent = Resources">
                 <el-icon><icon-menu /></el-icon>
@@ -78,12 +78,3 @@ onUnmounted(async () => {
         </div>
     </div>
 </template>
-<style scoped>
-.dashboard-container {
-    display: flex;
-}
-
-.dashboard-container .menu {
-    /* min-width: 200px; */
-}
-</style>
