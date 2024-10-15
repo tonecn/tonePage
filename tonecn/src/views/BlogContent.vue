@@ -178,6 +178,10 @@ onUnmounted(() => {
 
 #blogContentContainer table td {
     @apply border-[1px] p-[5px];
-
 }
+
+#blogContentContainer a {
+    @apply dark:text-white;
+}
+
 </style>
