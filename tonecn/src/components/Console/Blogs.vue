@@ -111,11 +111,12 @@ const formatTime = (row: any, _column: any, _cellValue: any, _index: any) => {
 }
 </script>
 <template>
-    <div style="padding: 15px 20px;">
+    <div class="px-[20px] py-[15px]">
         <el-text>总数量：{{ tableData.length }}</el-text>
-        <el-button type="primary" style="width: 120px;margin-left: 20px;" @click="addHandle">添加</el-button>
+        <el-button type="primary" class="w-[120px] ml-[20px]" @click="addHandle">添加</el-button>
     </div>
-    <el-table :data="tableData" border style="width: 100%">
+    <!-- 数据列表 -->
+    <el-table :data="tableData" border class="w-full">
         <el-table-column prop="id" label="id" width="50" />
         <el-table-column prop="uuid" label="uuid" width="120" show-overflow-tooltip />
         <el-table-column prop="title" label="标题" width="240" />
@@ -124,14 +125,14 @@ const formatTime = (row: any, _column: any, _cellValue: any, _index: any) => {
         <el-table-column prop="access_level" label="可访问级别" width="100" />
         <el-table-column prop="visit_count" label="访问量" width="80" />
         <el-table-column prop="like_count" label="点赞量" width="80" />
-        <el-table-column fixed="right" label="操作" width="120">
+        <el-table-column fixed="right" label="操作" min-width="110">
             <template #default="scope">
                 <el-button link type="primary" size="small" @click="editHandle(scope.row)">编辑</el-button>
                 <el-button link type="primary" size="small" @click="delHandle(scope.row)">删除</el-button>
             </template>
         </el-table-column>
     </el-table>
-
+    <!-- 编辑、添加博客对话框 -->
     <el-dialog v-model="dialogEditFormVisible" title="编辑" width="800">
         <el-form :model="editForm" label-width="auto" style="margin: 0 30px;">
             <el-form-item label="id">

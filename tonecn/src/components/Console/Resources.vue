@@ -106,11 +106,12 @@ const delHandle = async (data: { id: string, [key: string]: any }) => {
 }
 </script>
 <template>
-    <div style="padding: 15px 20px;">
+    <div class="py-[15px] px-[20px]">
         <el-text>总数量：{{ tableData.length }}</el-text>
         <el-button type="primary" style="width: 120px;margin-left: 20px;" @click="addHandle">添加</el-button>
     </div>
-    <el-table :data="tableData" border style="width: 100%">
+    <!-- 数据列表 -->
+    <el-table :data="tableData" border class="w-full">
         <el-table-column prop="id" label="id" width="50" />
         <el-table-column prop="type" label="类型" width="80" sortable>
             <template #default="scope">
@@ -133,16 +134,16 @@ const delHandle = async (data: { id: string, [key: string]: any }) => {
             </template>
         </el-table-column>
         <el-table-column prop="src" label="资源" width="180" />
-        <el-table-column fixed="right" label="操作" min-width="120">
+        <el-table-column fixed="right" label="操作" min-width="110">
             <template #default="scope">
                 <el-button link type="primary" size="small" @click="editHandle(scope.row)">编辑</el-button>
                 <el-button link type="primary" size="small" @click="delHandle(scope.row)">删除</el-button>
             </template>
         </el-table-column>
     </el-table>
-
+    <!-- 编辑、添加资源对话框 -->
     <el-dialog v-model="dialogEditFormVisible" title="编辑" width="800">
-        <el-form :model="editForm" label-width="auto" style="margin: 0 30px;">
+        <el-form :model="editForm" label-width="auto" class="mx-[30px]">
             <el-form-item label="id">
                 <el-input v-model="editForm.id" disabled />
             </el-form-item>

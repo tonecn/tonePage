@@ -33,6 +33,7 @@ const logout = () => {
     })
 }
 onMounted(async () => {
+    handleResize()
     window.addEventListener('resize', handleResize);
 })
 onUnmounted(async () => {
@@ -40,8 +41,8 @@ onUnmounted(async () => {
 })
 </script>
 <template>
-    <div class="flex">
-        <el-menu default-active="1" :collapse="menuCollapse" class="menu">
+    <div class="flex w-[100vw]">
+        <el-menu default-active="1" :collapse="menuCollapse">
             <el-menu-item index="1" @click="tabComponent = Resources">
                 <el-icon><icon-menu /></el-icon>
                 <span style="width: 140px;">资源及下载</span>
@@ -71,7 +72,7 @@ onUnmounted(async () => {
                 <span>退出登录</span>
             </el-menu-item>
         </el-menu>
-        <div style="flex: 1;min-height: calc(100vh - 90px);">
+        <div class="flex-1 overflow-x-scroll sm:min-h-[calc(100vh-90px)] min-h-[calc(100vh-77px)]">
             <KeepAlive>
                 <component :is="tabComponent" />
             </KeepAlive>

@@ -13,7 +13,7 @@ const generateUUID = () => {
 }
 </script>
 <template>
-    <el-col style="padding: 20px;">
+    <el-col class="p-[20px]">
         <el-row>
             <el-text>随机数生成</el-text>
         </el-row>
@@ -27,7 +27,7 @@ const generateUUID = () => {
                     @click="() => { copyText(randomNum + ''); ElMessage.success('复制成功') }">复制</el-button>
             </el-button-group>
         </el-row>
-        <el-row style="margin-top: 15px;">
+        <el-row class="mt-[15px]">
             <el-text>32位UUID生成</el-text>
         </el-row>
         <el-row>

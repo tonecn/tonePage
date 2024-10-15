@@ -363,7 +363,7 @@ const aceEditorTheme = ref('github');
 </script>
 <template>
     <div class="container w-full">
-        <div class="flex items-center p-[10px]">
+        <div class="flex items-center p-[10px] flex-wrap">
             <el-button class="mr-[-15px]" @click="() => { loadFullFileList(); loadFileListShow(); }" circle link>
                 <el-icon>
                     <Refresh />
@@ -394,6 +394,7 @@ const aceEditorTheme = ref('github');
             <el-button type="danger" :disabled="false" @click="deleteChosenFile">删除</el-button>
         </el-button-group>
     </div>
+    <!-- 文件列表 -->
     <el-table :data="fileListShow" @cell-click="fileClick" @selection-change="fileListSelectionChange" border
         class="mt-[10px]">
         <el-table-column type="selection" width="55" />
@@ -401,7 +402,7 @@ const aceEditorTheme = ref('github');
         <el-table-column prop="lastModified" :formatter="fileListTableLastModifiedFormatter" label="最后修改时间"
             width="180" />
         <el-table-column prop="size" :formatter="fileListTableSizeFormatter" label="文件大小" width="130" />
-        <el-table-column label="操作" width="200">
+        <el-table-column label="操作" width="180">
             <template #default="scope">
                 <el-button v-if="!scope.row.dir" size="small" text
                     @click.prevent="fileListHandleEdit(scope.row)">编辑</el-button>
