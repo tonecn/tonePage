@@ -171,4 +171,13 @@ onUnmounted(() => {
 #blogContentContainer pre {
     @apply text-[12px] rounded-[8px] shadow;
 }
+
+#blogContentContainer table thead th {
+    @apply border-[2px] ;
+}
+
+#blogContentContainer table td {
+    @apply border-[1px] p-[5px];
+
+}
 </style>
