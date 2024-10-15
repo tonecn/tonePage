@@ -16,7 +16,8 @@ type BlogInfo = {
     like_count: number,
     description: string
 }
-const loadStatus = ref(0);// 0加载中 -1加载失败 -2文章不存在或不可见 1加载成功
+const loadStatus = ref(0);// 0加载中 -1加载失败 1加载成功
+const loadStatusDescription = ref('出错啦，返回到上一个界面重试吧');
 const route = useRoute();
 const blogContent = ref('');
 const blogInfo: Ref<BlogInfo> = ref({
@@ -44,7 +45,8 @@ onMounted(async () => {
         return loadStatus.value = -1;
     }
     try {
-        let blogContentRes: BaseResponseData = await request.get(`/blogContent?bloguuid=${bloguuid}`);
+        let blogContentRes: BaseResponseData = await request.get(`/blogContent?bloguuid=${bloguuid}` + (window.location.href.indexOf('?') != -1 ? "&" + window.location.href.split('?')[1] : ""));
+        console.log(blogContent.value)
         if (blogContentRes.code == 0) {
             try {
                 blogContent.value = await marked.parse(decodeURIComponent(escape(atob(blogContentRes.data.data))))
@@ -58,12 +60,21 @@ onMounted(async () => {
             }
         } else if (blogContentRes.code == -4001) {
             // 不可见或不存在
+            loadStatus.value = -1;
+            loadStatusDescription.value = '文章不可见或不存在'
+        } else if (blogContentRes.code == -4002) {
+            // 文章加密
+            loadStatus.value = -1;
+            loadStatusDescription.value = '文章被加密啦，请联系发布者'
+        } else if (blogContentRes.code == -4003) {
             loadStatus.value = -2;
+            loadStatusDescription.value = '密钥好像有点问题，请联系发布者'
         } else {
             throw new Error(blogContentRes.message);
         }
     } catch (error) {
         console.error('请求博客内容发生错误 ', error);
+        loadStatusDescription.value = '加载失败，刷新后重试';
         loadStatus.value = -1;
     }
 })
@@ -75,7 +86,7 @@ onUnmounted(() => {
     <div class="bg-default-bg dark:bg-[#222] fixed inset-0 w-full h-full -z-10"></div>
     <div class="flex flex-col max-w-[600px] my-[50px] mx-auto px-[20px]">
         <div class="mx-auto dark:text-white" v-if="loadStatus == 0">加载中，请稍后...</div>
-        <el-empty v-if="loadStatus < 0" :description="loadStatus == -1 ? '加载失败，刷新后重试' : '文章不存在或不可见'" />
+        <el-empty v-if="loadStatus < 0" :description="loadStatusDescription" />
         <div v-if="loadStatus == 1">
             <div>
                 <h1 class="text-center text-[28px] font-semibold dark:text-white text-[#222]">{{ blogInfo.title }}</h1>

@@ -27,6 +27,14 @@ const ServerStdResponse = {
         NOTFOUND: {
             code: -4001,
             message: 'Blog not found'
+        },
+        PROTECT_FLAG: {
+            code: -4002,
+            message: 'Blog is protected, need password'
+        },
+        PASSWD_ERROR: {
+            code: -4003,
+            message: 'Blog is protected, and password is not right'
         }
     },
     CAPTCHA: {
@@ -48,7 +56,7 @@ const ServerStdResponse = {
             code: -6000,
             message: 'user is not found'
         },
-        PASSWORD_ERROR:{
+        PASSWORD_ERROR: {
             code: -6001,
             message: 'user password is error'
         }

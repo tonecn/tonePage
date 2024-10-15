@@ -19,6 +19,7 @@ import CheckCaptcha from "../APIs/CheckCaptcha";
 import Login from "../APIs/Console/Login";
 import GetResources from "../APIs/Console/GetResources";
 import GetBlogs from '../APIs/Console/GetBlogs'
+import SetBlogPasswd from "../APIs/Console/SetBlogPasswd";
 import SaveResource from '../APIs/Console/SaveResource'
 import DelResource from '../APIs/Console/DelResource'
 import SaveBlog from '../APIs/Console/SaveBlog'
@@ -52,6 +53,7 @@ class Server {
         this.apiLoader.add(DelResource);
         this.apiLoader.add(GetBlogs)
         this.apiLoader.add(SaveBlog);
+        this.apiLoader.add(SetBlogPasswd);
         this.apiLoader.add(DelBlog);
         this.apiLoader.add(GetOSSToken);
 

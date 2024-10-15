@@ -1,7 +1,7 @@
 <script setup lang='ts'>
 import { onMounted, reactive, ref, type Ref } from 'vue';
 import { request, type BaseResponseData } from '../../lib/request'
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { timestampToString } from '@/lib/timestampToString';
 const tableData: Ref<any[]> = ref([])
 const dialogEditFormVisible = ref(false);
@@ -14,7 +14,8 @@ type BlogContentData = {
     src: string,
     access_level: number,
     visit_count: number,
-    like_count: number
+    like_count: number,
+    encrypt_p: string,
 }
 onMounted(async () => {
     await loadTableData();
@@ -39,6 +40,7 @@ const editForm: BlogContentData = reactive({
     description: '',
     publish_time: new Date(),
     src: '',
+    encrypt_p: '',
     access_level: 0,
     visit_count: 0,
     like_count: 0
@@ -84,7 +86,47 @@ const saveHandle = async () => {
         if (res.code == 0) {
             dialogEditFormVisible.value = false;
             loadTableData();
-            return ElMessage.success('保存成功');
+            if ([7, 9].includes(editForm.access_level)) {
+                ElMessageBox.prompt('保存成功，当前文章可访问级别为：受保护。是否立即添加密码？', '提示', {
+                    confirmButtonText: '确认',
+                    cancelButtonText: '取消',
+                    inputPattern: /\S+/,
+                    inputErrorMessage: '输入不能为空或仅包含空白字符'
+                })
+                    .then(async ({ value }) => {
+                        await request.post('/console/setBlogPasswd', {
+                            uuid: editForm.uuid,
+                            passwd: value,
+                        }).then((res: any) => {
+                            if (res.code == 0) {
+                                ElMessage({
+                                    type: 'success',
+                                    message: `密码设置成功`,
+                                })
+                            } else {
+                                ElMessage({
+                                    type: 'error',
+                                    message: `密码设置失败`,
+                                })
+                            }
+                        }).catch((err) => {
+                            console.log(err)
+                            ElMessage({
+                                type: 'error',
+                                message: `密码设置发生错误`,
+                            })
+                        })
+
+                    })
+                    .catch(() => {
+                        ElMessage({
+                            type: 'info',
+                            message: '已取消',
+                        })
+                    })
+            } else {
+                return ElMessage.success('保存成功');
+            }
         } else {
             throw new Error(res.message);
         }
@@ -125,6 +167,11 @@ const formatTime = (row: any, _column: any, _cellValue: any, _index: any) => {
         <el-table-column prop="access_level" label="可访问级别" width="100" />
         <el-table-column prop="visit_count" label="访问量" width="80" />
         <el-table-column prop="like_count" label="点赞量" width="80" />
+        <!-- <el-table-column label="加密" width="80">
+            <template #default="scope">
+                <el-text>{{ scope.encrypt_p ? "是" : "否" }}</el-text>
+            </template>
+        </el-table-column> -->
         <el-table-column fixed="right" label="操作" min-width="110">
             <template #default="scope">
                 <el-button link type="primary" size="small" @click="editHandle(scope.row)">编辑</el-button>
@@ -155,7 +202,16 @@ const formatTime = (row: any, _column: any, _cellValue: any, _index: any) => {
             </el-form-item>
             <el-form-item label="可访问级别">
                 <el-input-number v-model="editForm.access_level" :min="0" />
-                <el-text style="margin-left: 20px;" size="small">默认可访问大于6的项</el-text>
+                <el-tooltip placement="right">
+                    <template #content>
+                        1 ～ 6 - 保留<br />
+                        7 - 列表不可见，文章内容无身份验证访问<br />
+                        8 - 列表不可见，文章内容公开<br />
+                        9 - 列表可见，文章内容可无状态验证访问<br />
+                        10 - 列表可见，文章内容公开<br />
+                    </template>
+                    <el-text style="margin-left: 20px;" size="small">查看规则</el-text>
+                </el-tooltip>
             </el-form-item>
             <el-form-item label="访问量">
                 <el-input-number v-model="editForm.visit_count" :min="0" disabled />
