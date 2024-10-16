@@ -1,8 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import Logger from "../Logger";
+import jwt from 'jsonwebtoken'
 
 interface MiddlewareFunction {
     (req: Request, res: Response, next: NextFunction): void;
+}
+
+interface RequestData {
+    [key: string | number | symbol] : any;
+    _jwt?: any;
+    _ip?: string;
 }
 
 abstract class API {
@@ -21,7 +28,8 @@ abstract class API {
     }
 
     // to override
-    public abstract onRequset(data: any, res: any): void;
+    public abstract onRequset(data: RequestData, res: any): void;
 }
 
 export { API };
+export type { RequestData }
