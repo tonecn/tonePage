@@ -57,7 +57,7 @@ class GetBlogContent extends API {
             const base64Content = Buffer.from(response.data, 'utf-8').toString('base64');
 
             // 访问次数+1
-            // MySQLConnection.execute('UPDATE blog SET visit_count = visit_count + 1 WHERE uuid = ?', [bloguuid]);
+            MySQLConnection.execute('UPDATE blog SET visit_count = visit_count + 1 WHERE uuid = ?', [bloguuid]);
             return res.json({
                 ...ServerStdResponse.OK, data: {
                     data: base64Content,
