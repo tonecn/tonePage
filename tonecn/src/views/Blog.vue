@@ -34,7 +34,7 @@ onMounted(async () => {
                     <span v-if="item.access_level == 9" class="text-[10px] text-[#666] dark:text-[#ccc] font-normal border border-[#d7d9de] py-[2px] px-[4px] rounded-[10px] bg-[#ebecf0] dark:border-[#999] dark:!bg-[#ffffff22]">受密码保护</span>
                 </a>
                 <div class="text-[#666] dark:text-[#ccc]">{{ item.description }}</div>
-                <div class="text-[#888] mt-[15px] text-[14px]">{{ timestampToString(+item.publish_time) }} ——
+                <div class="text-[#888] mt-[15px] text-[14px]">{{ timestampToString(+item.publish_time) }} ·
                     {{ formateTimes(item.visit_count) }} 次访问</div>
             </div>
         </div>
