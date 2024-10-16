@@ -6,6 +6,7 @@ import Utils from '../../components/Console/Utils.vue'
 import FileOnline from '../../components/Console/FileOnline.vue'
 import { shallowRef, ref, onMounted, onUnmounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { request } from '@/lib/request'
 const tabComponent = shallowRef(Resources);
 const menuCollapse = ref(false)
 const handleResize = () => {
@@ -35,6 +36,29 @@ const logout = () => {
 onMounted(async () => {
     handleResize()
     window.addEventListener('resize', handleResize);
+
+    const refreshToken = async () => {
+        // 判断jwt过期时间并定期刷新    
+        if (localStorage.getItem('jwtToken')) {
+            const binaryString = atob(localStorage.getItem('jwtToken')!.split('.')[1]);
+            const jwtPayload = JSON.parse(binaryString);
+            if ((jwtPayload.exp - Math.floor(Date.now() / 1000)) < 0) {
+                // token已过期
+                localStorage.clear()
+                window.location.reload()
+            }
+            if ((jwtPayload.exp - Math.floor(Date.now() / 1000)) / (jwtPayload.exp - jwtPayload.iat) < 0.3) {
+                // 重新获取token
+                console.log("token有效期 ", (jwtPayload.exp - Math.floor(Date.now() / 1000)) / (jwtPayload.exp - jwtPayload.iat), "不足%30，正在重新获取Token")
+                let res: any = await request.get('/console/loginStatus');
+                if (res.code == 0) {
+                    localStorage.setItem('jwtToken', res.data.token)
+                }
+            }
+        }
+    }
+    setInterval(refreshToken, 1000 * 60 * 30);// 30 分钟判定一次token有效期
+    refreshToken()
 })
 onUnmounted(async () => {
     window.removeEventListener('resize', handleResize);

@@ -25,6 +25,7 @@ import DelResource from '../APIs/Console/DelResource'
 import SaveBlog from '../APIs/Console/SaveBlog'
 import DelBlog from '../APIs/Console/DelBlog'
 import GetOSSToken from "../APIs/Console/GetOSSToken";
+import GetLoginStatus from "../APIs/Console/GetLoginStatus";
 
 class Server {
     private logger = new Logger('Server');
@@ -56,6 +57,7 @@ class Server {
         this.apiLoader.add(SetBlogPasswd);
         this.apiLoader.add(DelBlog);
         this.apiLoader.add(GetOSSToken);
+        this.apiLoader.add(GetLoginStatus);
 
         this.apiLoader.start(config.apiPort);
     }
