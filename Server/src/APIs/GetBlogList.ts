@@ -10,7 +10,7 @@ class GetBlogList extends API {
     private defaultAccessLevel = 9;
 
     public async onRequset(data: any, res: any) {
-        let blogListRes = await MySQLConnection.execute('SELECT uuid, title, description, publish_time, visit_count, like_count from blog WHERE access_level >= ? ORDER BY publish_time DESC',[this.defaultAccessLevel]);
+        let blogListRes = await MySQLConnection.execute('SELECT uuid, title, description, publish_time, access_level, visit_count, like_count from blog WHERE access_level >= ? ORDER BY publish_time DESC',[this.defaultAccessLevel]);
         if(!blogListRes){
             this.logger.error('查询时数据库发生错误');
             return res.json(ServerStdResponse.SERVER_ERROR);
