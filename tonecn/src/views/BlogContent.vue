@@ -84,7 +84,7 @@ onUnmounted(() => {
 </script>
 <template>
     <div class="bg-default-bg dark:bg-[#222] fixed inset-0 w-full h-full -z-10"></div>
-    <div class="flex flex-col max-w-[600px] my-[50px] mx-auto px-[20px]">
+    <div class="flex flex-col max-w-[700px] my-[50px] mx-auto px-[20px]">
         <div class="mx-auto dark:text-white" v-if="loadStatus == 0">加载中，请稍后...</div>
         <div v-if="loadStatus < 0" class="flex justify-center items-center sm:h-[calc(100vh-190px)] h-[calc(100vh-180px)] min-h-[260px]">
             <el-empty class="mb-[60px]" :description="loadStatusDescription" />
@@ -99,7 +99,7 @@ onUnmounted(() => {
                     {{ blogInfo.like_count }} 点赞
                 </p> -->
             </div>
-            <div v-html="blogContent" id="blogContentContainer"></div>
+            <div v-html="blogContent" class="w-full overflow-x-scroll" id="blogContentContainer"></div>
         </div>
 
         <BlogComment v-if="loadStatus == 1" v-model="blogCommentReload" />
