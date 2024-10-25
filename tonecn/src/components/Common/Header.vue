@@ -47,7 +47,8 @@ router.afterEach(() => {
                         <div class="h-[35px] text-[25px] cursor-pointer]">🍭</div>
                     </RouterLink>
                     <RouterLink :to="{ name: 'home' }" v-else>
-                        <div class="h-[35px] leading-[35px] font-semibold tracking-[5px] text-[#333] text-nowrap dark:text-white">
+                        <div
+                            class="h-[35px] leading-[35px] font-semibold tracking-[5px] text-[#333] text-nowrap dark:text-white">
                             特恩(TONE)</div>
                     </RouterLink>
                 </div>
@@ -66,20 +67,22 @@ router.afterEach(() => {
                 id="header-right">
                 <div class="flex justify-end items-center">
                     <RouterLink :to="{ name: 'resource' }">
-                        <div class="text-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-transparent hover:text-black dark:text-[#ccc] dark:hover:text-white"
-                            :class="{ 'border-b-[#e03ebf] text-black dark:text-white': $route.name === 'resource' }">资源</div>
+                        <div class="whitespace-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-transparent hover:text-black dark:text-[#ccc] dark:hover:text-white"
+                            :class="{ 'border-b-[#e03ebf] text-black dark:text-white': $route.name === 'resource' }">资源
+                        </div>
                     </RouterLink>
                     <RouterLink :to="{ name: 'download' }">
-                        <div class="text-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-transparent hover:text-black dark:text-[#ccc] dark:hover:text-white"
-                            :class="{ 'border-b-[#e03ebf] text-black dark:text-white': $route.name === 'download' }">下载</div>
+                        <div class="whitespace-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-transparent hover:text-black dark:text-[#ccc] dark:hover:text-white"
+                            :class="{ 'border-b-[#e03ebf] text-black dark:text-white': $route.name === 'download' }">下载
+                        </div>
                     </RouterLink>
                     <RouterLink :to="{ name: 'blog' }">
-                        <div class="text-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-transparent hover:text-black dark:text-[#ccc] dark:hover:text-white"
+                        <div class="whitespace-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-transparent hover:text-black dark:text-[#ccc] dark:hover:text-white"
                             :class="{ 'border-b-[#e03ebf] text-black dark:text-white': $route.name === 'blog' || $route.name === 'blogContent' }">
                             博客</div>
                     </RouterLink>
                     <RouterLink :to="{ name: 'dashboard' }">
-                        <div class="text-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-transparent hover:text-black dark:text-[#ccc] dark:hover:text-white"
+                        <div class="whitespace-nowrap mx-[20px] cursor-pointer text-[#666] transition-all duration-200 border-b-[3px] border-transparent hover:text-black dark:text-[#ccc] dark:hover:text-white"
                             :class="{ 'border-b-[#e03ebf] text-black dark:text-white': $route.name === 'login' || $route.name === 'dashboard' }">
                             控制台</div>
                     </RouterLink>
