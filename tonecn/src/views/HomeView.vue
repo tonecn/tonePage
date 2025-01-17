@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 onMounted(() => {
+  window.document.title = `特恩的日志`;
   // 界面特效字体
   let nameElement = document.getElementById("my-name");
   if (nameElement == null) {
