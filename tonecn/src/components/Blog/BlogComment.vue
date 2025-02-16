@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import { request, type BaseResponseData } from '@/lib/request';
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 import { timestampToString } from '@/lib/timestampToString';
 const model = defineModel();
@@ -39,8 +39,9 @@ const loadComment = async () => {
     }
 }
 
-watch(model, (newValue, oldValue) => {
-    if (newValue) {
+watchEffect(() => {
+    if (model.value) {
+        model.value = false;
         loadComment();
     }
 })
@@ -54,8 +55,10 @@ watch(model, (newValue, oldValue) => {
         <div class="my-[10px]" v-for="blogcomment of blogCommentList">
             <div class=" text-[#555] dark:text-[#fff]">{{ blogcomment.name }}</div>
             <div class="text-[12px] text-[#888] dark:text-[#aaa]">IP属地：{{ blogcomment.ip_address }}</div>
-            <div class="text-[12px] text-[#888] dark:text-[#aaa]">{{ timestampToString(blogcomment.time) }}</div>
-            <div class="py-[10px] border-b border-b-[#ddd] text-[#333] dark:text-[#fff]">「{{ blogcomment.content }}」</div>
+            <div class="text-[12px] text-[#888] dark:text-[#aaa]">{{ new Date(blogcomment.created_at).toLocaleString()
+                }}</div>
+            <div class="py-[10px] border-b border-b-[#ddd] text-[#333] dark:text-[#fff] whitespace-pre-wrap">{{
+                blogcomment.content }}</div>
         </div>
         <div class="text-[14px] text-[#666] dark:text-[#fff] my-[15px]">—— {{ getStatusText }} ——</div>
     </div>

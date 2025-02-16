@@ -1,10 +1,11 @@
 import { API } from "../Plugs/API/API";
 import ServerStdResponse from "../ServerStdResponse";
-import MySQLConnection from '../Plugs/MySQLConnection'
+import Database from '../Plugs/Database'
 import { Buffer } from 'buffer';
 import axios from "axios";
 import crypto from 'crypto'
 import MountIP from "../Plugs/Middleware/MountIP";
+import { Blog } from "@/Types/Schema";
 
 // 获取博客内容
 class GetBlogContent extends API {
@@ -22,14 +23,14 @@ class GetBlogContent extends API {
             return res.json(ServerStdResponse.INVALID_PARAMS);
         }
 
-        let blogContentRes = await MySQLConnection.execute(`SELECT * from blog WHERE access_level in (${this.AccessLevelRule.allow.join(',')}) AND uuid = ? `, [bloguuid]);
+        let blogContentRes = await Database.query<Blog>(`SELECT * from blog WHERE access_level in (${this.AccessLevelRule.allow.join(',')}) AND uuid = $1 `, [bloguuid]);
         if (!blogContentRes) {
             this.logger.error('查询时数据库发生错误');
             return res.json(ServerStdResponse.SERVER_ERROR);
         }
         if (blogContentRes.length == 0) {
             // 公开范围不可见，查询允许无连接加密查看的数据
-            blogContentRes = await MySQLConnection.execute(`SELECT * from blog WHERE access_level in (${this.AccessLevelRule.encrypt_allow.join(',')}) AND uuid = ? `, [bloguuid]);
+            blogContentRes = await Database.query<Blog>(`SELECT * from blog WHERE access_level in (${this.AccessLevelRule.encrypt_allow.join(',')}) AND uuid = $1 `, [bloguuid]);
             if (!blogContentRes) {
                 this.logger.error('查询时数据库发生错误');
                 return res.json(ServerStdResponse.SERVER_ERROR);
@@ -57,14 +58,14 @@ class GetBlogContent extends API {
             const base64Content = Buffer.from(response.data, 'utf-8').toString('base64');
 
             // 访问次数+1
-            MySQLConnection.execute('UPDATE blog SET visit_count = visit_count + 1 WHERE uuid = ?', [bloguuid]);
+            Database.query('UPDATE blog SET visit_count = visit_count + 1 WHERE uuid = $1', [bloguuid]);
             return res.json({
                 ...ServerStdResponse.OK, data: {
                     data: base64Content,
                     info: {
                         title: blogContentRes[0].title,
                         description: blogContentRes[0].description,
-                        publish_time: blogContentRes[0].publish_time,
+                        publish_time: blogContentRes[0].created_at,
                         visit_count: blogContentRes[0].visit_count,
                         like_count: blogContentRes[0].like_count
                     }

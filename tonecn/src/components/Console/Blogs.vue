@@ -6,11 +6,10 @@ import { timestampToString } from '@/lib/timestampToString';
 const tableData: Ref<any[]> = ref([])
 const dialogEditFormVisible = ref(false);
 type BlogContentData = {
-    id: string,
     uuid: string,
     title: string,
     description: string,
-    publish_time: Date,
+    created_at: Date,
     src: string,
     access_level: number,
     visit_count: number,
@@ -34,11 +33,10 @@ const loadTableData = async () => {
     }
 }
 const editForm: BlogContentData = reactive({
-    id: '',
     uuid: '',
     title: '',
     description: '',
-    publish_time: new Date(),
+    created_at: new Date(),
     src: '',
     encrypt_p: '',
     access_level: 0,
@@ -46,22 +44,20 @@ const editForm: BlogContentData = reactive({
     like_count: 0
 })
 const editHandle = (data: any) => {
-    editForm.id = data.id;
     editForm.uuid = data.uuid;
     editForm.title = data.title;
     editForm.description = data.description;
-    editForm.publish_time = new Date(+data.publish_time);
+    editForm.created_at = new Date(data.created_at);
     editForm.src = data.src;
     editForm.access_level = data.access_level;
     editForm.visit_count = data.visit_count;
     dialogEditFormVisible.value = true;
 }
 const addHandle = () => {
-    editForm.id = '';
     editForm.uuid = '';
     editForm.title = '';
     editForm.description = '';
-    editForm.publish_time = new Date();
+    editForm.created_at = new Date();
     editForm.src = '';
     editForm.access_level = 10;
     editForm.visit_count = 0;
@@ -70,16 +66,15 @@ const addHandle = () => {
 }
 const saveHandle = async () => {
     // 表单验证
-    if (!editForm.title || !editForm.description || !editForm.publish_time || !editForm.src || !editForm.access_level) {
+    if (!editForm.title || !editForm.description || !editForm.created_at || !editForm.src || !editForm.access_level) {
         return ElMessage.warning('请先完成表单')
     }
     try {
         let res: BaseResponseData = await request.post('/console/saveBlog', {
-            id: editForm.id,
             uuid: editForm.uuid,
             title: editForm.title,
             description: editForm.description,
-            publish_time: editForm.publish_time.getTime(),
+            created_at: editForm.created_at,
             src: editForm.src,
             access_level: editForm.access_level,
         })
@@ -134,10 +129,10 @@ const saveHandle = async () => {
         return ElMessage.error(`保存失败 ${error}`);
     }
 }
-const delHandle = async (data: { id: string, [key: string]: any }) => {
-    let { id } = data;
+const delHandle = async (data: { uuid: string, [key: string]: any }) => {
+    let { uuid } = data;
     try {
-        let res: BaseResponseData = await request.delete('/console/blog?id=' + id);
+        let res: BaseResponseData = await request.delete('/console/blog?uuid=' + uuid);
         if (res.code == 0) {
             ElMessage.success('删除成功');
             loadTableData();
@@ -149,7 +144,7 @@ const delHandle = async (data: { id: string, [key: string]: any }) => {
     }
 }
 const formatTime = (row: any, _column: any, _cellValue: any, _index: any) => {
-    return timestampToString(row.publish_time);
+    return new Date(row.created_at).toLocaleString();
 }
 </script>
 <template>
@@ -159,11 +154,10 @@ const formatTime = (row: any, _column: any, _cellValue: any, _index: any) => {
     </div>
     <!-- 数据列表 -->
     <el-table :data="tableData" border class="w-full">
-        <el-table-column prop="id" label="id" width="50" />
         <el-table-column prop="uuid" label="uuid" width="120" show-overflow-tooltip />
-        <el-table-column prop="title" label="标题" width="240" />
-        <el-table-column prop="description" label="描述" width="200" show-overflow-tooltip />
-        <el-table-column prop="publish_time" label="发布时间" width="160" :formatter="formatTime" />
+        <el-table-column prop="title" label="标题" width="250" />
+        <el-table-column prop="description" label="描述" width="300" show-overflow-tooltip />
+        <el-table-column prop="created_at" label="发布时间" width="160" :formatter="formatTime" />
         <el-table-column prop="access_level" label="可访问级别" width="100" />
         <el-table-column prop="visit_count" label="访问量" width="80" />
         <el-table-column prop="like_count" label="点赞量" width="80" />
@@ -171,7 +165,7 @@ const formatTime = (row: any, _column: any, _cellValue: any, _index: any) => {
             <template #default="scope">
                 <el-text>{{ scope.encrypt_p ? "是" : "否" }}</el-text>
             </template>
-        </el-table-column> -->
+</el-table-column> -->
         <el-table-column fixed="right" label="操作" min-width="110">
             <template #default="scope">
                 <el-button link type="primary" size="small" @click="editHandle(scope.row)">编辑</el-button>
@@ -182,9 +176,6 @@ const formatTime = (row: any, _column: any, _cellValue: any, _index: any) => {
     <!-- 编辑、添加博客对话框 -->
     <el-dialog v-model="dialogEditFormVisible" title="编辑" width="800">
         <el-form :model="editForm" label-width="auto" style="margin: 0 30px;">
-            <el-form-item label="id">
-                <el-input v-model="editForm.id" disabled />
-            </el-form-item>
             <el-form-item label="uuid">
                 <el-input v-model="editForm.uuid" disabled />
             </el-form-item>
@@ -195,7 +186,7 @@ const formatTime = (row: any, _column: any, _cellValue: any, _index: any) => {
                 <el-input v-model="editForm.description" type="textarea" autosize />
             </el-form-item>
             <el-form-item label="发布时间">
-                <el-date-picker v-model="editForm.publish_time" type="datetime" placeholder="选择发布时间" />
+                <el-date-picker v-model="editForm.created_at" type="datetime" placeholder="选择发布时间" />
             </el-form-item>
             <el-form-item label="文章链接">
                 <el-input v-model="editForm.src" type="textarea" autosize />

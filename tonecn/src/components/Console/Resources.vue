@@ -3,7 +3,7 @@ import { onMounted, reactive, ref, type Ref } from 'vue';
 import { request, type BaseResponseData } from '../../lib/request'
 import { ElMessage } from 'element-plus';
 type ResourceData = {
-    id: string,
+    uuid: string,
     type: string,
     recommand: number,
     title: string,
@@ -31,7 +31,7 @@ const loadTableData = async () => {
     }
 }
 const editForm: ResourceData = reactive({
-    id: '',
+    uuid: '',
     type: '',
     recommand: 1,
     title: '',
@@ -42,7 +42,7 @@ const editForm: ResourceData = reactive({
 })
 const openEditFormSrc = () => { window.open(editForm.src); }
 const editHandle = (data: ResourceData) => {
-    editForm.id = data.id;
+    editForm.uuid = data.uuid;
     editForm.type = data.type;
     editForm.recommand = +data.recommand;
     editForm.title = data.title;
@@ -53,7 +53,7 @@ const editHandle = (data: ResourceData) => {
     dialogEditFormVisible.value = true;
 }
 const addHandle = () => {
-    editForm.id = '';
+    editForm.uuid = '';
     editForm.type = '';
     editForm.recommand = 1;
     editForm.title = '';
@@ -70,7 +70,7 @@ const saveHandle = async () => {
     }
     try {
         let res: BaseResponseData = await request.post('/console/saveResource', {
-            id: editForm.id,
+            uuid: editForm.uuid,
             type: editForm.type,
             recommand: editForm.recommand,
             title: editForm.title,
@@ -91,9 +91,9 @@ const saveHandle = async () => {
     }
 }
 const delHandle = async (data: { id: string, [key: string]: any }) => {
-    let { id } = data;
+    let { uuid } = data;
     try {
-        let res: BaseResponseData = await request.delete('/console/resource?id=' + id);
+        let res: BaseResponseData = await request.delete('/console/resource?uuid=' + uuid);
         if (res.code == 0) {
             ElMessage.success('删除成功');
             loadTableData();
@@ -104,6 +104,9 @@ const delHandle = async (data: { id: string, [key: string]: any }) => {
         return ElMessage.error(`删除失败 ${error}`);
     }
 }
+const formatTime = (row: any, _column: any, _cellValue: any, _index: any) => {
+    return new Date(row.created_at).toLocaleString();
+}
 </script>
 <template>
     <div class="py-[15px] px-[20px]">
@@ -112,7 +115,7 @@ const delHandle = async (data: { id: string, [key: string]: any }) => {
     </div>
     <!-- 数据列表 -->
     <el-table :data="tableData" border class="w-full">
-        <el-table-column prop="id" label="id" width="50" />
+        <el-table-column prop="uuid" label="uuid" width="60" show-overflow-tooltip />
         <el-table-column prop="type" label="类型" width="80" sortable>
             <template #default="scope">
                 {{ scope.row.type == 'resource' ? '资源' : scope.row.type == 'download' ? '下载' : '未知' }}
@@ -140,12 +143,13 @@ const delHandle = async (data: { id: string, [key: string]: any }) => {
                 <el-button link type="primary" size="small" @click="delHandle(scope.row)">删除</el-button>
             </template>
         </el-table-column>
+        <el-table-column prop="created_at" label="创建时间" width="180" :formatter="formatTime" />
     </el-table>
     <!-- 编辑、添加资源对话框 -->
     <el-dialog v-model="dialogEditFormVisible" title="编辑" width="800">
         <el-form :model="editForm" label-width="auto" class="mx-[30px]">
-            <el-form-item label="id">
-                <el-input v-model="editForm.id" disabled />
+            <el-form-item label="uuid">
+                <el-input v-model="editForm.uuid" disabled />
             </el-form-item>
             <el-form-item label="类型">
                 <el-select v-model="editForm.type" placeholder="请选择类型">

@@ -1,7 +1,8 @@
 import { API } from "../../Plugs/API/API";
 import ServerStdResponse from "../../ServerStdResponse";
-import MySQLConnection from '../../Plugs/MySQLConnection'
+import Database from '../../Plugs/Database'
 import Auth from "../../Plugs/Middleware/Auth";
+import { Blog } from "@/Types/Schema";
 
 // 获取博客列表
 class GetBlogs extends API {
@@ -10,8 +11,7 @@ class GetBlogs extends API {
     }
 
     public async onRequset(data: any, res: any) {
-        // const { uuid } = data._jwt;
-        let resourcesRes = await MySQLConnection.execute("SELECT * FROM blog ORDER BY id DESC");
+        let resourcesRes = await Database.query<Blog>("SELECT * FROM blog ORDER BY created_at DESC");
         if (!resourcesRes) {
             return res.json(ServerStdResponse.SERVER_ERROR);
         }

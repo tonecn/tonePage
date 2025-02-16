@@ -1,6 +1,7 @@
 import { API } from "../Plugs/API/API";
 import ServerStdResponse from "../ServerStdResponse";
-import MySQLConnection from '../Plugs/MySQLConnection'
+import Database from '../Plugs/Database'
+import { BlogComment } from "@/Types/Schema";
 
 // 获取博客评论
 class GetBlogComment extends API {
@@ -16,7 +17,7 @@ class GetBlogComment extends API {
             return res.json(ServerStdResponse.INVALID_PARAMS);
         }
 
-        let blogCommentRes = await MySQLConnection.execute('SELECT content, name, ip_address, time FROM blog_comment WHERE uuid = ? AND display = 1 ORDER BY time DESC LIMIT ? OFFSET ?;', [bloguuid, this.pageSize, (page - 1) * this.pageSize]);
+        let blogCommentRes = await Database.query<BlogComment>('SELECT content, name, ip_address, created_at FROM blog_comment WHERE uuid = $1 AND display = true ORDER BY created_at DESC LIMIT $2 OFFSET $3;', [bloguuid, this.pageSize, (page - 1) * this.pageSize]);
         if (!blogCommentRes) {
             this.logger.error('获取博客评论时，数据库发生错误');
             return res.json(ServerStdResponse.SERVER_ERROR);

@@ -1,6 +1,6 @@
 import { API, RequestData } from "../../Plugs/API/API";
 import ServerStdResponse from "../../ServerStdResponse";
-import MySQLConnection from '../../Plugs/MySQLConnection'
+import Database from '../../Plugs/Database'
 import Auth from "../../Plugs/Middleware/Auth";
 import jwt from "jsonwebtoken";
 import config from "../../config";

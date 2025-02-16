@@ -4,8 +4,8 @@ type BaseResponseData = {
   message: string,
   data: any
 };
-// axios.defaults.baseURL = "http://localhost:23500";
-axios.defaults.baseURL = "https://tonesc.cn/apis";
+axios.defaults.baseURL = "http://localhost:23500";
+// axios.defaults.baseURL = "https://tonesc.cn/apis";
 
 axios.interceptors.response.use((response) => {
   if (response.data && response.data.code == -5) {

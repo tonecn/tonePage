@@ -2,9 +2,6 @@ import Logger from "../Plugs/Logger";
 import { APILoader } from "../Plugs/API/APILoader";
 import config from "../config";
 
-// 加载Plugs
-import '../Plugs/Service/captchaSession'
-
 // 加载API
 import GetTest from "../APIs/GetTest";
 import GetResourceList from "../APIs/GetResourceList";
@@ -13,8 +10,6 @@ import GetBlogContent from "../APIs/GetBlogContent";
 import BlogLike from "../APIs/BlogLike";
 import BlogComment from "../APIs/BlogComment";
 import GetBlogComment from "../APIs/GetBlogComment";
-import GetCaptcha from "../APIs/GetCaptcha";
-import CheckCaptcha from "../APIs/CheckCaptcha";
 
 import Login from "../APIs/Console/Login";
 import GetResources from "../APIs/Console/GetResources";
@@ -45,8 +40,6 @@ class Server {
         this.apiLoader.add(BlogLike);
         this.apiLoader.add(BlogComment);
         this.apiLoader.add(GetBlogComment);
-        this.apiLoader.add(GetCaptcha);
-        this.apiLoader.add(CheckCaptcha);
 
         this.apiLoader.add(Login);
         this.apiLoader.add(GetResources);

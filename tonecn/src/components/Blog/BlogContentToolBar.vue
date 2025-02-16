@@ -4,7 +4,6 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { request, type BaseResponseData } from '@/lib/request';
-import RotationVerification from '../Common/RotationVerification.vue';
 const route = useRoute()
 const bloguuid = route.params.uuid;
 const emit = defineEmits(['comment-success'])
@@ -56,7 +55,7 @@ const commentHandle = () => {
         cancelButtonText: '取消',
     }).then(({ value }) => {
         inputCommentName = value ? value : '';
-        isCaptchaViewShow.value = true;
+        submitComment();
     }).catch(() => {
         ElMessage.info('已取消')
     })
@@ -73,6 +72,7 @@ const submitComment = async () => {
         })
         if (commentRes.code == 0) {
             emit('comment-success');
+            inputComment.value = '';
             return ElMessage.success('评论成功～');
         } else {
             throw new Error(commentRes.message);
@@ -96,6 +96,4 @@ const submitComment = async () => {
             </div>
         </div>
     </transition>
-    <RotationVerification v-if="isCaptchaViewShow"
-        @fail="() => { isCaptchaViewShow = false; ElMessage.warning('验证失败') }" @success="submitComment" />
 </template>

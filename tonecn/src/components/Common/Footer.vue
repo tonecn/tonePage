@@ -17,7 +17,7 @@ let copyTextwithMsg = (text : string) => {
             <a href="https://beian.miit.gov.cn/">
                 <div class="mt-[5px] cursor-pointer dark:text-[#ccc]">备案号：渝ICP备2023009516号-1</div>
             </a>
-            <div class="mt-[6px] sm:mt-0 dark:text-[#ccc]">Copyright ©2020-2024 TONE All Rights Reserved.</div>
+            <div class="mt-[6px] sm:mt-0 dark:text-[#ccc]">Copyright ©2020-{{ new Date().getFullYear() }} TONE All Rights Reserved.</div>
         </div>
         <div class="mr-0 sm:mr-[25px] flex sm:pb-0 pb-[20px]">
             <el-popover trigger="click" placement="top" :width="160">

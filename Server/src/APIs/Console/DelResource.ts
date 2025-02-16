@@ -1,6 +1,6 @@
 import { API } from "../../Plugs/API/API";
 import ServerStdResponse from "../../ServerStdResponse";
-import MySQLConnection from '../../Plugs/MySQLConnection'
+import Database from '../../Plugs/Database'
 import Auth from "../../Plugs/Middleware/Auth";
 
 // 删除资源
@@ -10,13 +10,13 @@ class DelResource extends API {
     }
 
     public async onRequset(data: any, res: any) {
-        let { id } = data;
-        if (!id) {
+        let { uuid } = data;
+        if (!uuid) {
             return res.json(ServerStdResponse.PARAMS_MISSING);
         }
-        let execRes = await MySQLConnection.execute('DELETE FROM resource  WHERE `id` = ?', [id]);
+        let execRes = await Database.query('DELETE FROM resource  WHERE uuid = $1', [uuid]);
 
-        if (!execRes || execRes.affectedRows != 1) {
+        if (!execRes) {
             return res.json(ServerStdResponse.SERVER_ERROR);
         }
         return res.json({ ...ServerStdResponse.OK });

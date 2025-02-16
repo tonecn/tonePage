@@ -1,8 +1,9 @@
 import { API } from "../../Plugs/API/API";
 import ServerStdResponse from "../../ServerStdResponse";
-import MySQLConnection from '../../Plugs/MySQLConnection'
+import Database from '../../Plugs/Database'
 import Auth from "../../Plugs/Middleware/Auth";
 import crypto from 'crypto'
+import { Blog } from "@/Types/Schema";
 
 // 保存博客
 class SaveBlog extends API {
@@ -11,21 +12,21 @@ class SaveBlog extends API {
     }
 
     public async onRequset(data: any, res: any) {
-        let { id, uuid, title, description, publish_time, src, access_level } = data;
-        if (!title || !description || !publish_time || !src || !access_level) {
+        let { uuid, title, description, created_at, src, access_level } = data;
+        if (!title || !description || !created_at || !src || !access_level) {
             return res.json(ServerStdResponse.PARAMS_MISSING);
         }
         let execRes: any;
-        if (id) {
+        if (uuid) {
             // 保存
-            execRes = await MySQLConnection.execute('UPDATE blog SET title = ?, description = ?, publish_time = ?, src = ?, access_level = ? WHERE `id` = ?', [title, description, publish_time, src, access_level, id]);
+            execRes = await Database.query<Blog>('UPDATE blog SET title = $1, description = $2, created_at = $3, src = $4, access_level = $5 WHERE uuid = $6', [title, description, created_at, src, access_level, uuid]);
         } else {
             // 新建
             const uuid = crypto.createHash('md5').update(`${Math.random()}${Date.now()}`).digest('hex');
-            execRes = await MySQLConnection.execute('INSERT INTO blog (uuid, title, description, src, publish_time, access_level, visit_count, like_count) VALUES (?,?,?,?,?,?,?,?)', [uuid, title, description, src, publish_time, access_level, 0, 0]);
+            execRes = await Database.query<Blog>('INSERT INTO blog (uuid, title, description, src, created_at, access_level, visit_count, like_count) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)', [uuid, title, description, src, created_at, access_level, 0, 0]);
         }
 
-        if (!execRes || execRes.affectedRows != 1) {
+        if (!execRes) {
             return res.json(ServerStdResponse.SERVER_ERROR);
         }
         return res.json({ ...ServerStdResponse.OK });

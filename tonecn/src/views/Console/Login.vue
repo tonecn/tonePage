@@ -1,7 +1,6 @@
 <script setup lang='ts'>
 import { ElMessage } from 'element-plus';
 import { onMounted, reactive, ref } from 'vue';
-import RotationVerification from '@/components/Common/RotationVerification.vue';
 import { request, type BaseResponseData } from '@/lib/request';
 
 const containerHeight = ref('800px');
@@ -11,21 +10,17 @@ const formData = reactive({
     username: '',
     password: ''
 })
-const loginHandle = () => {
+const login = async () => {
     if (!formData.username || !formData.password) {
         return ElMessage.warning('请填写账户名和密码')
     }
-    isCaptchaShow.value = true;
-}
-const login = async () => {
-    loginStatus.value = true;
     try {
+        loginStatus.value = true;
         let loginRes: BaseResponseData = await request.post('/console/login', {
             username: formData.username,
             password: formData.password,
             session: localStorage.getItem('captcha-session')
         })
-        loginStatus.value = false;
         switch (loginRes.code) {
             case 0:
                 // 成功
@@ -50,8 +45,9 @@ const login = async () => {
                 return ElMessage.error(`未知错误 ${loginRes.message}`)
         }
     } catch (error) {
-        loginStatus.value = false;
         return ElMessage.error(`未知错误 ${error}`)
+    } finally {
+        loginStatus.value = false;
     }
 }
 onMounted(async () => {
@@ -75,12 +71,11 @@ onMounted(async () => {
                 clearable>
             </el-input>
             <el-input v-model="formData.password" show-password class="w-full h-[35px] text-[16px] mt-[10px]"
-                placeholder="密码" @keyup.enter="loginHandle">
+                placeholder="密码" @keyup.enter="login">
             </el-input>
-            <el-button class="mt-[12px] mb-[120px] w-full h-[35px] font-bold login-button hover:!bg-white hover:!border-gray-300 hover:!text-gray-800" @click="loginHandle"
-                :loading="loginStatus">登录</el-button>
+            <el-button
+                class="mt-[12px] mb-[120px] w-full h-[35px] font-bold login-button hover:!bg-white hover:!border-gray-300 hover:!text-gray-800"
+                @click="login" :loading="loginStatus">登录</el-button>
         </div>
     </div>
-    <RotationVerification v-if="isCaptchaShow" @fail="() => { isCaptchaShow = false; ElMessage.warning('验证失败') }"
-        @success="() => { isCaptchaShow = false; login() }" />
 </template>

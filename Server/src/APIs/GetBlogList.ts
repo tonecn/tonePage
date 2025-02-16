@@ -1,6 +1,7 @@
 import { API } from "../Plugs/API/API";
 import ServerStdResponse from "../ServerStdResponse";
-import MySQLConnection from '../Plugs/MySQLConnection'
+import Database from '../Plugs/Database'
+import { Blog } from "@/Types/Schema";
 
 // 获取博客列表
 class GetBlogList extends API {
@@ -10,12 +11,12 @@ class GetBlogList extends API {
     private defaultAccessLevel = 9;
 
     public async onRequset(data: any, res: any) {
-        let blogListRes = await MySQLConnection.execute('SELECT uuid, title, description, publish_time, access_level, visit_count, like_count from blog WHERE access_level >= ? ORDER BY publish_time DESC',[this.defaultAccessLevel]);
-        if(!blogListRes){
+        let blogListRes = await Database.query<Blog>('SELECT uuid, title, description, created_at, access_level, visit_count, like_count from blog WHERE access_level >= $1 ORDER BY created_at DESC', [this.defaultAccessLevel]);
+        if (!blogListRes) {
             this.logger.error('查询时数据库发生错误');
             return res.json(ServerStdResponse.SERVER_ERROR);
         }
-        return res.json({...ServerStdResponse.OK, data: blogListRes});
+        return res.json({ ...ServerStdResponse.OK, data: blogListRes });
     }
 }
 

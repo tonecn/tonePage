@@ -1,8 +1,9 @@
 import { API } from "../../Plugs/API/API";
 import ServerStdResponse from "../../ServerStdResponse";
-import MySQLConnection from '../../Plugs/MySQLConnection'
+import Database from '../../Plugs/Database'
 import Auth from "../../Plugs/Middleware/Auth";
 import crypto from 'crypto'
+import { Blog } from "@/Types/Schema";
 
 // 设置博客密码
 class SetBlogPasswd extends API {
@@ -16,7 +17,7 @@ class SetBlogPasswd extends API {
             return res.json(ServerStdResponse.PARAMS_MISSING);
         }
         const encrypt_p = crypto.createHash('sha256').update(passwd).digest('hex');
-        MySQLConnection.execute('UPDATE blog SET encrypt_p = ? WHERE uuid = ?', [encrypt_p, uuid]);
+        Database.query<Blog>('UPDATE blog SET encrypt_p = $1 WHERE uuid = $2', [encrypt_p, uuid]);
         return res.json({ ...ServerStdResponse.OK });
     }
 }
