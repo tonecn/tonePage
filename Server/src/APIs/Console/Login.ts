@@ -21,7 +21,7 @@ class Login extends API {
         }
 
         // 检查用户是否存在
-        let userInfoRes = await Database.query<User>('SELECT * FROM user WHERE username = $1', [username]);
+        let userInfoRes = await Database.query<User>('SELECT * FROM "user" WHERE username = $1', [username]);
         if (!userInfoRes) {
             return res.json(ServerStdResponse.SERVER_ERROR);
         }
