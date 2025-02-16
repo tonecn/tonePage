@@ -65,7 +65,7 @@ class GetBlogContent extends API {
                     info: {
                         title: blogContentRes[0].title,
                         description: blogContentRes[0].description,
-                        publish_time: blogContentRes[0].created_at,
+                        created_at: blogContentRes[0].created_at,
                         visit_count: blogContentRes[0].visit_count,
                         like_count: blogContentRes[0].like_count
                     }
