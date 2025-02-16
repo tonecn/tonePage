@@ -12,7 +12,7 @@ import BlogComment from '@/components/Blog/BlogComment.vue';
 type BlogInfo = {
     visit_count: number,
     title: string,
-    publish_time: string,
+    created_at: string,
     like_count: number,
     description: string
 }
@@ -23,7 +23,7 @@ const blogContent = ref('');
 const blogInfo: Ref<BlogInfo> = ref({
     visit_count: 0,
     title: '',
-    publish_time: '',
+    created_at: '',
     like_count: 0,
     description: ''
 });
@@ -93,7 +93,7 @@ onUnmounted(() => {
             <div>
                 <h1 class="text-center text-[28px] font-semibold dark:text-white text-[#222]">{{ blogInfo.title }}</h1>
                 <p class="my-[15px] mx-auto text-[14px] text-[#888] dark:text-[#ccc] text-center">发布于 {{
-                    timestampToString(blogInfo.publish_time) }} ｜ {{ blogInfo.like_count }} 点赞</p>
+                    new Date(blogInfo.created_at).toLocaleString() }} ｜ {{ blogInfo.like_count }} 点赞</p>
                 <!-- TODO <p class="mt-[-10px] mx-auto text-[14px] text-[#888] dark:text-[#ccc] text-center whitespace-pre">
                     {{ blogInfo.visit_count }} 访问
                     {{ blogInfo.like_count }} 点赞
