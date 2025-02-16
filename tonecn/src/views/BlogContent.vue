@@ -1,7 +1,6 @@
 <script setup lang='ts'>
 import { request, type BaseResponseData } from '@/lib/request';
 import { onMounted, onUnmounted, ref, type Ref } from 'vue';
-import { timestampToString } from '../lib/timestampToString'
 import { useRoute } from 'vue-router'
 import { Marked } from 'marked';
 import { markedHighlight } from "marked-highlight";
