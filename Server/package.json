@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node src/index.ts"
+    "start": "tsc && node dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +19,6 @@
     "@types/pg": "^8.11.11",
     "ali-oss": "^6.21.0",
     "jsonwebtoken": "^9.0.2",
-    "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   },
   "dependencies": {
@@ -27,7 +26,6 @@
     "axios": "^1.7.5",
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "pg": "^8.13.3",
-    "sharp": "^0.33.5"
+    "pg": "^8.13.3"
   }
 }
