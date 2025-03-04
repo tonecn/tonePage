@@ -27,7 +27,7 @@ onMounted(async () => {
         <div class="gap-[30px] flex flex-col" v-else>
             <div class="text-center mt-[20px] mb-[300px] dark:text-white" v-if="loadStatus == 0">加载中，请稍后...</div>
             <el-empty description="暂无数据" style="margin: 0 auto;" v-if="loadStatus == 1 && blogList.length == 0" />
-            <div class="mx-auto max-w-[400px] w-full flex flex-col" v-for="item of blogList">
+            <div class="mx-auto max-w-[400px] w-full flex flex-col items-start" v-for="item of blogList">
                 <a class="text-[26px] font-semibold cursor-pointer block hover:underline dark:text-white text-[#333]"
                     :href="`/blogContent/${item.uuid}`" target="_blank">
                     {{ item.title }}
