@@ -37,7 +37,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Header />
-          <main className="flex-grow">
+          <main className="flex-grow bg-zinc-50">
             {children}
             <Toaster />
           </main>
