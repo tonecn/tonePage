@@ -16,7 +16,7 @@ export default function Header() {
 
     return (
         <header className="sticky top-0 z-50 backdrop-blur-sm bg-white/40 shadow">
-            <div className="flex items-center justify-between px-10 md:h-18 h-14 duration-300">
+            <div className="flex items-center justify-between px-10 md:h-18 md:px-20 h-14 duration-300">
                 <Link
                     href="/"
                     className={cn(
