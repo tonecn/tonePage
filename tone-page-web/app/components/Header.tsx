@@ -3,15 +3,28 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
+import {
+    Drawer,
+    DrawerContent,
+    DrawerDescription,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from "@/components/ui/drawer"
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
+
 
 export default function Header() {
     const pathname = usePathname();
+    const [showMenu, setShowMenu] = useState(false);
 
     const menuItems = [
         { name: '特恩(TONE)', href: '/' },
         { name: '资源', href: '/resource' },
         { name: '博客', href: '/blog' },
-        { name: '账户', href: '/account' },
+        { name: '控制台', href: '/console' },
     ]
 
     return (
@@ -20,23 +33,56 @@ export default function Header() {
                 <Link
                     href="/"
                     className={cn(
-                        "cursor-pointer text-lg font-medium text-zinc-500 hover:text-zinc-800 border-b-4 border-transparent duration-200",
+                        "cursor-pointer font-medium text-zinc-500 hover:text-zinc-800 border-b-4 border-transparent duration-200",
                         pathname === "/" && "text-zinc-800"
                     )}
                 >
                     {pathname === "/"
                         ? <div className="text-2xl"> 🍭</div>
-                        : <div> 特恩(TONE)</div>}
+                        : <div className="md:text-lg">特恩(TONE)</div>}
                 </Link>
 
-                <div className="flex items-center gap-12">
+
+                <Drawer direction="right" open={showMenu} onOpenChange={(state) => !state && setShowMenu(false)}>
+                    <DrawerTrigger>
+                        <div className="sm:hidden cursor-pointer text-zinc-600" onClick={() => setShowMenu(true)}>
+                            菜单
+                        </div>
+                    </DrawerTrigger>
+                    <DrawerContent>
+                        <DrawerHeader>
+                            <DrawerTitle className="flex justify-between">
+                                <span>菜单</span>
+                                <X className="cursor-pointer" onClick={() => setShowMenu(false)} />
+                            </DrawerTitle>
+                            <DrawerDescription>请选择需要前往的页面</DrawerDescription>
+                        </DrawerHeader>
+                        <div className="w-full flex flex-col px-4 gap-2">
+                            {menuItems.slice(1).map((item) => (
+                                <Link
+                                    key={item.name}
+                                    href={item.href}
+                                    onClick={() => setShowMenu(false)}
+                                >
+                                    <Button className="w-full" size='lg'
+                                        variant={pathname.startsWith(item.href) ? 'default' : 'outline'}
+                                    >{item.name}</Button>
+                                </Link>
+                            ))}
+                        </div>
+                    </DrawerContent>
+                </Drawer>
+
+                <div className={cn(
+                    "sm:flex items-center gap-12 hidden",
+                )}>
                     {menuItems.slice(1).map((item) => (
                         <Link
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                "cursor-pointer text-lg font-medium text-zinc-500 hover:text-zinc-800 border-b-4 border-transparent duration-200",
-                                pathname === item.href && "text-zinc-800 border-b-pink-500"
+                                "cursor-pointer md:text-lg font-medium text-zinc-500 hover:text-zinc-800 border-b-4 border-transparent duration-200",
+                                pathname.startsWith(item.href) && "text-zinc-800 border-b-pink-500"
                             )}
                         >
                             {item.name}
@@ -44,7 +90,7 @@ export default function Header() {
                     ))}
                 </div>
             </div>
-        </header>
+        </header >
     )
 }
 
