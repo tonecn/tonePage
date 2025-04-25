@@ -20,7 +20,7 @@ async function handleCopy(text: string) {
 export default function Footer() {
     return (
         <footer className="border-t border-zinc-300 h-3 relative">
-            <div className="bg-zinc-50 h-20 flex sm:justify-between justify-center items-center px-20 flex-col sm:flex-row">
+            <div className="bg-zinc-50 h-20 flex sm:justify-between justify-center items-center sm:px-20 flex-col sm:flex-row">
                 <div className="flex flex-col items-center sm:block">
                     <a href="https://beian.miit.gov.cn/" className="text-sm text-zinc-500 hover:border-zinc-500 border-b border-transparent">备案号：渝ICP备2023009516号-1</a>
                     <div className="text-sm text-zinc-500 cursor-default">© 2025 TONE Page. All rights reserved.</div>
