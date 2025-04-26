@@ -19,15 +19,17 @@ export default function Resources() {
                             <Card className="w-full md:w-92 lg:w-100 md:rounded-xl rounded-none duration-300">
                                 <CardContent>
                                     <div className="flex gap-6">
-                                        <Image
-                                            src={''}
-                                            alt="资源图片"
-                                            width={100}
-                                            height={100}
-                                            className="rounded-md shadow"
-                                            priority
-                                            quality={100}
-                                        />
+                                        <div>
+                                            <Image
+                                                src={''}
+                                                alt="资源图片"
+                                                width={100}
+                                                height={100}
+                                                className="rounded-md shadow"
+                                                priority
+                                                quality={100}
+                                            />
+                                        </div>
                                         <div className="flex-1 overflow-x-hidden">
                                             <div className="font-bold text-2xl">Title 666 66 666 66 </div>
                                             <div className="font-medium text-sm text-zinc-400">你好这是一段随机文本，你好这是一段随机文本，你好这是一段随机文本，</div>
