@@ -13,7 +13,9 @@ async function handleCopy(text: string) {
         await navigator.clipboard.writeText(text);
         toast.success("复制成功");
     } catch (error) {
-        toast.error("复制失败");
+        if (error instanceof Error) {
+            toast.error(`复制失败 ${error.message}`);
+        }
     }
 }
 

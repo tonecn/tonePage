@@ -2,7 +2,7 @@ import {
     Card,
     CardContent,
 } from "@/components/ui/card";
-
+import Image from "next/image";
 
 export default function Resources() {
     return (
@@ -14,12 +14,20 @@ export default function Resources() {
 
             <div className="mt-6 sm:mt-10 md:mt-15 w-full flex flex-col md:w-auto md:mx-auto md:grid grid-cols-2 2xl:gap-x-35 lg:gap-x-20 gap-x-10 lg:gap-y-10 gap-y-5 sm:mb-10 duration-300">
                 {
-                    [0, 1, 2, 3, 4, 5].map((item) => (
-                        <a href="" target="_blank">
+                    [0, 1, 2, 3, 4, 5].map(() => (
+                        <a href="" target="_blank" key={Math.random()}>
                             <Card className="w-full md:w-92 lg:w-100 md:rounded-xl rounded-none duration-300">
                                 <CardContent>
                                     <div className="flex gap-6">
-                                        <img className="size-20 shadow rounded-md" src="https://chromiumdash.appspot.com/releases?platform=Windows" />
+                                        <Image
+                                            src={''}
+                                            alt="资源图片"
+                                            width={100}
+                                            height={100}
+                                            className="rounded-md shadow"
+                                            priority
+                                            quality={100}
+                                        />
                                         <div className="flex-1 overflow-x-hidden">
                                             <div className="font-bold text-2xl">Title 666 66 666 66 </div>
                                             <div className="font-medium text-sm text-zinc-400">你好这是一段随机文本，你好这是一段随机文本，你好这是一段随机文本，</div>

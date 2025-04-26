@@ -10,6 +10,7 @@ import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "./ui/input-otp";
 import LoginBG from './login-bg.jpg';
 import { toast } from "sonner";
+import Image from "next/image";
 
 export type SubmitMode = 'password' | 'phone' | 'email' | 'register';
 export type LoginFormData = {
@@ -41,7 +42,9 @@ export function useLoginForm(onSubmit: (data: LoginFormData) => Promise<void>, o
     try {
       await onSubmit({ ...formData, type: loginMode });
     } catch (error) {
-      toast.error('登录失败，请重试');
+      if (error instanceof Error) {
+        toast.error('登录失败，请重试');
+      }
     }
   }, [loginMode, onSubmit]);
 
@@ -49,9 +52,11 @@ export function useLoginForm(onSubmit: (data: LoginFormData) => Promise<void>, o
     try {
       await onSendCode(formData);
     } catch (error) {
-      toast.error('发送验证码失败，请重试');
+      if (error instanceof Error) {
+        toast.error('发送验证码失败，请重试');
+      }
     }
-  }, [loginMode, onSendCode]);
+  }, [onSendCode]);
 
   return {
     loginMode,
@@ -400,10 +405,14 @@ export function LoginForm({
             </div>
           </form>
           <div className="bg-muted relative hidden md:block">
-            <img
+            <Image
               src={LoginBG.src}
               alt="Image"
+              width={500}
+              height={500}
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+              priority
+              quality={100}
             />
           </div>
         </CardContent>

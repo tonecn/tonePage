@@ -1,10 +1,19 @@
 'use client';
 import favicon from './favicon.ico';
+import Image from 'next/image';
 
 export default function Home() {
   return (
     <div className="w-full flex-1 flex flex-col items-center justify-center">
-      <img src={favicon.src} className="size-35 md:size-45 rounded-full duration-400" />
+      <Image
+        src={favicon.src}
+        alt="TONE's avatar"
+        width={180}
+        height={180}
+        className="rounded-full duration-400 size-35 md:size-45 select-none"
+        priority
+        quality={100}
+      />
       <h1 className='text-4xl md:text-5xl font-bold mt-5 md:mt-8 gradient-title duration-400 select-none'>特恩(TONE)</h1>
       <h2 className='text-lg sm:text-xl md:text-2xl mt-3 font-medium text-zinc-400 duration-400 select-none'>一名啥都会一点点的程序员</h2>
       <div className='flex sm:flex-row flex-col gap-2 sm:gap-10 mt-5 md:mt-8 duration-400'>
