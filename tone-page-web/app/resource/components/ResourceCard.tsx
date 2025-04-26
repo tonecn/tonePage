@@ -1,6 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Resource } from "@/lib/types/resource";
-import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 interface ResourceCardProps {

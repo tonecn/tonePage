@@ -1,8 +1,3 @@
-import {
-    Card,
-    CardContent,
-} from "@/components/ui/card";
-import Image from "next/image";
 import { ResourceCard } from "./components/ResourceCard";
 
 export default function Resources() {
