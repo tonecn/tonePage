@@ -5,9 +5,64 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { KeyRound, Phone, Mail } from "lucide-react"
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "./ui/input-otp";
+import LoginBG from './login-bg.jpg';
+import { toast } from "sonner";
+
+export type SubmitMode = 'password' | 'phone' | 'email' | 'register';
+export type LoginFormData = {
+  type: SubmitMode;
+  account?: string;
+  password?: string;
+  phone?: string;
+  email?: string;
+  code?: string;
+}
+
+export type SendCodeMode = 'phone' | 'email';
+export type SendCodeFormData = {
+  type: SendCodeMode;
+  codeType: 'login' | 'register';
+  phone?: string;
+  email?: string;
+}
+
+
+export function useLoginForm(onSubmit: (data: LoginFormData) => Promise<void>, onSendCode: (data: SendCodeFormData) => Promise<void>) {
+  const [loginMode, setLoginMode] = useState<SubmitMode>('password');
+
+  const handleForgetPassword = useCallback(() => {
+    toast.warning('开发中，敬请期待！暂时可通过发送邮件至网站管理员进行密码重置。');
+  }, []);
+
+  const handleSubmit = useCallback(async (formData: LoginFormData) => {
+    try {
+      await onSubmit({ ...formData, type: loginMode });
+    } catch (error) {
+      toast.error('登录失败，请重试');
+    }
+  }, [loginMode, onSubmit]);
+
+  const handleSendCode = useCallback(async (formData: SendCodeFormData) => {
+    try {
+      await onSendCode(formData);
+    } catch (error) {
+      toast.error('发送验证码失败，请重试');
+    }
+  }, [loginMode, onSendCode]);
+
+  return {
+    loginMode,
+    setLoginMode,
+    handleForgetPassword,
+    handleSendCode,
+    handleSubmit
+  };
+}
+
+
 
 function LoginHeader() {
   return (
@@ -35,14 +90,15 @@ function RegisterHeader() {
   )
 }
 
-function PasswordMode() {
+function PasswordLoginMode({ forgetPassword }: { forgetPassword: () => void }) {
   return (
     <>
       <LoginHeader />
       <div className="grid gap-3">
         <Label htmlFor="email">电子邮箱/手机号/账号</Label>
         <Input
-          id="account"
+          id="password-login-mode-account"
+          name="account"
           type="text"
           placeholder="电子邮箱/手机号/账号"
           required
@@ -52,13 +108,17 @@ function PasswordMode() {
         <div className="flex items-center h-4">
           <Label htmlFor="password">密码</Label>
           <a
-            href="#"
-            className="ml-auto text-sm underline-offset-2 hover:underline"
+            onClick={forgetPassword}
+            className="ml-auto text-sm underline-offset-2 hover:underline cursor-pointer"
           >
             忘记密码？
           </a>
         </div>
-        <Input id="password" type="password" required />
+        <Input
+          id="password-login-mode-password"
+          name="password"
+          type="password"
+          required />
       </div>
       <Button type="submit" className="w-full">
         登录
@@ -67,13 +127,33 @@ function PasswordMode() {
   )
 }
 
-function PhoneMode() {
+function PhoneLoginMode({ onSendCode }: { onSendCode: (data: SendCodeFormData) => Promise<void> }) {
+  const [phone, setPhone] = useState("");
+  const handleSendCode = useCallback(() => {
+    if (phone.trim().length !== 11) {
+      toast.error('请输入正确的手机号');
+      return;
+    }
+    onSendCode({
+      type: 'phone',
+      codeType: 'login',
+      phone,
+    })
+  }, [phone, onSendCode]);
+
   return (
     <>
       <LoginHeader />
       <div className="grid gap-3">
         <Label htmlFor="phone">手机号</Label>
-        <Input id="phone" type="text" placeholder="手机号" required />
+        <Input
+          id="phone-login-mode-phone"
+          name="phone"
+          type="text"
+          placeholder="+86 手机号"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          required />
       </div>
       <div className="grid gap-3">
         <div className="flex items-center h-4">
@@ -81,6 +161,8 @@ function PhoneMode() {
         </div>
         <div className="flex gap-5">
           <InputOTP
+            id="phone-login-mode-code"
+            name="code"
             maxLength={6}
             pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
             required
@@ -94,7 +176,7 @@ function PhoneMode() {
               <InputOTPSlot index={5} />
             </InputOTPGroup>
           </InputOTP>
-          <Button variant="secondary">获取验证码</Button>
+          <Button type="button" variant="secondary" onClick={handleSendCode}>获取验证码</Button>
         </div>
       </div>
       <Button type="submit" className="w-full">
@@ -104,13 +186,33 @@ function PhoneMode() {
   )
 }
 
-function EmailMode() {
+function EmailLoginMode({ onSendCode }: { onSendCode: (data: SendCodeFormData) => Promise<void> }) {
+  const [email, setEmail] = useState("");
+  const handleSendCode = useCallback(() => {
+    if (!email.trim().match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      toast.error('请输入正确的邮箱地址');
+      return;
+    }
+    onSendCode({
+      type: 'email',
+      codeType: 'login',
+      email,
+    })
+  }, [email, onSendCode]);
+
   return (
     <>
       <LoginHeader />
       <div className="grid gap-3">
         <Label htmlFor="email">电子邮箱</Label>
-        <Input id="email" type="text" placeholder="电子邮箱" required />
+        <Input
+          id="email-login-mode-email"
+          name="email"
+          type="text"
+          placeholder="电子邮箱"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required />
       </div>
       <div className="grid gap-3">
         <div className="flex items-center h-4">
@@ -118,6 +220,8 @@ function EmailMode() {
         </div>
         <div className="flex gap-5">
           <InputOTP
+            id="email-login-mode-code"
+            name="code"
             maxLength={6}
             pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
             required
@@ -131,7 +235,7 @@ function EmailMode() {
               <InputOTPSlot index={5} />
             </InputOTPGroup>
           </InputOTP>
-          <Button variant="secondary">获取验证码</Button>
+          <Button type="button" variant="secondary" onClick={handleSendCode}>获取验证码</Button>
         </div>
       </div>
       <Button type="submit" className="w-full">
@@ -141,17 +245,42 @@ function EmailMode() {
   )
 }
 
-function RegisterMode() {
+function RegisterMode({ onSendCode }: { onSendCode: (data: SendCodeFormData) => Promise<void> }) {
+  const [email, setEmail] = useState("");
+  const handleSendCode = useCallback(() => {
+    if (!email.trim().match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      toast.error('请输入正确的邮箱地址');
+      return;
+    }
+    onSendCode({
+      type: 'email',
+      codeType: 'register',
+      email,
+    })
+  }, [email, onSendCode]);
+
   return (
     <>
       <RegisterHeader />
       <div className="grid gap-3">
         <Label htmlFor="email">账户名</Label>
-        <Input id="account" type="text" placeholder="账户名" required />
+        <Input
+          id="register-mode-account"
+          name="account"
+          type="text"
+          placeholder="账户名"
+          required />
       </div>
       <div className="grid gap-3">
         <Label htmlFor="email">电子邮箱</Label>
-        <Input id="email" type="text" placeholder="电子邮箱" required />
+        <Input
+          id="register-mode-email"
+          name="email"
+          type="text"
+          placeholder="电子邮箱"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required />
       </div>
       <div className="grid gap-3">
         <div className="flex items-center h-4">
@@ -159,6 +288,8 @@ function RegisterMode() {
         </div>
         <div className="flex gap-5">
           <InputOTP
+            id="register-mode-code"
+            name="code"
             maxLength={6}
             pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
             required
@@ -172,7 +303,7 @@ function RegisterMode() {
               <InputOTPSlot index={5} />
             </InputOTPGroup>
           </InputOTP>
-          <Button variant="secondary">获取验证码</Button>
+          <Button type="button" variant="secondary" onClick={handleSendCode}>获取验证码</Button>
         </div>
       </div>
       <Button type="submit" className="w-full">
@@ -183,22 +314,44 @@ function RegisterMode() {
 }
 
 export function LoginForm({
+  onSubmit,
+  onSendCode,
   className,
-  ...props
-}: React.ComponentProps<"div">) {
-  const [loginMode, setLoginMode] = useState<'password' | 'phone' | 'email' | 'register'>('password');
+}: {
+  onSubmit: (data: LoginFormData) => Promise<void>;
+  onSendCode: (data: SendCodeFormData) => Promise<void>;
+  className?: string;
+}) {
+  const {
+    loginMode,
+    setLoginMode,
+    handleForgetPassword,
+    handleSendCode,
+    handleSubmit,
+  } = useLoginForm(onSubmit, onSendCode);
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form className="p-6 md:p-8" onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            handleSubmit({
+              type: loginMode,
+              account: formData.get('account')?.toString(),
+              password: formData.get('password')?.toString(),
+              phone: formData.get('phone')?.toString(),
+              email: formData.get('email')?.toString(),
+              code: formData.get('code')?.toString(),
+            })
+          }}>
             <div className="flex flex-col gap-6">
 
-              {loginMode === 'password' ? <PasswordMode /> : null}
-              {loginMode === 'phone' ? <PhoneMode /> : null}
-              {loginMode === 'email' ? <EmailMode /> : null}
-              {loginMode === 'register' ? <RegisterMode /> : null}
+              {loginMode === 'password' ? <PasswordLoginMode forgetPassword={handleForgetPassword} /> : null}
+              {loginMode === 'phone' ? <PhoneLoginMode onSendCode={handleSendCode} /> : null}
+              {loginMode === 'email' ? <EmailLoginMode onSendCode={handleSendCode} /> : null}
+              {loginMode === 'register' ? <RegisterMode onSendCode={handleSendCode} /> : null}
 
               {
                 loginMode !== 'register' && (
@@ -248,7 +401,7 @@ export function LoginForm({
           </form>
           <div className="bg-muted relative hidden md:block">
             <img
-              src="/placeholder.svg"
+              src={LoginBG.src}
               alt="Image"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
             />
