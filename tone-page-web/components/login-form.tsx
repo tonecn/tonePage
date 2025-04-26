@@ -362,13 +362,13 @@ export function LoginForm({
                       </span>
                     </div>
                     <div className="grid grid-cols-3 gap-4">
-                      <Button variant="outline" type="button" className="w-full" onClick={() => setLoginMode('password')}>
+                      <Button variant={loginMode === 'password' ? 'default' : 'outline'} type="button" className="w-full" onClick={() => setLoginMode('password')}>
                         <KeyRound />
                       </Button>
-                      <Button variant="outline" type="button" className="w-full" onClick={() => setLoginMode('phone')}>
+                      <Button variant={loginMode === 'phone' ? 'default' : 'outline'} type="button" className="w-full" onClick={() => setLoginMode('phone')}>
                         <Phone />
                       </Button>
-                      <Button variant="outline" type="button" className="w-full" onClick={() => setLoginMode('email')}>
+                      <Button variant={loginMode === 'email' ? 'default' : 'outline'} type="button" className="w-full" onClick={() => setLoginMode('email')}>
                         <Mail />
                       </Button>
                     </div>
