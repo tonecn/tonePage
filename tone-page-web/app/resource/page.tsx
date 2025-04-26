@@ -16,7 +16,7 @@ export default function Resources() {
                 {
                     [0, 1, 2, 3, 4, 5].map((item) => (
                         <a href="" target="_blank">
-                            <Card className="w-full md:w-88 lg:w-100 md:rounded-xl rounded-none duration-300">
+                            <Card className="w-full md:w-92 lg:w-100 md:rounded-xl rounded-none duration-300">
                                 <CardContent>
                                     <div className="flex gap-6">
                                         <img className="size-20 shadow rounded-md" src="https://chromiumdash.appspot.com/releases?platform=Windows" />
