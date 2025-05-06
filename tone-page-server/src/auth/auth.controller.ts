@@ -19,7 +19,7 @@ export class AuthController {
             case 'email':
                 return this.authService.loginWithEmail(loginDto);
             default:
-                throw new BadRequestException('Invalid login type');
+                throw new BadRequestException('服务器错误');
         }
     }
 }
