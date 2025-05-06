@@ -19,7 +19,7 @@ export class User {
     salt: string;
 
     @Column({ nullable: true, type: 'char', length: 64 })
-    hashed_password: string;
+    password_hash: string;
 
     @Column({ nullable: true, length: 254 })// RFC 5321
     @Index({ unique: true })
