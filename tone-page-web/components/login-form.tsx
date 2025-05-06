@@ -12,7 +12,7 @@ import LoginBG from './login-bg.jpg';
 import { toast } from "sonner";
 import Image from "next/image";
 
-export type SubmitMode = 'password' | 'phone' | 'email' | 'register';
+export type SubmitMode = 'password' | 'phone' | 'email';
 export type LoginFormData = {
   type: SubmitMode;
   account?: string;
@@ -25,7 +25,6 @@ export type LoginFormData = {
 export type SendCodeMode = 'phone' | 'email';
 export type SendCodeFormData = {
   type: SendCodeMode;
-  codeType: 'login' | 'register';
   phone?: string;
   email?: string;
 }
@@ -82,19 +81,6 @@ function LoginHeader() {
   )
 }
 
-function RegisterHeader() {
-  return (
-    <>
-      <div className="flex flex-col items-center text-center">
-        <h1 className="text-2xl font-bold">欢迎注册</h1>
-        <p className="text-muted-foreground text-balance">
-          注册您的账号
-        </p>
-      </div>
-    </>
-  )
-}
-
 function PasswordLoginMode({ forgetPassword }: { forgetPassword: () => void }) {
   return (
     <>
@@ -141,7 +127,6 @@ function PhoneLoginMode({ onSendCode }: { onSendCode: (data: SendCodeFormData) =
     }
     onSendCode({
       type: 'phone',
-      codeType: 'login',
       phone,
     })
   }, [phone, onSendCode]);
@@ -185,7 +170,7 @@ function PhoneLoginMode({ onSendCode }: { onSendCode: (data: SendCodeFormData) =
         </div>
       </div>
       <Button type="submit" className="w-full">
-        登录
+        注册并登录
       </Button>
     </>
   )
@@ -200,7 +185,6 @@ function EmailLoginMode({ onSendCode }: { onSendCode: (data: SendCodeFormData) =
     }
     onSendCode({
       type: 'email',
-      codeType: 'login',
       email,
     })
   }, [email, onSendCode]);
@@ -244,75 +228,7 @@ function EmailLoginMode({ onSendCode }: { onSendCode: (data: SendCodeFormData) =
         </div>
       </div>
       <Button type="submit" className="w-full">
-        登录
-      </Button>
-    </>
-  )
-}
-
-function RegisterMode({ onSendCode }: { onSendCode: (data: SendCodeFormData) => Promise<void> }) {
-  const [email, setEmail] = useState("");
-  const handleSendCode = useCallback(() => {
-    if (!email.trim().match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      toast.error('请输入正确的邮箱地址');
-      return;
-    }
-    onSendCode({
-      type: 'email',
-      codeType: 'register',
-      email,
-    })
-  }, [email, onSendCode]);
-
-  return (
-    <>
-      <RegisterHeader />
-      <div className="grid gap-3">
-        <Label htmlFor="email">账户名</Label>
-        <Input
-          id="register-mode-account"
-          name="account"
-          type="text"
-          placeholder="账户名"
-          required />
-      </div>
-      <div className="grid gap-3">
-        <Label htmlFor="email">电子邮箱</Label>
-        <Input
-          id="register-mode-email"
-          name="email"
-          type="text"
-          placeholder="电子邮箱"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required />
-      </div>
-      <div className="grid gap-3">
-        <div className="flex items-center h-4">
-          <Label htmlFor="code">验证码</Label>
-        </div>
-        <div className="flex gap-5">
-          <InputOTP
-            id="register-mode-code"
-            name="code"
-            maxLength={6}
-            pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
-            required
-          >
-            <InputOTPGroup>
-              <InputOTPSlot index={0} />
-              <InputOTPSlot index={1} />
-              <InputOTPSlot index={2} />
-              <InputOTPSlot index={3} />
-              <InputOTPSlot index={4} />
-              <InputOTPSlot index={5} />
-            </InputOTPGroup>
-          </InputOTP>
-          <Button type="button" variant="secondary" onClick={handleSendCode}>获取验证码</Button>
-        </div>
-      </div>
-      <Button type="submit" className="w-full">
-        注册
+        注册并登录
       </Button>
     </>
   )
@@ -356,52 +272,30 @@ export function LoginForm({
               {loginMode === 'password' ? <PasswordLoginMode forgetPassword={handleForgetPassword} /> : null}
               {loginMode === 'phone' ? <PhoneLoginMode onSendCode={handleSendCode} /> : null}
               {loginMode === 'email' ? <EmailLoginMode onSendCode={handleSendCode} /> : null}
-              {loginMode === 'register' ? <RegisterMode onSendCode={handleSendCode} /> : null}
 
-              {
-                loginMode !== 'register' && (
-                  <>
-                    <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-                      <span className="bg-card text-muted-foreground relative z-10 px-2">
-                        或者使用
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-4">
-                      <Button variant={loginMode === 'password' ? 'default' : 'outline'} type="button" className="w-full" onClick={() => setLoginMode('password')}>
-                        <KeyRound />
-                      </Button>
-                      <Button variant={loginMode === 'phone' ? 'default' : 'outline'} type="button" className="w-full" onClick={() => setLoginMode('phone')}>
-                        <Phone />
-                      </Button>
-                      <Button variant={loginMode === 'email' ? 'default' : 'outline'} type="button" className="w-full" onClick={() => setLoginMode('email')}>
-                        <Mail />
-                      </Button>
-                    </div>
-                  </>
-                )
-              }
+              <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+                <span className="bg-card text-muted-foreground relative z-10 px-2">
+                  或者使用
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <Button variant={loginMode === 'password' ? 'default' : 'outline'} type="button" className="w-full" onClick={() => setLoginMode('password')}>
+                  <KeyRound />
+                </Button>
+                <Button variant={loginMode === 'phone' ? 'default' : 'outline'} type="button" className="w-full" onClick={() => setLoginMode('phone')}>
+                  <Phone />
+                </Button>
+                <Button variant={loginMode === 'email' ? 'default' : 'outline'} type="button" className="w-full" onClick={() => setLoginMode('email')}>
+                  <Mail />
+                </Button>
+              </div>
 
-              {
-                loginMode === 'register' ? (
-                  <>
-                    <div className="text-center text-sm">
-                      已有账号？{" "}
-                      <a className="underline underline-offset-4 cursor-pointer" onClick={() => setLoginMode('password')}>
-                        直接登录
-                      </a>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="text-center text-sm">
-                      还没有账号？{" "}
-                      <a className="underline underline-offset-4 cursor-pointer" onClick={() => setLoginMode('register')}>
-                        注册
-                      </a>
-                    </div>
-                  </>
-                )
-              }
+              <div className="text-center text-sm">
+                还没有账号？{" "}
+                <a className="underline underline-offset-4 cursor-pointer" onClick={() => setLoginMode('phone')}>
+                  注册
+                </a>
+              </div>
             </div>
           </form>
           <div className="bg-muted relative hidden md:block">
