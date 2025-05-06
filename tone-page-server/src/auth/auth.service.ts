@@ -5,27 +5,33 @@ import { LoginDto } from './dto/login.dto';
 export class AuthService {
     async loginWithPassword(loginDto: LoginDto) {
         const { account, password } = loginDto;
-        if (!account || !password) {
-            throw new BadRequestException('account and password are required');
-        }
+        // 依次使用账号、手机号、邮箱登录
 
         return { message: 'Logged in with password', data: loginDto };
     }
 
     async loginWithPhone(loginDto: LoginDto) {
         const { phone, code } = loginDto;
-        if (!phone || !code) {
-            throw new BadRequestException('Phone number and code are required');
-        }
+        // 先判断验证码是否正确
+
+
+        // 判断用户是否存在，若不存在则进行注册
+
+
+        // 登录，颁发token
 
         return { message: 'Logged in with phone', data: loginDto };
     }
 
     async loginWithEmail(loginDto: LoginDto) {
         const { email, code } = loginDto;
-        if (!email || !code) {
-            throw new BadRequestException('Email and code are required');
-        }
+        // 先判断验证码是否正确
+
+
+        // 判断用户是否存在，若不存在则进行注册
+
+
+        // 登录，颁发token
 
         return { message: 'Logged in with email', data: loginDto };
     }
