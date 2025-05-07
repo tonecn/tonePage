@@ -26,12 +26,12 @@ export class Resource {
     @Column('jsonb')
     tags: ResourceTag[];
 
-    @Column()
-    isHidden: boolean;
-
     @CreateDateColumn({ precision: 3 })
     createdAt: Date;
 
     @UpdateDateColumn({ precision: 3 })
     updatedAt: Date;
+
+    @DeleteDateColumn({ precision: 3, nullable: true })
+    deletedAt: Date;
 }

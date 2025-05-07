@@ -12,7 +12,7 @@ export class ResourceService {
 
     async findAll(): Promise<Resource[]> {
         return this.resourceRepository.find({
-            where: { isHidden: false },
+            where: { deletedAt: null },
             order: {
                 createdAt: 'DESC',
             }
