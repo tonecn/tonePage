@@ -27,7 +27,7 @@ export class AuthController {
     }
 
     @UseGuards(AuthGuard('jwt'))
-    @Get('logout')
+    @Post('logout')
     async logout(@Request() req) {
         const { userId, sessionId } = req.user;
         await this.userSessionService.invalidateSession(userId, sessionId);
