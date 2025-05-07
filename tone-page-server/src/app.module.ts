@@ -9,6 +9,8 @@ import { VerificationModule } from './verification/verification.module';
 import { NotificationModule } from './notification/notification.module';
 import { PassportModule } from '@nestjs/passport';
 import { ResourceModule } from './resource/resource.module';
+import { BlogModule } from './blog/blog.module';
+import { BlgService } from './blg/blg.service';
 
 @Module({
   imports: [
@@ -29,9 +31,10 @@ import { ResourceModule } from './resource/resource.module';
     AuthModule,
     VerificationModule,
     NotificationModule,
-    ResourceModule
+    ResourceModule,
+    BlogModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, BlgService],
 })
 export class AppModule { }
