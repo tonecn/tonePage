@@ -11,6 +11,7 @@ import { PassportModule } from '@nestjs/passport';
 import { ResourceModule } from './resource/resource.module';
 import { BlogModule } from './blog/blog.module';
 import { RoleModule } from './role/role.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { RoleModule } from './role/role.module';
     ResourceModule,
     BlogModule,
     RoleModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
