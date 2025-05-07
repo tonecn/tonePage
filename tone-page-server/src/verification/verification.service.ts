@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class VerificationService {
+
+    constructor(
+        private readonly notificationService: NotificationService,
+    ) { }
 
     private pool: Map<string, {
         code: string;
@@ -19,8 +24,7 @@ export class VerificationService {
         // 生成验证码
         const code = this.generateCode();
         // 发送验证码
-        // TODO
-
+        // await this.notificationService.sendSMS(phone, type, code);
         // 存储验证码
         this.saveCode(key, code);
     }
