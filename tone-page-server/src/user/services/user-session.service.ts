@@ -18,4 +18,16 @@ export class UserSessionService {
         });
         return await this.userSessionRepository.save(session);
     }
+
+    async isSessionValid(userId: string, sessionId: string): Promise<boolean> {
+        const session = await this.userSessionRepository.findOne({
+            where: {
+                userId,
+                sessionId,
+                deletedAt: null,
+            }
+        });
+
+        return !!session;
+    }
 }
