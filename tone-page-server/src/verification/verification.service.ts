@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class VerificationService {
+
+    private readonly logger = new Logger(VerificationService.name);
 
     constructor(
         private readonly notificationService: NotificationService,
@@ -23,6 +25,8 @@ export class VerificationService {
 
         // 生成验证码
         const code = this.generateCode();
+        this.logger.log(`Phone[${phone}] code: ${code}`);
+
         // 发送验证码
         // await this.notificationService.sendSMS(phone, type, code);
         // 存储验证码
@@ -36,6 +40,7 @@ export class VerificationService {
 
         // 生成验证码
         const code = this.generateCode();
+        this.logger.log(`Email[${email}] code: ${code}`);
         // 发送验证码
         // TODO
 
