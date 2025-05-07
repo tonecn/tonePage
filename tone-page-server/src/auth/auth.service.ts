@@ -6,6 +6,7 @@ import { User } from 'src/user/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { UserSessionService } from 'src/user/services/user-session.service';
 import { v4 as uuidv4 } from 'uuid';
+import { VerificationService } from 'src/verification/verification.service';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,7 @@ export class AuthService {
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
         private readonly userSessionService: UserSessionService,
+        private readonly verificationService: VerificationService,
     ) { }
 
     async loginWithPassword(loginDto: LoginDto) {
@@ -44,7 +46,19 @@ export class AuthService {
     async loginWithPhone(loginDto: LoginDto) {
         const { phone, code } = loginDto;
         // 先判断验证码是否正确
-        // TODO
+        const isValid = this.verificationService.verifyPhoneCode(phone, code, 'login');
+        switch (isValid) {
+            case 0:
+                break;
+            case -1:
+                throw new BadRequestException('验证码已过期');
+            case -2:
+                throw new BadRequestException('验证码错误');
+            case -3:
+                throw new BadRequestException('验证码已失效');
+            default:
+                throw new BadRequestException('验证码错误');
+        }
 
         // 判断用户是否存在，若不存在则进行注册
         let user = await this.userService.findOne({ phone });
@@ -66,7 +80,19 @@ export class AuthService {
     async loginWithEmail(loginDto: LoginDto) {
         const { email, code } = loginDto;
         // 先判断验证码是否正确
-        // TODO
+        const isValid = this.verificationService.verifyEmailCode(email, code, 'login');
+        switch (isValid) {
+            case 0:
+                break;
+            case -1:
+                throw new BadRequestException('验证码已过期，请重新获取');
+            case -2:
+                throw new BadRequestException('验证码错误');
+            case -3:
+                throw new BadRequestException('验证码已失效，请重新获取');
+            default:
+                throw new BadRequestException('验证码错误，请稍后再试');
+        }
 
         // 判断用户是否存在，若不存在则进行注册
         let user = await this.userService.findOne({ email });

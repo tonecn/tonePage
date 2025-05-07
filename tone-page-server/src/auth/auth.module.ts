@@ -8,6 +8,7 @@ import { UserSession } from 'src/user/entities/user-session.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { VerificationModule } from 'src/verification/verification.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           expiresIn: configService.get<string>('JWT_EXPIRES_IN', '1d'),
         },
       })
-    })
+    }),
+    VerificationModule,
   ],
   controllers: [AuthController],
   providers: [
