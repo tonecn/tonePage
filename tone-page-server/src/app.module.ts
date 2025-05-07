@@ -10,7 +10,6 @@ import { NotificationModule } from './notification/notification.module';
 import { PassportModule } from '@nestjs/passport';
 import { ResourceModule } from './resource/resource.module';
 import { BlogModule } from './blog/blog.module';
-import { BlgService } from './blg/blg.service';
 
 @Module({
   imports: [
@@ -35,6 +34,6 @@ import { BlgService } from './blg/blg.service';
     BlogModule
   ],
   controllers: [AppController],
-  providers: [AppService, BlgService],
+  providers: [AppService],
 })
 export class AppModule { }
