@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { VerificationModule } from './verification/verification.module';
 import { NotificationModule } from './notification/notification.module';
 import { PassportModule } from '@nestjs/passport';
+import { ResourceModule } from './resource/resource.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { PassportModule } from '@nestjs/passport';
     UserModule,
     AuthModule,
     VerificationModule,
-    NotificationModule
+    NotificationModule,
+    ResourceModule
   ],
   controllers: [AppController],
   providers: [AppService],
