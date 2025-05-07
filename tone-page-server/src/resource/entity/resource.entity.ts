@@ -34,7 +34,4 @@ export class Resource {
 
     @UpdateDateColumn({ precision: 3 })
     updatedAt: Date;
-
-    @DeleteDateColumn({ nullable: true, precision: 3 })
-    deletedAt: Date;
 }

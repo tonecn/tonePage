@@ -11,6 +11,11 @@ export class ResourceService {
     ) { }
 
     async findAll(): Promise<Resource[]> {
-        return this.resourceRepository.find();
+        return this.resourceRepository.find({
+            where: { isHidden: false },
+            order: {
+                createdAt: 'DESC',
+            }
+        });
     }
 }
