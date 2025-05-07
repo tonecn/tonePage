@@ -30,4 +30,18 @@ export class UserSessionService {
 
         return !!session;
     }
+
+    async invalidateSession(userId: string, sessionId: string): Promise<void> {
+        const session = await this.userSessionRepository.findOne({
+            where: {
+                userId,
+                sessionId,
+                deletedAt: null,
+            }
+        });
+
+        if (session) {
+            await this.userSessionRepository.softDelete(session.id);
+        }
+    }
 }

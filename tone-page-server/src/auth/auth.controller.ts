@@ -1,12 +1,15 @@
-import { BadRequestException, Body, Controller, Get, Post, Request } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
+import { AuthGuard } from '@nestjs/passport';
+import { UserSessionService } from 'src/user/services/user-session.service';
 
 @Controller('auth')
 export class AuthController {
 
     constructor(
         private readonly authService: AuthService,
+        private readonly userSessionService: UserSessionService,
     ) { }
 
     @Post('login')
@@ -21,5 +24,14 @@ export class AuthController {
             default:
                 throw new BadRequestException('服务器错误');
         }
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Get('logout')
+    async logout(@Request() req) {
+        const { userId, sessionId } = req.user;
+        await this.userSessionService.invalidateSession(userId, sessionId);
+        
+        return true;
     }
 }
