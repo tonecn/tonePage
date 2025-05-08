@@ -1,7 +1,7 @@
 import { Entity, Index, PrimaryColumn } from "typeorm";
 
 @Entity()
-@Index(['roleId', 'permissionId'])
+@Index(['roleId', 'permissionId'], { unique: true })
 export class RolePermission {
     @PrimaryColumn('uuid')
     roleId: string;

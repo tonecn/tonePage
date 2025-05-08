@@ -7,4 +7,7 @@ export class Role {
 
     @Column({ unique: true })
     name: string;
+
+    @Column()
+    localName: string;
 }

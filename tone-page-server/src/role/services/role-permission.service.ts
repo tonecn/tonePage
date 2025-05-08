@@ -20,4 +20,23 @@ export class RolePermissionService {
 
         return rolePermissions.map(rp => rp.permissionId);
     }
+
+    async addRolePermissions(roleId: string, permissionIds: string[]): Promise<void> {
+        const rolePermissions = permissionIds.map(permissionId => {
+            const rolePermission = this.rolePermissionRepository.create({
+                roleId,
+                permissionId,
+            });
+            return rolePermission;
+        });
+
+        await this.rolePermissionRepository.save(rolePermissions);
+    }
+
+    async deleteRolePermissions(roleId: string, permissionIds: string[]): Promise<void> {
+        await this.rolePermissionRepository.delete({
+            roleId,
+            permissionId: In(permissionIds),
+        });
+    }
 }
