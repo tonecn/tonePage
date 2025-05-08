@@ -32,4 +32,16 @@ export class UserRoleService {
             ]
         })
     }
+
+    async addUserRole(userRole: Pick<UserRole, 'roleId' | 'userId' | 'isEnabled' | 'expiredAt'>): Promise<void> {
+        const newUserRole = this.userRoleRepository.create(userRole);
+        await this.userRoleRepository.save(newUserRole);
+    }
+
+    async deleteUserRole(userId: string, roleId: string): Promise<void> {
+        await this.userRoleRepository.delete({
+            userId,
+            roleId,
+        });
+    }
 }
