@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { createHash } from 'crypto';
+import { v4 as uuid } from 'uuid';
 
 type UserFindOptions = Partial<Pick<User, 'userId' | 'username' | 'phone' | 'email'>>;
 
@@ -22,5 +24,41 @@ export class UserService {
     async create(user: Partial<User>): Promise<User> {
         const newUser = this.userRepository.create(user);
         return this.userRepository.save(newUser);
+    }
+
+    async update(userId: string, user: Partial<User>): Promise<User> {
+        const existingUser = await this.userRepository.findOne({ where: { userId } });
+        if (!existingUser) {
+            throw new BadRequestException('User not found');
+        }
+        Object.assign(existingUser, user);
+        return this.userRepository.save(existingUser);
+    }
+
+    async delete(userId: string): Promise<void> {
+        const existingUser = await this.userRepository.findOne({ where: { userId } });
+        if (!existingUser) {
+            throw new BadRequestException('User not found');
+        }
+        await this.userRepository.softDelete(existingUser.id);
+    }
+
+    hashPassword(password: string, salt: string): string {
+        return createHash('sha256').update(`${password}${salt}`).digest('hex');
+    }
+
+    generateSalt(): string {
+        return uuid().replace(/-/g, '');
+    }
+
+    async setPassword(userId: string, password: string): Promise<User> {
+        const user = await this.userRepository.findOne({ where: { userId } });
+        if (!user) {
+            throw new BadRequestException('User not found');
+        }
+        const salt = this.generateSalt();
+        user.password_hash = this.hashPassword(password, salt);
+        user.salt = salt;
+        return this.userRepository.save(user);
     }
 }
