@@ -5,6 +5,8 @@ import { AdminUserService } from './service/admin-user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { UserModule } from 'src/user/user.module';
+import { RoleModule } from 'src/role/role.module';
+import { AdminRoleController } from './controller/admin-role.controller';
 
 @Module({
   imports: [
@@ -12,10 +14,12 @@ import { UserModule } from 'src/user/user.module';
       User,
     ]),
     UserModule,
+    RoleModule,
   ],
   controllers: [
     AdminController,
     AdminUserController,
+    AdminRoleController,
   ],
   providers: [
     AdminUserService,
