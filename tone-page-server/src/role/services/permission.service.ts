@@ -24,6 +24,14 @@ export class PermissionService {
         })
     }
 
+    async findPermissionByIds(permissionIds: string[]): Promise<Permission[]> {
+        return this.permissionRepository.find({
+            where: {
+                id: In(permissionIds),
+            }
+        });
+    }
+
     async list() {
         return this.permissionRepository.find();
     }
