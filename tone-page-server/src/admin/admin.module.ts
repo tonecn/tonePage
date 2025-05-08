@@ -7,6 +7,7 @@ import { User } from 'src/user/entities/user.entity';
 import { UserModule } from 'src/user/user.module';
 import { RoleModule } from 'src/role/role.module';
 import { AdminRoleController } from './controller/admin-role.controller';
+import { AdminPermissionController } from './controller/admin-permission.controller';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AdminRoleController } from './controller/admin-role.controller';
     AdminController,
     AdminUserController,
     AdminRoleController,
+    AdminPermissionController,
   ],
   providers: [
     AdminUserService,
