@@ -9,6 +9,7 @@ import { RoleModule } from 'src/role/role.module';
 import { AdminRoleController } from './controller/admin-role.controller';
 import { AdminPermissionController } from './controller/admin-permission.controller';
 import { AdminRolePermissionController } from './controller/admin-role-permission.controller';
+import { AdminUserRoleController } from './controller/admin-user-role.controller';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AdminRolePermissionController } from './controller/admin-role-permissio
     AdminRoleController,
     AdminPermissionController,
     AdminRolePermissionController,
+    AdminUserRoleController,
   ],
   providers: [
     AdminUserService,

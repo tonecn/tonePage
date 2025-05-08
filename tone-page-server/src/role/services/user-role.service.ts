@@ -10,6 +10,16 @@ export class UserRoleService {
         private readonly userRoleRepository: Repository<UserRole>,
     ) { }
 
+    async findRoleIdsByUserId(userId: string): Promise<string[]> {
+        const userRoles = await this.userRoleRepository.find({
+            where: {
+                userId,
+            }
+        });
+
+        return userRoles.map(ur => ur.roleId);
+    }
+
     async findValidRoleIdsByUserId(userId: string): Promise<string[]> {
         return (await this.findValidRolesByUserId(userId)).map(ur => ur.roleId);
     }
