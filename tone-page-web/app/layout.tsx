@@ -35,12 +35,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
           <main className="flex-1 flex flex-col bg-zinc-50">
             {children}
             <Toaster />
           </main>
-          <Footer />
         </ThemeProvider>
       </body>
     </html>

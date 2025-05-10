@@ -24,7 +24,7 @@ export default function Header() {
         { name: '特恩(TONE)', href: '/' },
         { name: '资源', href: '/resource' },
         { name: '博客', href: '/blog' },
-        { name: '控制台', href: '/console' },
+        { name: '控制台', href: '/console/login' },
     ]
 
     return (

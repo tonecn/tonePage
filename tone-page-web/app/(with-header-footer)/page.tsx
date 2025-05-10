@@ -1,5 +1,5 @@
 'use client';
-import favicon from './favicon.ico';
+import favicon from '../favicon.ico';
 import Image from 'next/image';
 
 export default function Home() {
