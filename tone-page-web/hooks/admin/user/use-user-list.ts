@@ -1,9 +1,7 @@
 "use client"
 
 import { list, UserListParams, UserListResponse } from '@/lib/api/admin/user'
-import { ApiError } from '@/lib/api/fetcher'
 import { useCallback } from 'react'
-import { toast } from 'sonner'
 import useSWR from 'swr'
 
 export function useUserList(params?: UserListParams) {

@@ -1,3 +1,4 @@
+import { ResourceBadge } from "@/components/resource";
 import { Card, CardContent } from "@/components/ui/card";
 import { Resource } from "@/lib/types/resource";
 import Image from "next/image";
@@ -30,11 +31,7 @@ export function ResourceCard({ resource, key }: ResourceCardProps) {
                             <div className="flex gap-2 flex-wrap mt-4">
                                 {
                                     resource.tags.map((tag) => (
-                                        <div
-                                            id={tag.id}
-                                            className="text-[10px] text-zinc-500 font-medium py-[1px] px-1.5 rounded-full bg-zinc-200"
-                                            style={{ backgroundColor: tag.color }}
-                                        >{tag.name}</div>
+                                        <ResourceBadge tag={tag} />
                                     ))
                                 }
                             </div>
