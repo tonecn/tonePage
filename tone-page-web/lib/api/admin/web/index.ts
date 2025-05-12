@@ -1,2 +1,2 @@
-export * from './blog/index';
-export * from './resrouce/index';
+export * as blog from './blog/index';
+export * as resource from './resource/index';
