@@ -1,14 +1,14 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 type ResourceTag = {
     name: string;
-    description: string;
+    type: string;
 }
 
 @Entity()
 export class Resource {
-    @PrimaryColumn('uuid', { unique: true, default: () => 'gen_random_uuid()' })
-    @Index({ unique: true })
+    @PrimaryGeneratedColumn('uuid')
+    @Index()
     id: string;
 
     @Column()
@@ -31,7 +31,4 @@ export class Resource {
 
     @UpdateDateColumn({ precision: 3 })
     updatedAt: Date;
-
-    @DeleteDateColumn({ precision: 3, nullable: true })
-    deletedAt: Date;
 }

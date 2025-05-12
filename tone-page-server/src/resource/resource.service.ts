@@ -12,10 +12,23 @@ export class ResourceService {
 
     async findAll(): Promise<Resource[]> {
         return this.resourceRepository.find({
-            where: { deletedAt: null },
             order: {
                 createdAt: 'DESC',
             }
         });
+    }
+
+    async create(data: Partial<Resource>): Promise<Resource> {
+        const resource = this.resourceRepository.create(data);
+        return this.resourceRepository.save(resource);
+    }
+
+    async update(id: string, data: Partial<Resource>): Promise<Resource> {
+        await this.resourceRepository.update(id, data);
+        return this.resourceRepository.findOne({ where: { id } });
+    }
+
+    async delete(id: string): Promise<void> {
+        await this.resourceRepository.delete(id);
     }
 }

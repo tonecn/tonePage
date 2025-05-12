@@ -7,6 +7,7 @@ import { Resource } from './entity/resource.entity';
 @Module({
   imports:[TypeOrmModule.forFeature([Resource])],
   controllers: [ResourceController],
-  providers: [ResourceService]
+  providers: [ResourceService],
+  exports: [ResourceService],
 })
 export class ResourceModule {}

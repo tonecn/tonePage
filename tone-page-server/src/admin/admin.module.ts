@@ -10,6 +10,9 @@ import { AdminRoleController } from './controller/admin-role.controller';
 import { AdminPermissionController } from './controller/admin-permission.controller';
 import { AdminRolePermissionController } from './controller/admin-role-permission.controller';
 import { AdminUserRoleController } from './controller/admin-user-role.controller';
+import { AdminWebResourceController } from './controller/web/admin-web-resource.controller';
+import { AdminWebBlogController } from './controller/web/admin-web-blog.controller';
+import { ResourceModule } from 'src/resource/resource.module';
 
 @Module({
   imports: [
@@ -18,6 +21,7 @@ import { AdminUserRoleController } from './controller/admin-user-role.controller
     ]),
     UserModule,
     RoleModule,
+    ResourceModule,
   ],
   controllers: [
     AdminController,
@@ -26,6 +30,8 @@ import { AdminUserRoleController } from './controller/admin-user-role.controller
     AdminPermissionController,
     AdminRolePermissionController,
     AdminUserRoleController,
+    AdminWebResourceController,
+    AdminWebBlogController,
   ],
   providers: [
     AdminUserService,
