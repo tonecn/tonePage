@@ -2,11 +2,11 @@ import { IsEmail, IsOptional, IsString, Length, Matches } from "class-validator"
 
 export class UpdateDto {
     @IsString({ message: '用户名不得为空' })
-    @Length(6, 32, { message: '用户名长度只能为6~32' })
+    @Length(4, 32, { message: '用户名长度只能为4~32' })
     username: string;
 
     @IsString({ message: '昵称不得为空' })
-    @Length(6, 30, { message: '昵称长度只能为6~30' })
+    @Length(1, 30, { message: '昵称长度只能为1~30' })
     nickname: string;
 
     @IsOptional()
