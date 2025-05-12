@@ -9,15 +9,6 @@ export function useUserList(params?: UserListParams) {
     const { data, error, isLoading, mutate } = useSWR<UserListResponse>(
         ['/api/admin/user', params],
         () => list(params),
-        {
-            onError: (err) => {
-                if (err instanceof ApiError) {
-                    toast.error(err.message)
-                } else {
-                    toast.error('请求失败')
-                }
-            }
-        }
     )
 
     return {

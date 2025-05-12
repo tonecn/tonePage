@@ -21,6 +21,13 @@ export class AdminUserController {
         return this.adminUserService.getUser(listDto.page, listDto.pageSize);
     }
 
+    @Get(':userId')
+    async get(
+        @Param('userId', new ParseUUIDPipe({ version: '4' })) userId: string,
+    ) {
+        return this.userService.findOne({ userId });
+    }
+
     @Post()
     async create(
         @Body() createDto: CreateDto
