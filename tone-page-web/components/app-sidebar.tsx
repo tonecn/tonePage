@@ -53,7 +53,7 @@ const data = {
       items: [
         {
           title: "用户",
-          url: "/console/user",
+          url: "/console/user/list",
         },
         {
           title: "角色/权限",
