@@ -32,7 +32,16 @@ export class AdminUserController {
     async create(
         @Body() createDto: CreateDto
     ) {
-        return this.userService.create(createDto);
+        return this.userService.create({
+            ...createDto,
+            ...createDto.password && (() => {
+                const salt = this.userService.generateSalt();
+                return {
+                    salt,
+                    password_hash: this.userService.hashPassword(createDto.password, salt),
+                }
+            })(),
+        });
     }
 
     @Put(':userId')

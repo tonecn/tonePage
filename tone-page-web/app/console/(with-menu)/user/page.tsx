@@ -7,6 +7,7 @@ import { useUserList } from "@/hooks/admin/user/use-user-list";
 import { useState } from "react";
 import { UserInfoEditor } from "./components/user-info-editor";
 import { User } from "@/lib/types/user";
+import { CreateUserEditor } from "./components/create-user-editor";
 
 
 export default function Page() {
@@ -47,6 +48,11 @@ export default function Page() {
 
     return (
         <>
+            <div>
+                <CreateUserEditor >
+                    <Button >新增用户</Button>
+                </CreateUserEditor>
+            </div>
             <Table>
                 {error && <TableCaption>{error.message}</TableCaption>}
                 <TableHeader>

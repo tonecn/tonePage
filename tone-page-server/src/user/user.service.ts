@@ -22,8 +22,15 @@ export class UserService {
     }
 
     async create(user: Partial<User>): Promise<User> {
-        const newUser = this.userRepository.create(user);
-        return this.userRepository.save(newUser);
+        try {
+            const newUser = this.userRepository.create(user);
+            return this.userRepository.save(newUser);
+        } catch (error) {
+            if (error instanceof QueryFailedError) {
+                throw new ConflictException(this.getDuplicateErrorMessage(error));
+            }
+            throw new BadRequestException('创建用户失败');
+        }
     }
 
     async update(userId: string, user: Partial<User>): Promise<User> {
