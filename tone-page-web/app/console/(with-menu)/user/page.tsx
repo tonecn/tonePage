@@ -6,11 +6,29 @@ import { TooltipContent, TooltipProvider, TooltipTrigger, Tooltip } from "@/comp
 import { useUserList } from "@/hooks/admin/user/use-user-list";
 import { useState } from "react";
 import { UserInfoEditor } from "./components/user-info-editor";
+import { User } from "@/lib/types/user";
 
 
 export default function Page() {
-    const { users, isLoading, error, total, page, pageSize } = useUserList();
+    const { users, isLoading, error, total, page, pageSize, mutate } = useUserList();
     const [editorUserId, setEditorUserId] = useState("");
+
+    const handleUserUpdate = async (newUser: User) => {
+        await mutate(
+            (data) => {
+                if (!data) return data;
+                return {
+                    ...data,
+                    items: data.items.map((user) =>
+                        user.userId === newUser.userId ? newUser : user
+                    ),
+                };
+            },
+            {
+                revalidate: false,
+            }
+        )
+    }
 
     return (
         <>
@@ -67,12 +85,11 @@ export default function Page() {
                 </TableBody>
             </Table>
 
-            <UserInfoEditor onClose={() => setEditorUserId('')} userId={editorUserId} onUserUpdate={(user) => {
-                const index = users.findIndex((u) => u.userId === user.userId);
-                if (index !== -1) {
-                    users[index] = user;
-                }
-            }} />
+            <UserInfoEditor
+                onClose={() => setEditorUserId('')}
+                userId={editorUserId}
+                onUserUpdate={handleUserUpdate}
+            />
         </>
     )
 }

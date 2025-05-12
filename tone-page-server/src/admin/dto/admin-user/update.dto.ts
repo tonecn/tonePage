@@ -1,4 +1,4 @@
-import { IsEmail, IsOptional, IsString, Length, Matches, ValidateIf } from "class-validator";
+import { IsEmail, IsOptional, IsString, Length, Matches } from "class-validator";
 
 export class UpdateDto {
     @IsString({ message: '用户名不得为空' })
