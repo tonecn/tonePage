@@ -17,10 +17,11 @@ import { toast } from "sonner";
 import { ApiError } from "next/dist/server/api-utils";
 
 interface CreateUserEditorProps {
-    children: React.ReactNode
+    children: React.ReactNode;
+    onRefresh: () => void;
 }
 
-export function CreateUserEditor({ children }: CreateUserEditorProps) {
+export function CreateUserEditor({ children, onRefresh }: CreateUserEditorProps) {
     const [open, setOpen] = useState(false);
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -35,6 +36,7 @@ export function CreateUserEditor({ children }: CreateUserEditorProps) {
             });
             setOpen(false);
             toast.success('创建成功')
+            onRefresh();
         } catch (error) {
             toast.error((error as ApiError).message || '创建失败')
         }

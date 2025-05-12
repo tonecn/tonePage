@@ -2,6 +2,7 @@
 
 import { list, UserListParams, UserListResponse } from '@/lib/api/admin/user'
 import { ApiError } from '@/lib/api/fetcher'
+import { useCallback } from 'react'
 import { toast } from 'sonner'
 import useSWR from 'swr'
 
@@ -11,6 +12,10 @@ export function useUserList(params?: UserListParams) {
         () => list(params),
     )
 
+    const refresh = useCallback(() => {
+        return mutate()
+    }, [mutate])
+
     return {
         users: data?.items ?? [],
         total: data?.total ?? 0,
@@ -19,5 +24,6 @@ export function useUserList(params?: UserListParams) {
         isLoading,
         error,
         mutate,
+        refresh,
     }
 }

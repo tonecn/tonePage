@@ -11,7 +11,7 @@ import { CreateUserEditor } from "./components/create-user-editor";
 
 
 export default function Page() {
-    const { users, isLoading, error, total, page, pageSize, mutate } = useUserList();
+    const { users, isLoading, error, total, page, pageSize, mutate, refresh } = useUserList();
     const [editorUserId, setEditorUserId] = useState("");
 
     const handleUserUpdate = async (newUser: User) => {
@@ -49,7 +49,7 @@ export default function Page() {
     return (
         <>
             <div>
-                <CreateUserEditor >
+                <CreateUserEditor onRefresh={() => refresh()}>
                     <Button >新增用户</Button>
                 </CreateUserEditor>
             </div>
