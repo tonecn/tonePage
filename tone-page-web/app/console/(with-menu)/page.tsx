@@ -1,3 +1,7 @@
 export default function Page() {
-    return <div>console</div>
+    return (
+        <div>
+            page
+        </div>
+    )
 }

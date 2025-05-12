@@ -8,7 +8,7 @@ interface SendVerificationCodeParam {
 }
 
 export const send = async (data: SendVerificationCodeParam) => {
-    return fetcher('/api/verification/send', {
+    return fetcher<boolean>('/api/verification/send', {
         method: 'POST',
         body: JSON.stringify(data),
     })

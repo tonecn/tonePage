@@ -15,6 +15,7 @@ import { LoginFormData, SendCodeFormData, SubmitMode } from "./components/types"
 import { useCallback, useState } from "react";
 import LoginBG from './components/login-bg.jpg';
 import Image from "next/image";
+import { ApiError } from "@/lib/api/fetcher";
 
 export default function Login() {
     const router = useRouter();
@@ -25,34 +26,42 @@ export default function Login() {
     }, []);
 
     const handleSendCode = async (data: SendCodeFormData) => {
-        const res = await verificationApi.send({
-            type: 'login',
-            targetType: data.type,
-            phone: data.phone,
-            email: data.email,
-        })
+        try {
+            const res = await verificationApi.send({
+                type: 'login',
+                targetType: data.type,
+                phone: data.phone,
+                email: data.email,
+            })
 
-        if (res.statusCode === 200) {
-            toast.success('验证码已发送，请注意查收');
-            return true;
-        } else {
-            toast.error(res.message || '验证码发送失败，请稍后再试');
+            if (res) {
+                toast.success('验证码已发送，请注意查收');
+                return true;
+            } else {
+                throw new Error();
+            }
+        } catch (error) {
+            toast.error((error as ApiError).message || '验证码发送失败，请稍后再试');
             return false;
         }
     }
 
     const handleSubmit = async (data: LoginFormData) => {
-        const res = await authApi.login({
-            ...data,
-        });
+        try {
+            const res = await authApi.login({
+                ...data,
+            });
 
-        if (res.statusCode === 200 && res.data) {
-            toast.success('登录成功');
-            localStorage.setItem('token', res.data.token);
-            router.replace('/console');
-            return true;
-        } else {
-            toast.error(res.message || '登录失败，请稍后再试');
+            if (res.token) {
+                toast.success('登录成功');
+                localStorage.setItem('token', res.token);
+                router.replace('/console');
+                return true;
+            } else {
+                throw new Error();
+            }
+        } catch (error) {
+            toast.error((error as ApiError).message || '登录失败，请稍后再试');
             return false;
         }
     }

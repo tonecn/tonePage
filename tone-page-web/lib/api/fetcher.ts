@@ -4,7 +4,18 @@ export interface StanderResponse<T> {
     data?: T;
 }
 
-const fetcher = async<T>(url: string, options?: RequestInit): Promise<StanderResponse<T>> => {
+export class ApiError extends Error {
+    constructor(
+        public statusCode: number,
+        message: string,
+        public data?: unknown,
+    ) {
+        super(message);
+        this.name = 'ApiError';
+    }
+}
+
+const fetcher = async<T>(url: string, options?: RequestInit): Promise<T> => {
     const res = await fetch(url, {
         method: 'GET',
         headers: {
@@ -17,11 +28,12 @@ const fetcher = async<T>(url: string, options?: RequestInit): Promise<StanderRes
         ...options,
     });
 
-    if (!res.ok) {
-        return await res.json();
+    const result = await res.json();
+    if (result.statusCode !== 200) {
+        throw new ApiError(result.statusCode, result.message, result.data);
     }
 
-    return await res.json();
+    return result.data as T;
 }
 
 export default fetcher
