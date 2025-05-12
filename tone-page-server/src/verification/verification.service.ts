@@ -31,6 +31,7 @@ export class VerificationService {
         // await this.notificationService.sendSMS(phone, type, code);
         // 存储验证码
         this.saveCode(key, code);
+        return true;
     }
 
     async sendEmailCode(email: string, type: 'login') {
@@ -46,6 +47,7 @@ export class VerificationService {
 
         // 存储验证码
         this.saveCode(key, code);
+        return true;
     }
 
     private saveCode(key: string, code: string) {
