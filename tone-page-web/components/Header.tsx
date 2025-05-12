@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
     Drawer,
     DrawerContent,
@@ -21,11 +21,18 @@ export default function Header() {
     const [showMenu, setShowMenu] = useState(false);
 
     const menuItems = [
-        { name: '特恩(TONE)', href: '/' },
-        { name: '资源', href: '/resource' },
-        { name: '博客', href: '/blog' },
-        { name: '控制台', href: '/console/login' },
-    ]
+        { name: '特恩(TONE)', path: '/' },
+        { name: '资源', path: '/resource' },
+        { name: '博客', path: '/blog' },
+        { name: '控制台', path: '/console' },
+    ];
+
+    const getHref = useCallback((path: string) => {
+        if (path === '/console') {
+            return localStorage.getItem('token') ? '/console' : '/console/login';
+        }
+        return path;
+    }, []);
 
     return (
         <header className="sticky top-0 z-50 backdrop-blur-sm bg-white/40 shadow">
@@ -61,11 +68,11 @@ export default function Header() {
                             {menuItems.slice(1).map((item) => (
                                 <Link
                                     key={item.name}
-                                    href={item.href}
+                                    href={getHref(item.path)}
                                     onClick={() => setShowMenu(false)}
                                 >
                                     <Button className="w-full" size='lg'
-                                        variant={pathname.startsWith(item.href) ? 'default' : 'outline'}
+                                        variant={pathname.startsWith(item.path) ? 'default' : 'outline'}
                                     >{item.name}</Button>
                                 </Link>
                             ))}
@@ -78,11 +85,11 @@ export default function Header() {
                 )}>
                     {menuItems.slice(1).map((item) => (
                         <Link
-                            key={item.href}
-                            href={item.href}
+                            key={item.name}
+                            href={getHref(item.path)}
                             className={cn(
                                 "cursor-pointer md:text-lg font-medium text-zinc-500 hover:text-zinc-800 border-b-4 border-transparent duration-200",
-                                pathname.startsWith(item.href) && "text-zinc-800 border-b-pink-500"
+                                pathname.startsWith(item.path) && "text-zinc-800 border-b-pink-500"
                             )}
                         >
                             {item.name}
