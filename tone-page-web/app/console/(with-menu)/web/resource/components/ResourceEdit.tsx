@@ -151,7 +151,7 @@ export default function ResourceEdit({ children, id, onRefresh }: ResourceEditPr
                                 <Label htmlFor="admin-web-resource-add-tags" className="text-right">
                                     标签
                                 </Label>
-                                <div className="flex items-center gap-2">
+                                <div className="col-span-3 w-full flex flex-wrap items-center gap-2 gap-y-1">
                                     {
                                         resource.tags.map((tag, index) => (
                                             <ResourceBadge tag={tag} key={index} editMode={true} onClose={name => mutate({ ...resource, tags: resource.tags.filter(tag => tag.name !== name) }, false)} />

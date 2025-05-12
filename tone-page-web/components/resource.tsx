@@ -23,7 +23,7 @@ export function ResourceBadge({ tag, editMode, onClose, ...props }: ResourceBadg
             }}
             {...props}
         >
-            <span>{tag.name}</span>
+            <span className="text-nowrap">{tag.name}</span>
             {
                 editMode && (
                     <span onClick={() => onClose?.(tag.name)}><X className="w-3 h-3 text-zinc-800 cursor-pointer" /></span>
