@@ -1,7 +1,6 @@
 export type TagType = {
-    id: string;
     name: string;
-    color: string;
+    type: string;
 }
 
 export interface Resource {
