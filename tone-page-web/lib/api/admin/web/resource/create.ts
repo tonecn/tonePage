@@ -12,7 +12,7 @@ type CreateResourceParams = {
 }
 
 export async function create(data: CreateResourceParams) {
-    return fetcher('/admin/web/resource', {
+    return fetcher('/api/admin/web/resource', {
         method: 'POST',
         body: JSON.stringify(data)
     })

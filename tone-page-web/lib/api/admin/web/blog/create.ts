@@ -5,7 +5,7 @@ type CreateBlogParams = {
 }
 
 export async function create(data: CreateBlogParams) {
-    return fetcher('/admin/web/blog', {
+    return fetcher('/api/admin/web/blog', {
         method: 'POST',
         body: JSON.stringify(data)
     })
