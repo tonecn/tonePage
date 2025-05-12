@@ -2,8 +2,8 @@
 import { authApi, verificationApi } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import Header from "@/app/components/Header";
-import Footer from "@/app/components/Footer";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
