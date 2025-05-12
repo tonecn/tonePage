@@ -24,7 +24,7 @@ export function ResourceCard({ r, ...props }: ResourceCardProps) {
                                 height={90}
                                 className="rounded-md shadow"
                                 priority
-                                quality={100}
+                                quality={80}
                                 onError={() => setImageError(true)}
                             />}
                         </div>
@@ -34,7 +34,7 @@ export function ResourceCard({ r, ...props }: ResourceCardProps) {
                             <div className="flex gap-2 flex-wrap mt-4">
                                 {
                                     r.tags.map((tag) => (
-                                        <ResourceBadge tag={tag} />
+                                        <ResourceBadge key={tag.name} tag={tag} />
                                     ))
                                 }
                             </div>
