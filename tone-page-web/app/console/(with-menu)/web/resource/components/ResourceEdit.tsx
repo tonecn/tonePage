@@ -88,7 +88,7 @@ export default function ResourceEdit({ children, id, onRefresh }: ResourceEditPr
             <DialogTrigger asChild>
                 {children}
             </DialogTrigger>
-            <DialogContent className="w-300">
+            <DialogContent>
                 <DialogHeader>
                     <DialogTitle>编辑资源</DialogTitle>
                 </DialogHeader>
