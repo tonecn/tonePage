@@ -78,7 +78,7 @@ export class UserService {
     private getDuplicateErrorMessage(error: QueryFailedError): string {
         // 根据具体的错误信息返回友好的提示
         if (error.message.includes('IDX_user_username')) {
-            return '用户名已被使用';
+            return '账户名已被使用';
         }
         if (error.message.includes('IDX_user_email')) {
             return '邮箱已被使用';
