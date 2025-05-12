@@ -24,7 +24,7 @@ export class UserService {
     async create(user: Partial<User>): Promise<User> {
         try {
             const newUser = this.userRepository.create(user);
-            return this.userRepository.save(newUser);
+            return await this.userRepository.save(newUser);
         } catch (error) {
             if (error instanceof QueryFailedError) {
                 throw new ConflictException(this.getDuplicateErrorMessage(error));
