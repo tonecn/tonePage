@@ -1,6 +1,15 @@
+"use client";
+
+import useSWR from "swr";
 import { ResourceCard } from "./components/ResourceCard";
+import { ResourceApi } from "@/lib/api";
 
 export default function Resources() {
+    const { data, isLoading, error } = useSWR(
+        '/api/resource',
+        () => ResourceApi.list(),
+    );
+
     return (
         <div className="flex-1 flex flex-col items-center">
             <h1 className="mt-6 md:mt-20 text-2xl md:text-5xl font-medium text-zinc-600 text-center duration-300">精心挑选并收藏的资源</h1>
@@ -9,21 +18,12 @@ export default function Resources() {
                 ，继续使用或浏览表示您接受协议条款。</p>
 
             <div className="mt-6 sm:mt-10 md:mt-15 w-full flex flex-col md:w-auto md:mx-auto md:grid grid-cols-2 2xl:gap-x-35 lg:gap-x-20 gap-x-10 lg:gap-y-10 gap-y-5 sm:mb-10 duration-300">
-                <ResourceCard
-                    key="1"
-                    resource={{
-                        id: Math.random().toString(),
-                        title: "Adobe全家桶",
-                        description: "包含了macOS、Windows操作系统的Adobe全系列软件",
-                        imageUrl: "",
-                        link: "https://bing.com",
-                        tags: [
-                            { id: "1", name: "第三方来源", color: "" },
-                            { id: "2", name: "macOS", color: "#dbedfd" },
-                            { id: "3", name: "Windows", color: "#dbedfd" },
-                        ],
-                    }}
-                />
+                {data && data.map((resource) => (
+                    <ResourceCard
+                        key={resource.id}
+                        r={resource}
+                    />
+                ))}
             </div>
         </div>
     )
