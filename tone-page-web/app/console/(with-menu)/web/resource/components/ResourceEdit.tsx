@@ -22,6 +22,18 @@ import { AdminApi } from "@/lib/api"
 import useSWR from "swr"
 import { ApiError } from "next/dist/server/api-utils"
 import { Skeleton } from "@/components/ui/skeleton"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+
 interface ResourceEditProps {
     children: React.ReactNode
     id: string;
@@ -57,6 +69,17 @@ export default function ResourceEdit({ children, id, onRefresh }: ResourceEditPr
             setOpen(false);
         } catch (error) {
             toast.error((error as ApiError).message || "资源更新失败");
+        }
+    }
+
+    const handleRemove = async (id: string) => {
+        try {
+            await AdminApi.web.resource.remove(id);
+            toast.success("资源删除成功");
+            onRefresh();
+            setOpen(false);
+        } catch (error) {
+            toast.error((error as ApiError).message || "资源删除失败");
         }
     }
 
@@ -154,7 +177,29 @@ export default function ResourceEdit({ children, id, onRefresh }: ResourceEditPr
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button type="submit" onClick={handleSubmit}>保存</Button>
+                            <div className="w-full flex justify-between">
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button variant={'destructive'}>删除</Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>是否要删除该资源?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                该操作不可逆，删除后将无法恢复该资源
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>取消</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleRemove(id)}>删除</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                                <div >
+                                    <Button variant={'secondary'} onClick={() => setOpen(false)}>取消</Button>
+                                    <Button type="button" onClick={handleSubmit} className="ml-3">保存</Button>
+                                </div>
+                            </div>
                         </DialogFooter>
                     </>
                 )}
