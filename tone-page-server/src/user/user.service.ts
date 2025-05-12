@@ -46,7 +46,7 @@ export class UserService {
         if (!existingUser) {
             throw new BadRequestException('User not found');
         }
-        await this.userRepository.softDelete(existingUser.id);
+        await this.userRepository.softDelete(existingUser.userId);
     }
 
     hashPassword(password: string, salt: string): string {

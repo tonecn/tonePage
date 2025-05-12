@@ -7,10 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 @Index("IDX_user_email", ["email"], { unique: true, where: "email IS NOT NULL" })
 @Index("IDX_user_phone", ["phone"], { unique: true, where: "phone IS NOT NULL" })
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
-
-    @Column('uuid', { default: () => 'gen_random_uuid()' })
+    @PrimaryGeneratedColumn('uuid')
     userId: string;
 
     @Column({ length: 32 })
