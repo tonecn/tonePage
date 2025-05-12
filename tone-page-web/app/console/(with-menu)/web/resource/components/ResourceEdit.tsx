@@ -21,6 +21,7 @@ import { Resource } from "@/lib/types/resource"
 import { AdminApi } from "@/lib/api"
 import useSWR from "swr"
 import { ApiError } from "next/dist/server/api-utils"
+import { Skeleton } from "@/components/ui/skeleton"
 interface ResourceEditProps {
     children: React.ReactNode
     id: string;
@@ -68,6 +69,14 @@ export default function ResourceEdit({ children, id, onRefresh }: ResourceEditPr
                 <DialogHeader>
                     <DialogTitle>编辑资源</DialogTitle>
                 </DialogHeader>
+                {
+                    isLoading && (
+                        [...Array(5)].map((_, index) => (
+                            <Skeleton className="w-full h-14 rounded" key={index} />
+                        ))
+                    )
+                }
+
                 {resource && (
                     <>
                         <div className="grid gap-4 py-4">
