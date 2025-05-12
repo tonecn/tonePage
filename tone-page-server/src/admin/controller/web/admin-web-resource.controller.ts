@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put } from "@nestjs/common";
 import { CreateResourceDto } from "src/admin/dto/admin-web/create-resource.dto";
 import { ResourceService } from "src/resource/resource.service";
 
@@ -12,6 +12,11 @@ export class AdminWebResourceController {
     @Get()
     async list() {
         return this.resourceService.findAll();
+    }
+
+    @Get(':id')
+    async get(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+        return this.resourceService.findById(id);
     }
 
     @Post()

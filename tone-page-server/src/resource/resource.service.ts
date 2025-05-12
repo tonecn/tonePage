@@ -18,6 +18,10 @@ export class ResourceService {
         });
     }
 
+    async findById(id: string): Promise<Resource> {
+        return this.resourceRepository.findOne({ where: { id } });
+    }
+
     async create(data: Partial<Resource>): Promise<Resource> {
         const resource = this.resourceRepository.create(data);
         return this.resourceRepository.save(resource);

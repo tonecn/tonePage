@@ -13,7 +13,7 @@ type UpdateResourceParams = {
 
 export async function update(id: string, data: UpdateResourceParams) {
     return fetcher(`/api/admin/web/resource/${id}`, {
-        method: 'POST',
+        method: 'PUT',
         body: JSON.stringify(data)
     })
 }

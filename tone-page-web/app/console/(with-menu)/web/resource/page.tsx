@@ -17,6 +17,7 @@ export default function Page() {
             </div>
             <ResourceTable
                 resources={resources || []}
+                onRefresh={refresh}
             />
         </>
     )
