@@ -1,23 +1,29 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsEmail, IsOptional, IsString, Length, Matches, ValidateIf } from "class-validator";
 
 export class UpdateDto {
-    @IsOptional()
-    @IsString()
-    username?: string;
+    @IsString({ message: '用户名不得为空' })
+    @Length(6, 32, { message: '用户名长度只能为6~32' })
+    username: string;
+
+    @IsString({ message: '昵称不得为空' })
+    @Length(6, 30, { message: '昵称长度只能为6~30' })
+    nickname: string;
 
     @IsOptional()
-    @IsString()
-    nickname?: string;
-
-    @IsOptional()
-    @IsString()
+    @IsEmail({}, { message: '请输入有效的邮箱地址', always: false })
+    @Length(6, 254, {
+        message: '邮箱长度只能为6~254',
+        // 仅在值不为 null 或 undefined 时验证
+        always: false
+    })
     email?: string;
 
-    @IsOptional()
-    @IsString()
+    @IsOptional()  // 标记字段为可选
+    @IsString({ message: '手机号不得为空', always: false })
+    @Matches(/^1[3456789]\d{9}$/, {
+        message: '请输入有效的手机号码',
+        // 仅在值不为 null 或 undefined 时验证
+        always: false
+    })
     phone?: string;
-
-    @IsOptional()
-    @IsString()
-    avatar?: string;
 }

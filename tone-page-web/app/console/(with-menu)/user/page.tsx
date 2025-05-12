@@ -67,7 +67,12 @@ export default function Page() {
                 </TableBody>
             </Table>
 
-            <UserInfoEditor onClose={() => setEditorUserId('')} userId={editorUserId} />
+            <UserInfoEditor onClose={() => setEditorUserId('')} userId={editorUserId} onUserUpdate={(user) => {
+                const index = users.findIndex((u) => u.userId === user.userId);
+                if (index !== -1) {
+                    users[index] = user;
+                }
+            }} />
         </>
     )
 }

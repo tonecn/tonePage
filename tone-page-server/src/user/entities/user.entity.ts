@@ -2,16 +2,18 @@ import { BeforeInsert, Column, CreateDateColumn, DeleteDateColumn, Entity, Index
 import { v4 as uuidv4 } from 'uuid';
 
 @Entity()
+@Index("IDX_user_userid", ["userId"], { unique: true })
+@Index("IDX_user_username", ["username"], { unique: true })
+@Index("IDX_user_email", ["email"], { unique: true, where: "email IS NOT NULL" })
+@Index("IDX_user_phone", ["phone"], { unique: true, where: "phone IS NOT NULL" })
 export class User {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column('uuid', { unique: true, default: () => 'gen_random_uuid()' })
-    @Index({ unique: true })
+    @Column('uuid', { default: () => 'gen_random_uuid()' })
     userId: string;
 
     @Column({ length: 32 })
-    @Index({ unique: true })
     username: string;
 
     @Column({ length: 30 })
@@ -33,15 +35,33 @@ export class User {
     @Column({ nullable: true, type: 'char', length: 64 })
     password_hash: string;
 
-    @Column({ nullable: true, length: 254 })// RFC 5321
-    @Index({ unique: true })
-    email: string;
+    @Column({
+        nullable: true,
+        length: 254,
+        transformer: {
+            to: (value: string | null) => value?.trim() || null,
+            from: (value: string | null) => value,
+        }
+    })// RFC 5321
+    email: string | null;
 
-    @Column({ nullable: true, length: 20 })// China Mainland
-    @Index({ unique: true })
-    phone: string;
+    @Column({
+        nullable: true,
+        length: 20,
+        transformer: {
+            to: (value: string | null) => value?.trim() || null,
+            from: (value: string | null) => value,
+        }
+    })// China Mainland
+    phone: string | null;
 
-    @Column({ nullable: true })
+    @Column({
+        nullable: true,
+        transformer: {
+            to: (value: string | null) => value?.trim() || null,
+            from: (value: string | null) => value,
+        }
+    })
     avatar: string;
 
     @CreateDateColumn({ precision: 3 })

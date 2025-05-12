@@ -1,8 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
-import { createHash } from 'crypto';
+import { QueryFailedError, Repository } from 'typeorm';
+import { createHash, ECDH } from 'crypto';
 import { v4 as uuid } from 'uuid';
 
 type UserFindOptions = Partial<Pick<User, 'userId' | 'username' | 'phone' | 'email'>>;
@@ -31,8 +31,14 @@ export class UserService {
         if (!existingUser) {
             throw new BadRequestException('User not found');
         }
-        Object.assign(existingUser, user);
-        return this.userRepository.save(existingUser);
+        try {
+            Object.assign(existingUser, user);
+            return await this.userRepository.save(existingUser);
+        } catch (error) {
+            if (error instanceof QueryFailedError) {
+                throw new ConflictException(this.getDuplicateErrorMessage(error));
+            }
+        }
     }
 
     async delete(userId: string): Promise<void> {
@@ -60,5 +66,19 @@ export class UserService {
         user.password_hash = this.hashPassword(password, salt);
         user.salt = salt;
         return this.userRepository.save(user);
+    }
+
+    private getDuplicateErrorMessage(error: QueryFailedError): string {
+        // 根据具体的错误信息返回友好的提示
+        if (error.message.includes('IDX_user_username')) {
+            return '用户名已被使用';
+        }
+        if (error.message.includes('IDX_user_email')) {
+            return '邮箱已被使用';
+        }
+        if (error.message.includes('IDX_user_phone')) {
+            return '手机号已被使用';
+        }
+        return '数据已存在，请检查输入';
     }
 }
