@@ -72,8 +72,8 @@ export function CreateUserEditor({ children, onRefresh }: CreateUserEditorProps)
                             <Input id="phone" name="phone" />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="phone">密码</Label>
-                            <Input id="phone" name="phone" />
+                            <Label htmlFor="password">密码</Label>
+                            <Input id="password" name="password" />
                         </div>
                         <Button type="submit">保存</Button>
                     </form>
