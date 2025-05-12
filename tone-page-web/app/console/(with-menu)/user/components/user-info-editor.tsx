@@ -26,38 +26,66 @@ import {
     AlertTitle,
 } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export function UserInfoEditor({
     onClose,
     onUserUpdate,
+    onUserDelete,
     userId,
 }: {
     onClose: () => void,
     onUserUpdate: (user: User) => void,
+    onUserDelete: (userId: string) => void,
     userId: string
 }) {
-    const { user, isLoading, error } = userId ? useUser(userId) : {};
+    const { user, isLoading, error } = useUser(userId);
+
+    const [saveLoading, setSaveLoading] = React.useState(false);
     const handleSave = async (user: updateUser) => {
         try {
+            setSaveLoading(true);
             const res = await AdminApi.user.update(userId, user);
             if (res) {
                 toast.success("保存成功");
                 onUserUpdate(res);
-                onClose();
             } else {
                 throw new Error();
             }
         } catch (error) {
             toast.error((error as Error).message || "保存失败");
+        } finally {
+            setSaveLoading(false);
         }
     }
 
-    const handleRemove = async () => {
-
+    const [removeLoading, setRemoveLoading] = React.useState(false);
+    const handleRemove = async (userId: string) => {
+        try {
+            setRemoveLoading(true);
+            await AdminApi.user.remove(userId);
+            toast.success("删除成功");
+            onUserDelete(userId);
+            onClose();
+        } catch (error) {
+            toast.error((error as Error).message || "删除失败");
+        } finally {
+            setRemoveLoading(false);
+        }
     }
 
-    const handleSetPassword = async () => {
-
+    const [setPasswordLoading, setSetPasswordLoading] = React.useState(false);
+    const handleSetPassword = async (userId: string, password: string) => {
+        try {
+            setSetPasswordLoading(true);
+            await AdminApi.user.setPassword(userId, password);
+            toast.success("密码修改成功");
+        } catch (error) {
+            toast.error((error as Error).message || "密码修改失败");
+        } finally {
+            setSetPasswordLoading(false);
+        }
     }
 
     return (
@@ -112,9 +140,11 @@ export function UserInfoEditor({
 function ProfileForm({ className, user, onSetPassword, onRemove, ...props }:
     React.ComponentProps<"form"> & {
         user: User,
-        onSetPassword: () => Promise<void>,
-        onRemove: () => Promise<void>,
+        onSetPassword: (userId: string, password: string) => Promise<void>,
+        onRemove: (userId: string) => Promise<void>,
     }) {
+    const [newPassword, setNewPassword] = React.useState<string>("");
+
     return (
         <form className={cn("grid items-start gap-4", className)} {...props}>
             <div className="grid gap-2">
@@ -138,8 +168,56 @@ function ProfileForm({ className, user, onSetPassword, onRemove, ...props }:
                 <Input id="phone" name="phone" defaultValue={user.phone} />
             </div>
             <div className="w-full flex gap-5">
-                <Button type="button" variant="secondary" className="flex-1" onClick={onSetPassword}>修改密码</Button>
-                <Button type="button" variant="destructive" className="flex-1" onClick={onRemove}>删除用户</Button>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button type="button" variant="secondary" className="flex-1" onClick={() => setNewPassword('')}>修改密码</Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]" >
+                        <DialogHeader>
+                            <DialogTitle>修改密码</DialogTitle>
+                            <DialogDescription>
+                                新密码长度在6-32位之间，且至少包含一个字母和一个数字，可以包含特殊字符
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="password" className="text-right">
+                                    新密码
+                                </Label>
+                                <Input
+                                    id="password"
+                                    name="password"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    className="col-span-3"
+                                />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <DialogClose asChild>
+                                <Button type="button" onClick={() => onSetPassword(user.userId, newPassword)}>保存密码</Button>
+                            </DialogClose>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button type="button" variant="destructive" className="flex-1">删除用户</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>是否要删除该用户?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                该操作无法撤销，这会永久删除该用户的所有数据
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>取消</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => onRemove(user.userId)}>删除</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
             <Button type="submit">保存</Button>
         </form>

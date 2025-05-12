@@ -1,7 +1,7 @@
 import fetcher from "../../fetcher";
 
 export async function remove(userId: string) {
-    return fetcher(`/admin/user/${userId}`, {
+    return fetcher(`/api/admin/user/${userId}`, {
         method: 'DELETE',
     })
 } 

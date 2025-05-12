@@ -7,7 +7,6 @@ export function useUser(userId: string) {
         ['/api/admin/user', userId],
         () => AdminApi.user.get(userId),
         {
-            revalidateOnFocus: false,
             revalidateOnReconnect: false,
             revalidateIfStale: false,
             dedupingInterval: 0,

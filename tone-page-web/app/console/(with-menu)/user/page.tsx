@@ -30,6 +30,21 @@ export default function Page() {
         )
     }
 
+    const handleUserDelete = async (userId: string) => {
+        await mutate(
+            (data) => {
+                if (!data) return data;
+                return {
+                    ...data,
+                    items: data.items.filter((user) => user.userId !== userId),
+                };
+            },
+            {
+                revalidate: false,
+            }
+        )
+    }
+
     return (
         <>
             <Table>
@@ -89,6 +104,7 @@ export default function Page() {
                 onClose={() => setEditorUserId('')}
                 userId={editorUserId}
                 onUserUpdate={handleUserUpdate}
+                onUserDelete={handleUserDelete}
             />
         </>
     )
