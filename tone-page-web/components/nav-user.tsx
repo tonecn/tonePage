@@ -27,10 +27,11 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import useSWR from "swr"
-import { UserApi } from "@/lib/api"
+import { authApi, UserApi } from "@/lib/api"
 import { Skeleton } from "./ui/skeleton"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { ApiError } from "next/dist/server/api-utils"
 
 export function NavUser({ }: {}) {
   const { isMobile } = useSidebar();
@@ -41,7 +42,7 @@ export function NavUser({ }: {}) {
     () => UserApi.me(),
     {
       onError: (error) => {
-        if (`${error}`.includes('Unauthorized')) {
+        if (error.statusCode === 401) {
           localStorage.removeItem('token');
           toast.info('登录凭证已失效，请重新登录');
           router.replace('/console/login');
@@ -50,6 +51,16 @@ export function NavUser({ }: {}) {
     }
   );
 
+  async function logout() {
+    try {
+      await authApi.logout();
+      localStorage.removeItem('token');
+      toast.success('登出成功');
+      router.replace('/console/login');
+    } catch (error) {
+      toast.error('登出失败，请稍后再试');
+    }
+  }
 
   return (
     <SidebarMenu>
@@ -124,7 +135,7 @@ export function NavUser({ }: {}) {
               修改密码
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={logout}>
               <LogOut />
               登出
             </DropdownMenuItem>
