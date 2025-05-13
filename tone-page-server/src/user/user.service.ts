@@ -16,7 +16,7 @@ export class UserService {
 
     async findOne(options: UserFindOptions | UserFindOptions[]): Promise<User | null> {
         if (Object.keys(options).length === 0) {
-            return null;
+            throw new BadRequestException('查询条件不能为空');
         }
         return this.userRepository.findOne({ where: options });
     }
