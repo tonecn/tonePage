@@ -14,6 +14,9 @@ const nextConfig: NextConfig = {
       }
     ]
   },
+  images: {
+    remotePatterns: [new URL('https://tone-personal.oss-cn-chengdu.aliyuncs.com/**')]
+  }
 };
 
 export default nextConfig;
