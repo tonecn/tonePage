@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import {
     Drawer,
@@ -17,6 +17,7 @@ import { X } from "lucide-react";
 
 
 export default function Header() {
+    const router = useRouter();
     const pathname = usePathname();
     const [showMenu, setShowMenu] = useState(false);
 
@@ -27,12 +28,16 @@ export default function Header() {
         { name: '控制台', path: '/console' },
     ];
 
-    const getHref = useCallback((path: string) => {
+    const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
+        e.preventDefault();
         if (path === '/console') {
-            return localStorage.getItem('token') ? '/console' : '/console/login';
+            const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+            router.push(token ? '/console' : '/console/login');
+        } else {
+            router.push(path);
         }
-        return path;
-    }, []);
+        setShowMenu(false);
+    }
 
     return (
         <header className="sticky top-0 z-50 backdrop-blur-sm bg-white/40 shadow">
@@ -68,8 +73,8 @@ export default function Header() {
                             {menuItems.slice(1).map((item) => (
                                 <Link
                                     key={item.name}
-                                    href={getHref(item.path)}
-                                    onClick={() => setShowMenu(false)}
+                                    href={item.path}
+                                    onClick={e => handleClick(e, item.path)}
                                 >
                                     <Button className="w-full" size='lg'
                                         variant={pathname.startsWith(item.path) ? 'default' : 'outline'}
@@ -86,11 +91,12 @@ export default function Header() {
                     {menuItems.slice(1).map((item) => (
                         <Link
                             key={item.name}
-                            href={getHref(item.path)}
+                            href={item.path}
                             className={cn(
                                 "cursor-pointer md:text-lg font-medium text-zinc-500 hover:text-zinc-800 border-b-4 border-transparent duration-200",
                                 pathname.startsWith(item.path) && "text-zinc-800 border-b-pink-500"
                             )}
+                            onClick={e => handleClick(e, item.path)}
                         >
                             {item.name}
                         </Link>
