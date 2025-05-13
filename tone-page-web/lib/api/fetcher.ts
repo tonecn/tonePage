@@ -7,7 +7,7 @@ export interface StanderResponse<T> {
 export class ApiError extends Error {
     constructor(
         public statusCode: number,
-        message: string,
+        public message: string,
         public data?: unknown,
     ) {
         super(message);
