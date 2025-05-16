@@ -10,11 +10,13 @@ import {
 } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Blog } from "@/lib/types/blog"
+import BlogEdit from "./BlogEdit"
+import { Button } from "@/components/ui/button"
 
 interface BlogTableProps {
     blogs: Blog[],
     error?: string,
-    onRefresh?: () => void,
+    onRefresh: () => void,
 }
 
 export default function BlogTable({ blogs, error, onRefresh }: BlogTableProps) {
@@ -53,9 +55,9 @@ export default function BlogTable({ blogs, error, onRefresh }: BlogTableProps) {
                         <TableCell>{blog.description}</TableCell>
                         <TableCell>{blog.contentUrl}</TableCell>
                         <TableCell className="text-right">
-                            {/* <ResourceEdit id={resource.id} onRefresh={() => onRefresh()}>
+                            <BlogEdit id={blog.id} onRefresh={() => onRefresh()}>
                                 <Button variant={'outline'} size={'sm'}>编辑</Button>
-                            </ResourceEdit> */}
+                            </BlogEdit>
                         </TableCell>
                     </TableRow>
                 ))}
