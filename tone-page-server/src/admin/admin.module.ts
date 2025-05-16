@@ -13,6 +13,7 @@ import { AdminUserRoleController } from './controller/admin-user-role.controller
 import { AdminWebResourceController } from './controller/web/admin-web-resource.controller';
 import { AdminWebBlogController } from './controller/web/admin-web-blog.controller';
 import { ResourceModule } from 'src/resource/resource.module';
+import { BlogModule } from 'src/blog/blog.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ResourceModule } from 'src/resource/resource.module';
     UserModule,
     RoleModule,
     ResourceModule,
+    BlogModule,
   ],
   controllers: [
     AdminController,

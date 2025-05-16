@@ -14,9 +14,6 @@ export class Blog {
     @Column()
     contentUrl: string;
 
-    @Column({ precision: 3 })
-    publishAt: Date;
-
     @CreateDateColumn({ precision: 3 })
     createdAt: Date;
 

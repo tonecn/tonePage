@@ -8,41 +8,58 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Blog } from "@/lib/types/blog"
 
 interface BlogTableProps {
-    blogs: {
-       
-    }[]
+    blogs: Blog[],
+    error?: string,
+    onRefresh?: () => void,
 }
 
-export default function BlogTable({ blogs }: BlogTableProps) {
+export default function BlogTable({ blogs, error, onRefresh }: BlogTableProps) {
     return (
         <Table>
-            <TableCaption>A list of your recent invoices.</TableCaption>
+            {
+                error && (
+                    <TableCaption>{error}</TableCaption>
+                )
+            }
             <TableHeader>
                 <TableRow>
-                    <TableHead className="w-[100px]">Invoice</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Method</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
+                    <TableHead className="w-[100px]">Id</TableHead>
+                    <TableHead>标题</TableHead>
+                    <TableHead>描述</TableHead>
+                    <TableHead>文章URL</TableHead>
+                    <TableHead className="text-right">操作</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {/* {invoices.map((invoice) => (
-                    <TableRow key={invoice.invoice}>
-                        <TableCell className="font-medium">{invoice.invoice}</TableCell>
-                        <TableCell>{invoice.paymentStatus}</TableCell>
-                        <TableCell>{invoice.paymentMethod}</TableCell>
-                        <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+                {blogs.map((blog) => (
+                    <TableRow key={blog.id}>
+                        <TableCell className="font-medium">
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <div className="max-w-[100px] overflow-hidden text-ellipsis">{blog.id}</div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{blog.id}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </TableCell>
+                        <TableCell>{blog.title}</TableCell>
+                        <TableCell>{blog.description}</TableCell>
+                        <TableCell>{blog.contentUrl}</TableCell>
+                        <TableCell className="text-right">
+                            {/* <ResourceEdit id={resource.id} onRefresh={() => onRefresh()}>
+                                <Button variant={'outline'} size={'sm'}>编辑</Button>
+                            </ResourceEdit> */}
+                        </TableCell>
                     </TableRow>
-                ))} */}
+                ))}
             </TableBody>
-            <TableFooter>
-                <TableRow>
-                    <TableCell colSpan={3}>Total</TableCell>
-                    <TableCell className="text-right">$2,500.00</TableCell>
-                </TableRow>
-            </TableFooter>
         </Table>
     )
 }

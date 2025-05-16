@@ -1,5 +1,6 @@
 import fetcher from "@/lib/api/fetcher";
+import { Blog } from "@/lib/types/blog";
 
 export async function list() {
-    return fetcher('/api/admin/web/blog')
+    return fetcher<Blog[]>('/api/admin/web/blog')
 }
