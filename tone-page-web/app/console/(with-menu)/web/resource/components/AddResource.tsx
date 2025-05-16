@@ -4,6 +4,7 @@ import React, { useState } from "react"
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -73,6 +74,9 @@ export default function AddResource({ children, refresh }: AddResourceProps) {
             <DialogContent className="w-300">
                 <DialogHeader>
                     <DialogTitle>添加资源</DialogTitle>
+                    <DialogDescription>
+                        添加一个新的资源到资源列表中
+                    </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
