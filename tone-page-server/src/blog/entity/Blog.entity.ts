@@ -14,6 +14,9 @@ export class Blog {
     @Column()
     contentUrl: string;
 
+    @Column({ default: 0 })
+    viewCount: number;
+
     @CreateDateColumn({ precision: 3 })
     createdAt: Date;
 
