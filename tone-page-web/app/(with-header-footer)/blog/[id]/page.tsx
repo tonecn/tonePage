@@ -69,6 +69,7 @@ export default function Blog() {
                                 table: ({ node, ...props }) => <div className="overflow-x-auto"><table {...props} /></div>,
                                 pre: ({ node, ...props }) => <pre className="rounded-sm overflow-hidden shadow" {...props} />,
                                 blockquote: ({ node, ...props }) => <blockquote className="pl-3 border-l-5" {...props} />,
+                                a: ({ node, ...props }) => <a className="hover:underline" {...props} />,
                             }}
                         />
                     </>
