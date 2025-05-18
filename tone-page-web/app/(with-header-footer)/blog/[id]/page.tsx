@@ -8,6 +8,8 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import 'highlight.js/styles/github.css'
+import { PhotoProvider, PhotoView } from 'react-photo-view';
+import 'react-photo-view/dist/react-photo-view.css';
 
 export default function Blog() {
     const params = useParams();
@@ -42,7 +44,13 @@ export default function Blog() {
                             h4: ({ node, ...props }) => <h4 className="text-lg font-bold" {...props} />,
                             h5: ({ node, ...props }) => <h5 className="text-md font-bold" {...props} />,
                             p: ({ node, ...props }) => <p className="py-2 text-zinc-700" {...props} />,
-                            img: ({ node, ...props }) => <img className="w-full shadow" {...props} />,
+                            img: ({ node, src, ...props }) => (
+                                <PhotoProvider>
+                                    <PhotoView src={src as string}>
+                                        <img src={src} alt="" {...props} />
+                                    </PhotoView>
+                                </PhotoProvider>
+                            ),
                             th: ({ node, ...props }) => <th className="text-ellipsis text-nowrap border border-zinc-300 p-2" {...props} />,
                             td: ({ node, ...props }) => <td className="border border-zinc-300 p-1" {...props} />,
                             table: ({ node, ...props }) => <div className="overflow-x-auto"><table {...props} /></div>,
