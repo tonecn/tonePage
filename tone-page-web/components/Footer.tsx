@@ -34,7 +34,7 @@ export default function Footer() {
                         </PopoverTrigger>
                         <PopoverContent className="w-60 mr-5">
                             <div className="flex items-center">
-                                <div className="text-sm">电子邮箱:</div>
+                                <div className="text-sm text-nowrap">电子邮箱:</div>
                                 <Button variant="link" className="cursor-pointer select-text" onClick={() => handleCopy('tone@ctbu.net.cn')}>tone@ctbu.net.cn</Button>
                             </div>
                         </PopoverContent>
