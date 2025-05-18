@@ -10,6 +10,7 @@ import rehypeHighlight from 'rehype-highlight'
 import 'highlight.js/styles/github.css'
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
+import rehypeRaw from 'rehype-raw'
 
 export default function Blog() {
     const params = useParams();
@@ -35,19 +36,19 @@ export default function Blog() {
                     <p className="text-sm text-zinc-500 text-center my-5">发布于：{new Date(data.createdAt).toLocaleString()}</p>
                     <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
-                        rehypePlugins={[rehypeHighlight]}
+                        rehypePlugins={[rehypeRaw, rehypeHighlight]}
                         children={data.content}
                         components={{
-                            h1: ({ node, ...props }) => <h1 className="text-3xl font-bold py-1" {...props} />,
-                            h2: ({ node, ...props }) => <h2 className="text-2xl font-bold py-0.5" {...props} />,
-                            h3: ({ node, ...props }) => <h3 className="text-xl font-bold" {...props} />,
+                            h1: ({ node, ...props }) => <h1 className="text-3xl font-bold py-2" {...props} />,
+                            h2: ({ node, ...props }) => <h2 className="text-2xl font-bold py-1" {...props} />,
+                            h3: ({ node, ...props }) => <h3 className="text-xl font-bold py-0.5" {...props} />,
                             h4: ({ node, ...props }) => <h4 className="text-lg font-bold" {...props} />,
                             h5: ({ node, ...props }) => <h5 className="text-md font-bold" {...props} />,
-                            p: ({ node, ...props }) => <p className="py-2 text-zinc-700" {...props} />,
+                            p: ({ node, ...props }) => <p className="py-1 text-zinc-700" {...props} />,
                             img: ({ node, src, ...props }) => (
                                 <PhotoProvider>
                                     <PhotoView src={src as string}>
-                                        <img src={src} alt="" {...props} />
+                                        <img src={src}  {...props} />
                                     </PhotoView>
                                 </PhotoProvider>
                             ),
