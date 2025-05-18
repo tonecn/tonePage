@@ -14,11 +14,14 @@ export class UserService {
         private readonly userRepository: Repository<User>,
     ) { }
 
-    async findOne(options: UserFindOptions | UserFindOptions[]): Promise<User | null> {
+    async findOne(options: UserFindOptions | UserFindOptions[], additionalOptions?: { withDeleted?: boolean }): Promise<User | null> {
         if (Object.keys(options).length === 0) {
             throw new BadRequestException('查询条件不能为空');
         }
-        return this.userRepository.findOne({ where: options });
+        return this.userRepository.findOne({
+            where: options,
+            withDeleted: additionalOptions?.withDeleted || false,
+        });
     }
 
     async create(user: Partial<User>): Promise<User> {
