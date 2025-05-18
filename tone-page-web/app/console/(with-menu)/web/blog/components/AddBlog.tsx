@@ -37,6 +37,11 @@ export default function AddBlog({ children, onRefresh }: AddBlogProps) {
                 setOpen(false);
                 onRefresh();
                 toast.success("添加成功");
+                setBlog({
+                    title: '',
+                    description: '',
+                    contentUrl: '',
+                })
             } else {
                 throw new Error();
             }
