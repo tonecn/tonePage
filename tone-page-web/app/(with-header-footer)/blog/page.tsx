@@ -52,7 +52,7 @@ export default function Blog() {
             {
                 blogs && blogs.map((blog) => (
                     <div className="w-full px-5 cursor-default" key={blog.id}>
-                        <a className="text-2xl font-medium cursor-pointer hover:underline" target="_black" href={`/blog/${base62.encode(Buffer.from(blog.id.replace(/-/g, ''), 'hex'))}`}>{blog.title}</a>
+                        <a className="text-2xl font-medium cursor-pointer hover:underline" target="_blank" href={`/blog/${base62.encode(Buffer.from(blog.id.replace(/-/g, ''), 'hex'))}`}>{blog.title}</a>
                         <p className="text-sm font-medium text-zinc-400">{blog.description}</p>
                         <p className="text-sm font-medium text-zinc-400 mt-3">{new Date(blog.createdAt).toLocaleString()} · {formatNumber(blog.viewCount)} 次访问</p>
                     </div>
