@@ -39,4 +39,8 @@ export class BlogService {
     async findById(id: string) {
         return this.blogRepository.findOneBy({ id });
     }
+
+    async incrementViewCount(id: string) {
+        await this.blogRepository.increment({ id }, 'viewCount', 1);
+    }
 }
