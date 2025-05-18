@@ -50,6 +50,7 @@ export function UserInfoEditor({
             if (res) {
                 toast.success("保存成功");
                 onUserUpdate(res);
+                onClose();
             } else {
                 throw new Error();
             }
@@ -75,12 +76,14 @@ export function UserInfoEditor({
         }
     }
 
+    const [passwordDialogOpen, setPasswordDialogOpen] = React.useState(false);
     const [setPasswordLoading, setSetPasswordLoading] = React.useState(false);
     const handleSetPassword = async (userId: string, password: string) => {
         try {
             setSetPasswordLoading(true);
             await AdminApi.user.setPassword(userId, password);
             toast.success("密码修改成功");
+            setPasswordDialogOpen(false);
         } catch (error) {
             toast.error((error as Error).message || "密码修改失败");
         } finally {
@@ -100,6 +103,8 @@ export function UserInfoEditor({
                     user={user}
                     onSetPassword={handleSetPassword}
                     onRemove={handleRemove}
+                    passwordDialogOpen={passwordDialogOpen}
+                    setPasswordDialogOpen={setPasswordDialogOpen}
                     onSubmit={(e) => {
                         e.preventDefault()
                         const formData = new FormData(e.currentTarget);
@@ -137,11 +142,13 @@ export function UserInfoEditor({
     )
 }
 
-function ProfileForm({ className, user, onSetPassword, onRemove, ...props }:
+function ProfileForm({ className, user, onSetPassword, onRemove, passwordDialogOpen, setPasswordDialogOpen, ...props }:
     React.ComponentProps<"form"> & {
-        user: User,
-        onSetPassword: (userId: string, password: string) => Promise<void>,
-        onRemove: (userId: string) => Promise<void>,
+        user: User;
+        onSetPassword: (userId: string, password: string) => Promise<void>;
+        onRemove: (userId: string) => Promise<void>;
+        passwordDialogOpen: boolean;
+        setPasswordDialogOpen: (s: boolean) => void;
     }) {
     const [newPassword, setNewPassword] = React.useState<string>("");
 
@@ -168,7 +175,7 @@ function ProfileForm({ className, user, onSetPassword, onRemove, ...props }:
                 <Input id="phone" name="phone" defaultValue={user.phone} />
             </div>
             <div className="w-full flex gap-5">
-                <Dialog>
+                <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
                     <DialogTrigger asChild>
                         <Button type="button" variant="secondary" className="flex-1" onClick={() => setNewPassword('')}>修改密码</Button>
                     </DialogTrigger>
@@ -194,9 +201,7 @@ function ProfileForm({ className, user, onSetPassword, onRemove, ...props }:
                             </div>
                         </div>
                         <DialogFooter>
-                            <DialogClose asChild>
-                                <Button type="button" onClick={() => onSetPassword(user.userId, newPassword)}>保存密码</Button>
-                            </DialogClose>
+                            <Button type="button" onClick={() => onSetPassword(user.userId, newPassword)}>保存密码</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
