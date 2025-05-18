@@ -3,13 +3,11 @@
 import { BlogApi } from "@/lib/api";
 import { base62 } from "@/lib/utils";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import useSWR from "swr";
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import remarkRehype from 'remark-rehype';
-import rehypeHighlight from 'rehype-highlight';
-import rehypeStringify from 'rehype-stringify';
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import rehypeHighlight from 'rehype-highlight'
+import 'highlight.js/styles/github.css'
 
 export default function Blog() {
     const params = useParams();
@@ -22,46 +20,36 @@ export default function Blog() {
         hex.slice(20, 32)
     ].join('-');
 
-    const [markdownHTML, setMarkdownHTML] = useState<string | null>(null);
-
     const { data, error, isLoading } = useSWR(
         `/api/blog/${id}`,
         () => BlogApi.get(id),
     )
 
-    useEffect(() => {
-        if (data?.content) {
-            (async () => {
-                try {
-                    const processed = unified()
-                        .use(remarkParse)         // 解析 Markdown
-                        .use(remarkRehype)        // 转换为 HTML AST
-                        .use(rehypeHighlight)     // 高亮代码块
-                        .use(rehypeStringify);    // 输出 HTML 字符串
-
-                    const result = await processed.process(data.content);
-                    setMarkdownHTML(result.toString());
-                } catch (err) {
-                    console.error("Failed to parse markdown", err);
-                    setMarkdownHTML("<p>无法加载内容</p>");
-                }
-            })();
-        }
-    }, [data]);
-
     return (
-        <div className="w-full">
+        <div className="w-full overflow-x-hidden">
             {data && (
-                <div className="w-full flex flex-col items-center">
-                    <h1 className="text-center text-2xl font-semibold mt-5">{data.title}</h1>
-                    {/* 渲染 Markdown HTML */}
-                    {markdownHTML && (
-                        <div
-                            className="prose dark:prose-invert max-w-200 mt-8"
-                            dangerouslySetInnerHTML={{ __html: markdownHTML }}
-                        />
-                    )}
-                    <h2 className="text-sm text-zinc-500 text-center mt-1">发布于：{new Date(data.createdAt).toLocaleString()}</h2>
+                <div className="max-w-200 mx-auto px-5 overflow-x-hidden mb-10">
+                    <h1 className="text-center text-3xl font-bold mt-10">{data.title}</h1>
+                    <p className="text-sm text-zinc-500 text-center my-5">发布于：{new Date(data.createdAt).toLocaleString()}</p>
+                    <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeHighlight]}
+                        children={data.content}
+                        components={{
+                            h1: ({ node, ...props }) => <h1 className="text-3xl font-bold py-1" {...props} />,
+                            h2: ({ node, ...props }) => <h2 className="text-2xl font-bold py-0.5" {...props} />,
+                            h3: ({ node, ...props }) => <h3 className="text-xl font-bold" {...props} />,
+                            h4: ({ node, ...props }) => <h4 className="text-lg font-bold" {...props} />,
+                            h5: ({ node, ...props }) => <h5 className="text-md font-bold" {...props} />,
+                            p: ({ node, ...props }) => <p className="py-2 text-zinc-700" {...props} />,
+                            img: ({ node, ...props }) => <img className="w-full shadow" {...props} />,
+                            th: ({ node, ...props }) => <th className="text-ellipsis text-nowrap border border-zinc-300 p-2" {...props} />,
+                            td: ({ node, ...props }) => <td className="border border-zinc-300 p-1" {...props} />,
+                            table: ({ node, ...props }) => <div className="overflow-x-auto"><table {...props} /></div>,
+                            pre: ({ node, ...props }) => <pre className="rounded-sm overflow-hidden shadow" {...props} />,
+                            blockquote: ({ node, ...props }) => <blockquote className="pl-3 border-l-5" {...props} />,
+                        }}
+                    />
                 </div>
             )}
         </div>
