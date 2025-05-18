@@ -25,7 +25,13 @@ export class AuthService {
             { email: account },
             { phone: account },
             { username: account },
-        ]);
+        ], {
+            withDeleted: true,
+        });
+
+        if (user && user.deletedAt !== null) {
+            throw new BadRequestException('该账号注销中');
+        }
 
         if (user === null || !user.password_hash || !user.salt) {
             throw new BadRequestException('账户或密码错误');
@@ -61,7 +67,11 @@ export class AuthService {
         }
 
         // 判断用户是否存在，若不存在则进行注册
-        let user = await this.userService.findOne({ phone });
+        let user = await this.userService.findOne({ phone }, { withDeleted: true });
+        if (user && user.deletedAt !== null) {
+            throw new BadRequestException('该账号注销中，请使用其他手机号');
+        }
+
         if (!user) {
             // 执行注册操作
             user = await this.userService.create({ phone: phone });
@@ -95,7 +105,11 @@ export class AuthService {
         }
 
         // 判断用户是否存在，若不存在则进行注册
-        let user = await this.userService.findOne({ email });
+        let user = await this.userService.findOne({ email }, { withDeleted: true });
+        if (user && user.deletedAt !== null) {
+            throw new BadRequestException('该账号注销中，请使用其他邮箱');
+        }
+
         if (!user) {
             // 执行注册操作
             user = await this.userService.create({ email: email });
