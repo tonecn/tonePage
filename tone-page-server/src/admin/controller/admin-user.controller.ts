@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, Query } from "@nestjs/common";
-import { AdminUserService } from "../service/admin-user.service";
 import { ListDto } from "../dto/admin-user/list.dto";
 import { CreateDto } from "../dto/admin-user/create.dto";
 import { UserService } from "src/user/user.service";
@@ -10,7 +9,6 @@ import { UpdatePasswordDto } from "../dto/admin-user/update-password.dto";
 export class AdminUserController {
 
     constructor(
-        private readonly adminUserService: AdminUserService,
         private readonly userService: UserService,
     ) { }
 
@@ -18,7 +16,7 @@ export class AdminUserController {
     async list(
         @Query() listDto: ListDto
     ) {
-        return this.adminUserService.getUser(listDto.page, listDto.pageSize);
+        return this.userService.list(listDto.page, listDto.pageSize);
     }
 
     @Get(':userId')

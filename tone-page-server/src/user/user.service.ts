@@ -91,4 +91,21 @@ export class UserService {
         }
         return '数据已存在，请检查输入';
     }
+
+    async list(page = 1, pageSize = 20) {
+        const queryBuilder = this.userRepository.createQueryBuilder('user')
+
+        queryBuilder.orderBy('user.createdAt', 'DESC');
+
+        queryBuilder.skip((page - 1) * pageSize);
+        queryBuilder.take(pageSize);
+
+        const [items, total] = await queryBuilder.getManyAndCount();
+        return {
+            items,
+            total,
+            page,
+            pageSize,
+        }
+    }
 }
