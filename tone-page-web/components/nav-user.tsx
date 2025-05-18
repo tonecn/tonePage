@@ -51,6 +51,12 @@ export function NavUser({ }: {}) {
     }
   );
 
+  if (!isLoading && !error && !user) {
+    router.replace('/console/login');
+    localStorage.removeItem('token');
+    toast.error('账户状态异常，请重新登录');
+  }
+
   async function logout() {
     try {
       await authApi.logout();
