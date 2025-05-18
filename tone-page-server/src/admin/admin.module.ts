@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AdminController } from './admin.controller';
 import { AdminUserController } from './controller/admin-user.controller';
-import { AdminUserService } from './service/admin-user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { UserModule } from 'src/user/user.module';
@@ -35,8 +34,5 @@ import { BlogModule } from 'src/blog/blog.module';
     AdminWebResourceController,
     AdminWebBlogController,
   ],
-  providers: [
-    AdminUserService,
-  ]
 })
 export class AdminModule { }

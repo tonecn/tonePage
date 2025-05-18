@@ -75,7 +75,7 @@ export function CreateUserEditor({ children, onRefresh }: CreateUserEditorProps)
                             <Label htmlFor="password">密码</Label>
                             <Input id="password" name="password" />
                         </div>
-                        <Button type="submit">保存</Button>
+                        <Button type="submit">创建</Button>
                     </form>
 
                     <DrawerFooter className="pt-2">

@@ -51,12 +51,23 @@ export class UserService {
         }
     }
 
-    async delete(userId: string): Promise<void> {
-        const existingUser = await this.userRepository.findOne({ where: { userId } });
+    async delete(userId: string, soft: boolean) {
+        const existingUser = await this.userRepository.findOne({ where: { userId }, withDeleted: true });
         if (!existingUser) {
-            throw new BadRequestException('User not found');
+            throw new BadRequestException('用户不存在');
         }
-        await this.userRepository.softDelete(existingUser.userId);
+
+        if (existingUser.deletedAt && soft) {
+            throw new BadRequestException('账户已注销，不得重复操作')
+        }
+
+        if (!existingUser.deletedAt && !soft) {
+            throw new BadRequestException('账号未注销，请先注销再执行删除操作')
+        }
+
+        return soft
+            ? await this.userRepository.softDelete(existingUser.userId)
+            : await this.userRepository.delete(existingUser.userId)
     }
 
     hashPassword(password: string, salt: string): string {

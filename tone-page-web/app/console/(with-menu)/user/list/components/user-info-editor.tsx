@@ -27,17 +27,17 @@ import {
 } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export function UserInfoEditor({
     onClose,
     onUserUpdate,
-    onUserDelete,
+    onUserSoftDelete,
     userId,
 }: {
     onClose: () => void,
     onUserUpdate: (user: User) => void,
-    onUserDelete: (userId: string) => void,
+    onUserSoftDelete: (userId: string) => void,
     userId: string
 }) {
     const { user, isLoading, error } = useUser(userId);
@@ -65,12 +65,12 @@ export function UserInfoEditor({
     const handleRemove = async (userId: string) => {
         try {
             setRemoveLoading(true);
-            await AdminApi.user.remove(userId);
-            toast.success("删除成功");
-            onUserDelete(userId);
+            await AdminApi.user.remove(userId, true);
+            toast.success("注销成功");
+            onUserSoftDelete(userId);
             onClose();
         } catch (error) {
-            toast.error((error as Error).message || "删除失败");
+            toast.error((error as Error).message || "注销失败");
         } finally {
             setRemoveLoading(false);
         }
@@ -208,18 +208,18 @@ function ProfileForm({ className, user, onSetPassword, onRemove, passwordDialogO
 
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
-                        <Button type="button" variant="destructive" className="flex-1">删除用户</Button>
+                        <Button type="button" variant="destructive" className="flex-1">注销</Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>是否要删除该用户?</AlertDialogTitle>
+                            <AlertDialogTitle>是否要注销该账号?</AlertDialogTitle>
                             <AlertDialogDescription>
-                                该操作无法撤销，这会永久删除该用户的所有数据
+                                该操作无法撤销，稍后可通过删除来彻底清理该用户信息
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel>取消</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => onRemove(user.userId)}>删除</AlertDialogAction>
+                            <AlertDialogAction onClick={() => onRemove(user.userId)}>注销</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>

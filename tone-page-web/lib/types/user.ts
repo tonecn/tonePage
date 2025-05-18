@@ -7,4 +7,5 @@ export interface User {
     avatar?: string;
     createdAt: string;
     updatedAt: string;
+    deletedAt: string | null;
 }

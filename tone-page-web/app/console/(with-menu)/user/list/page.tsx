@@ -8,13 +8,17 @@ import { useState } from "react";
 import { UserInfoEditor } from "./components/user-info-editor";
 import { User } from "@/lib/types/user";
 import { CreateUserEditor } from "./components/create-user-editor";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { AdminApi } from "@/lib/api";
+import { toast } from "sonner";
+import { ApiError } from "next/dist/server/api-utils";
 
 
 export default function Page() {
     const { users, isLoading, error, total, page, pageSize, mutate, refresh } = useUserList();
     const [editorUserId, setEditorUserId] = useState("");
 
-    const handleUserUpdate = async (newUser: User) => {
+    const handleUserUpdateLocal = async (newUser: User) => {
         await mutate(
             (data) => {
                 if (!data) return data;
@@ -31,11 +35,14 @@ export default function Page() {
         )
     }
 
-    const handleUserDelete = async (userId: string) => {
+    const handleUserDeleteLocal = async (userId: string, soft: boolean) => {
         await mutate(
             (data) => {
                 if (!data) return data;
-                return {
+                return soft ? {
+                    ...data,
+                    items: data.items.map(u => u.userId === userId ? { ...u, deletedAt: new Date().toLocaleString() } : u)
+                } : {
                     ...data,
                     items: data.items.filter((user) => user.userId !== userId),
                 };
@@ -44,6 +51,18 @@ export default function Page() {
                 revalidate: false,
             }
         )
+    }
+
+    const [deletedUserId, setDeletedUserId] = useState('');
+    const handleUserDelete = async (userId: string) => {
+        try {
+            await AdminApi.user.remove(userId, false);
+            toast.success('删除成功');
+            handleUserDeleteLocal(userId, false);
+            setDeletedUserId('');
+        } catch (error) {
+            toast.error((error as ApiError).message || '删除失败');
+        }
     }
 
     return (
@@ -86,7 +105,12 @@ export default function Page() {
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>{user.phone}</TableCell>
                                 <TableCell>
-                                    <Button className="cursor-pointer" variant='outline' size='sm' onClick={() => setEditorUserId(user.userId)}>编辑</Button>
+                                    {user.deletedAt
+                                        ? <Button className="cursor-pointer" variant='destructive' size='sm'
+                                            onClick={() => setDeletedUserId(user.userId)}>删除</Button>
+                                        : <Button className="cursor-pointer" variant='outline' size='sm'
+                                            onClick={() => setEditorUserId(user.userId)}>编辑</Button>
+                                    }
                                 </TableCell>
                             </TableRow>
                         ))
@@ -104,14 +128,29 @@ export default function Page() {
                         </TableRow>
                     )}
                 </TableBody>
-            </Table>
+            </Table >
 
             <UserInfoEditor
                 onClose={() => setEditorUserId('')}
                 userId={editorUserId}
-                onUserUpdate={handleUserUpdate}
-                onUserDelete={handleUserDelete}
+                onUserUpdate={handleUserUpdateLocal}
+                onUserSoftDelete={userId => handleUserDeleteLocal(userId, true)}
             />
+
+            <AlertDialog open={!!deletedUserId} onOpenChange={o => !o && setDeletedUserId('')}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>是否要彻底删除账号?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            该操作无法撤销，会彻底删除该账号相关连的所有数据
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>取消</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleUserDelete(deletedUserId)}>删除</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     )
 }

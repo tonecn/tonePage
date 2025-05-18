@@ -4,6 +4,7 @@ import { CreateDto } from "../dto/admin-user/create.dto";
 import { UserService } from "src/user/user.service";
 import { UpdateDto } from "../dto/admin-user/update.dto";
 import { UpdatePasswordDto } from "../dto/admin-user/update-password.dto";
+import { RemoveUserDto } from "../dto/admin-user/remove.dto";
 
 @Controller('admin/user')
 export class AdminUserController {
@@ -53,8 +54,9 @@ export class AdminUserController {
     @Delete(':userId')
     async delete(
         @Param('userId', new ParseUUIDPipe({ version: '4' })) userId: string,
+        @Query() dto: RemoveUserDto,
     ) {
-        return this.userService.delete(userId);
+        return this.userService.delete(userId, dto.soft);
     }
 
     @Post(':userId/password')
