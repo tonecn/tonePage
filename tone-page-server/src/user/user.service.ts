@@ -95,6 +95,8 @@ export class UserService {
     async list(page = 1, pageSize = 20) {
         const queryBuilder = this.userRepository.createQueryBuilder('user')
 
+        queryBuilder.withDeleted();
+
         queryBuilder.orderBy('user.createdAt', 'DESC');
 
         queryBuilder.skip((page - 1) * pageSize);
