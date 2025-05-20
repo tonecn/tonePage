@@ -4,6 +4,7 @@ import * as React from "react"
 import {
   CloudUpload,
   Inbox,
+  Mail,
   Server,
   SquareTerminal,
   UsersRound,
@@ -58,6 +59,29 @@ const data = {
           title: "角色/权限",
           url: "/console/user/role",
         },
+      ],
+    },
+    {
+      title: "邮件系统",
+      url: "/console/mail",
+      icon: Mail,
+      items: [
+        {
+          title: "收件箱",
+          url: "/console/mail/inbox",
+        },
+        {
+          title: "已发送",
+          url: "/console/mail/sent",
+        },
+        {
+          title: "发送邮件",
+          url: "/console/mail/send",
+        },
+        {
+          title: "邮件管理",
+          url: "/console/mail/manage"
+        }
       ],
     },
     {
