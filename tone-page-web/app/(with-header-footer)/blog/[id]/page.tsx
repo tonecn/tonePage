@@ -12,6 +12,7 @@ import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 import rehypeRaw from 'rehype-raw'
 import { Skeleton } from "@/components/ui/skeleton";
+import { BlogComments } from "./components/BlogComments";
 
 export default function Blog() {
     const params = useParams();
@@ -72,6 +73,13 @@ export default function Blog() {
                                 a: ({ node, ...props }) => <a className="hover:underline" {...props} />,
                             }}
                         />
+                    </>
+                )}
+
+                {data && (
+                    <>
+                        <div className="border my-5"></div>
+                        <BlogComments blogId={data.id} />
                     </>
                 )}
             </div>

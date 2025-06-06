@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Blog } from './entity/Blog.entity';
 import { Repository } from 'typeorm';
+import { BlogComment } from './entity/BlogComment';
 
 @Injectable()
 export class BlogService {
@@ -9,6 +10,8 @@ export class BlogService {
     constructor(
         @InjectRepository(Blog)
         private readonly blogRepository: Repository<Blog>,
+        @InjectRepository(BlogComment)
+        private readonly blogCommentRepository: Repository<BlogComment>,
     ) { }
 
     async list() {
@@ -42,5 +45,20 @@ export class BlogService {
 
     async incrementViewCount(id: string) {
         await this.blogRepository.increment({ id }, 'viewCount', 1);
+    }
+
+    async getComments(id: string) {
+        return this.blogCommentRepository.find({
+            where: { blogId: id },
+            relations: ['user'],
+            order: {
+                createdAt: 'DESC',
+            }
+        });
+    }
+
+    async createComment(comment: Partial<BlogComment>) {
+        const newComment = this.blogCommentRepository.create(comment);
+        return this.blogCommentRepository.save(newComment);
     }
 }

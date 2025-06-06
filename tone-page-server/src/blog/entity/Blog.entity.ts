@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BlogComment } from "./BlogComment";
 
 @Entity()
 export class Blog {
@@ -27,4 +28,8 @@ export class Blog {
     deletedAt: Date;
 
     // 权限关系 TODO
+
+    // 关系
+    @OneToMany(() => BlogComment, blog => blog.id)
+    comments: BlogComment[];
 }

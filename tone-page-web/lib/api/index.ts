@@ -4,3 +4,4 @@ export * as AdminApi from './admin/index';
 export * as ResourceApi from './resource/index';
 export * as BlogApi from './blog/index';
 export * as UserApi from './user/index';
+export * as OssApi from './oss/index';
