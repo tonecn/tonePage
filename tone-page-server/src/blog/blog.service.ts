@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Blog } from './entity/Blog.entity';
 import { Repository } from 'typeorm';
 import { BlogComment } from './entity/BlogComment';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class BlogService {

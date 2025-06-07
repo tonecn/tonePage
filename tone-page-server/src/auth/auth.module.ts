@@ -9,6 +9,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { VerificationModule } from 'src/verification/verification.module';
+import { OptionalAuthGuard } from './strategies/OptionalAuthGuard';
 
 @Module({
   imports: [
@@ -32,11 +33,13 @@ import { VerificationModule } from 'src/verification/verification.module';
   providers: [
     AuthService,
     JwtStrategy,
+    OptionalAuthGuard,
   ],
   exports: [
     PassportModule,
     JwtStrategy,
     AuthService,
+    OptionalAuthGuard,
   ]
 })
 export class AuthModule { }
