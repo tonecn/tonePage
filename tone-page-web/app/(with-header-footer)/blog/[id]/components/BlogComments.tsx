@@ -1,23 +1,34 @@
 import useSWR from "swr";
 import { BlogCommentTool } from "./BlogCommentTool";
 import { BlogApi } from "@/lib/api";
+import { BlogComment } from "@/lib/types/blogComment";
 
 export function BlogComments({ blogId }: { blogId: string }) {
-    const { data, isLoading, error } = useSWR(
+    const { data, isLoading, error, mutate } = useSWR(
         `/api/blog/${blogId}/comments`,
         () => BlogApi.getComments(blogId),
     )
 
+    const insertComment = async (newOne: BlogComment) => {
+        await mutate(
+            (comments) => {
+                if (!comments) return [newOne];
+                return [newOne, ...comments]
+            },
+            { revalidate: false }
+        )
+    }
+
     return (
         data && <div className="" >
             <h1 className="px-2 border-l-4 border-zinc-300">评论 {data.length}</h1>
-            <BlogCommentTool blogId={blogId} />
+            <BlogCommentTool blogId={blogId} onInsertComment={insertComment} />
             <div className="flex flex-col gap-3">
                 {
                     data.filter(d => !d.parentId)
                         .map(d => (
                             <div key={d.id}>
-                                <h1 className="text-zinc-500">{d.user ? d.user : '匿名'}</h1>
+                                <h1 className="text-zinc-500">{d.user ? d.user.nickname : '匿名'}</h1>
                                 <div>{d.content}</div>
                                 <div className="text-xs text-zinc-500 flex gap-2">
                                     <p>{new Date(d.createdAt).toLocaleString()}</p>
@@ -30,7 +41,7 @@ export function BlogComments({ blogId }: { blogId: string }) {
                                             {
                                                 data.filter(c => c.parentId === d.id).map(c => (
                                                     <div key={c.id}>
-                                                        <h1 className="text-zinc-500">{c.user ? c.user : '匿名'}</h1>
+                                                        <h1 className="text-zinc-500">{c.user ? c.user.nickname : '匿名'}</h1>
                                                         <div>{c.content}</div>
                                                         <p className="text-xs text-zinc-500 flex gap-2">
                                                             <p>{new Date().toLocaleString()}</p>
