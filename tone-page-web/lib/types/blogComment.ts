@@ -8,4 +8,5 @@ export interface BlogComment {
     deletedAt: string | null;
     parentId: string | null;
     user: User | null;
+    address: string;
 }

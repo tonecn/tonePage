@@ -41,7 +41,7 @@ export function BlogComments({ blogId }: { blogId: string }) {
                                 <div className="whitespace-pre-wrap break-all">{d.content}</div>
                                 <div className="text-xs text-zinc-500 flex gap-2">
                                     <p>{new Date(d.createdAt).toLocaleString()}</p>
-                                    <p>未知</p>
+                                    <p>{d.address}</p>
                                     <p className="text-zinc-900 cursor-pointer" onClick={() => setReplayTarget(d)}>回复</p>
                                 </div>
                                 {
@@ -54,7 +54,7 @@ export function BlogComments({ blogId }: { blogId: string }) {
                                                         <div className="whitespace-pre-wrap break-all">{c.content}</div>
                                                         <div className="text-xs text-zinc-500 flex gap-2">
                                                             <p>{new Date().toLocaleString()}</p>
-                                                            <p>未知</p>
+                                                            <p>{c.address}</p>
                                                         </div>
                                                     </div>
                                                 ))

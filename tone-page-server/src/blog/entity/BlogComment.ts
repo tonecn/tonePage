@@ -9,11 +9,11 @@ export class BlogComment {
     @Column()
     content: string;
 
-    // @Column()
-    // ip: string;
+    @Column()
+    ip: string;
 
-    // @Column()
-    // address: string;
+    @Column()
+    address: string;
 
     @CreateDateColumn({ precision: 3 })
     createdAt: Date;
