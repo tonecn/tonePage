@@ -12,6 +12,7 @@ import { ResourceModule } from './resource/resource.module';
 import { BlogModule } from './blog/blog.module';
 import { RoleModule } from './role/role.module';
 import { AdminModule } from './admin/admin.module';
+import { OssModule } from './oss/oss.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { AdminModule } from './admin/admin.module';
     BlogModule,
     RoleModule,
     AdminModule,
+    OssModule,
   ],
   controllers: [AppController],
   providers: [AppService],
