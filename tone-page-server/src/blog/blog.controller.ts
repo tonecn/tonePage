@@ -60,10 +60,30 @@ export class BlogController {
 
         let user = userId ? await this.userService.findOne({ userId }) : null;
 
+        // 获取IP归属地
+        const ip = req.ip || req.socket.remoteAddress || req.headers['x-forwarded-for'] || '未知';
+        let address = '未知';
+        if (!['::1'].includes(ip)) {
+            const addressRes = await (await fetch(`https://mesh.if.iqiyi.com/aid/ip/info?version=1.1.1&ip=${ip}`)).json();
+            if (addressRes?.code == 0) {
+                const country: string = addressRes?.data?.countryCN || '未知';
+                const province: string = addressRes?.data?.provinceCN || '中国';
+                if (country !== '中国') {
+                    // 非中国，显示国家
+                    address = country;
+                } else {
+                    // 中国，显示省份
+                    address = province;
+                }
+            }
+        }
+
         const comment = {
             ...commentData,
             blogId: id,
             user: user,
+            ip: ip,
+            address: address,
         };
 
         return await this.blogService.createComment(comment);
