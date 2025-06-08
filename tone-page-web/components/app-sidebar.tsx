@@ -7,6 +7,7 @@ import {
   Mail,
   Server,
   SquareTerminal,
+  Undo2,
   UsersRound,
 } from "lucide-react"
 
@@ -98,6 +99,11 @@ const data = {
       title: "虚拟主机",
       url: "/console/vserver",
       icon: Server,
+    },
+    {
+      title: "前往首页",
+      url: "/",
+      icon: Undo2,
     },
   ],
 }
