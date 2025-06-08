@@ -61,7 +61,7 @@ export default function Blog() {
                                 img: ({ node, src, ...props }) => (
                                     <PhotoProvider>
                                         <PhotoView src={src as string}>
-                                            <img src={src}  {...props} />
+                                            <img src={src}  {...props} className="cursor-pointer" />
                                         </PhotoView>
                                     </PhotoProvider>
                                 ),
