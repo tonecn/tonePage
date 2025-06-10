@@ -49,18 +49,8 @@ const data = {
     },
     {
       title: "用户管理",
-      url: "/console/user",
+      url: "/console/user/list",
       icon: UsersRound,
-      items: [
-        {
-          title: "用户",
-          url: "/console/user/list",
-        },
-        {
-          title: "角色/权限",
-          url: "/console/user/role",
-        },
-      ],
     },
     {
       title: "邮件系统",
