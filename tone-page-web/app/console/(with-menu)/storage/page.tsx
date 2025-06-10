@@ -149,7 +149,7 @@ export default function Page() {
                 ><Delete />删除</Button>
                 <div className='flex items-center'>
                     <Button variant='secondary' size='icon' className='cursor-pointer' onClick={() => handleRefreshFileList()}><RefreshCcw /></Button>
-                    <div className='text-sm ml-2'>共有 {fileList?.length ?? 0} 个文件，目前最大支持100个文件</div>
+                    {fileList && <div className='text-sm ml-2'>共有 {fileList.length} 个文件，目前最大支持100个文件</div>}
                 </div>
             </div>
             <Table>
