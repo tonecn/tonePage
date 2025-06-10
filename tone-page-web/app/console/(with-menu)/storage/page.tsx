@@ -122,6 +122,7 @@ export default function Page() {
         const a = document.createElement('a');
         a.href = url;
         a.download = localFilename;
+        a.target = '_blank';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
