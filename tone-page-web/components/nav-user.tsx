@@ -141,7 +141,7 @@ export function NavUser({ }: {}) {
                 <UserRoundCog />
                 账户信息
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setPasswordOpen(true)}>
+              <DropdownMenuItem onClick={() => setTimeout(() => { setPasswordOpen(true) }, 0)}>
                 <KeyRound />
                 修改密码
               </DropdownMenuItem>
