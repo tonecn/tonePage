@@ -51,9 +51,9 @@ export default function BlogTable({ blogs, error, onRefresh }: BlogTableProps) {
                                 </Tooltip>
                             </TooltipProvider>
                         </TableCell>
-                        <TableCell className="whitespace-normal break-words">{blog.title}</TableCell>
-                        <TableCell className="whitespace-normal break-words">{blog.description}</TableCell>
-                        <TableCell className="whitespace-normal break-words">{blog.contentUrl}</TableCell>
+                        <TableCell className="whitespace-normal break-all">{blog.title}</TableCell>
+                        <TableCell className="whitespace-normal break-all">{blog.description}</TableCell>
+                        <TableCell className="whitespace-normal break-all">{blog.contentUrl}</TableCell>
                         <TableCell className="text-right">
                             <BlogEdit id={blog.id} onRefresh={() => onRefresh()}>
                                 <Button variant={'outline'} size={'sm'}>编辑</Button>

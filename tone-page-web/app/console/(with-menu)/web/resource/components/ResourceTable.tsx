@@ -52,10 +52,10 @@ export default function ResourceTable({ resources, errorMessage, onRefresh }: Re
                                     </Tooltip>
                                 </TooltipProvider>
                             </TableCell>
-                            <TableCell>{resource.title}</TableCell>
-                            <TableCell className="whitespace-normal break-words">{resource.description}</TableCell>
-                            <TableCell className="whitespace-normal break-words">{resource.imageUrl}</TableCell>
-                            <TableCell className="whitespace-normal break-words">{resource.link}</TableCell>
+                            <TableCell className="whitespace-normal break-all">{resource.title}</TableCell>
+                            <TableCell className="whitespace-normal break-all">{resource.description}</TableCell>
+                            <TableCell className="whitespace-normal break-all">{resource.imageUrl}</TableCell>
+                            <TableCell className="whitespace-normal break-all">{resource.link}</TableCell>
                             <TableCell>
                                 <div className="flex flex-wrap gap-1">
                                     {resource.tags.map((tag, index) => (
