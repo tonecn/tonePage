@@ -133,9 +133,6 @@ export default function Page() {
 
     return (
         <div>
-            <div>
-                <Button variant='secondary' size='icon' className='cursor-pointer' onClick={() => handleRefreshFileList()}><RefreshCcw /></Button>
-            </div>
             <div className='mt-1 flex gap-2'>
                 <UploadManager
                     store={store}
@@ -150,6 +147,10 @@ export default function Page() {
                     disabled={(checkedFileIds?.length || 0) <= 0}
                     onClick={() => handleDeleteCheckedFiles()}
                 ><Delete />删除</Button>
+                <div className='flex items-center'>
+                    <Button variant='secondary' size='icon' className='cursor-pointer' onClick={() => handleRefreshFileList()}><RefreshCcw /></Button>
+                    <div className='text-sm ml-2'>共有 {fileList?.length ?? 0} 个文件，目前最大支持100个文件</div>
+                </div>
             </div>
             <Table>
                 <TableCaption>
