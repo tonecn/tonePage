@@ -8,9 +8,13 @@ import { AuthModule } from 'src/auth/auth.module';
 import { UserModule } from 'src/user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Blog, BlogComment]), AuthModule, UserModule],
+  imports: [
+    TypeOrmModule.forFeature([Blog, BlogComment]),
+    AuthModule,
+    UserModule,
+  ],
   controllers: [BlogController],
   providers: [BlogService],
   exports: [BlogService],
 })
-export class BlogModule { }
+export class BlogModule {}

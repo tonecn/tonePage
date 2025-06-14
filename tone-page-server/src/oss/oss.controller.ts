@@ -4,18 +4,15 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Controller('oss')
 export class OssController {
+  constructor(private readonly ossService: OssService) {}
 
-    constructor(
-        private readonly ossService: OssService,
-    ) { }
-
-    @UseGuards(AuthGuard('jwt'))
-    @Get('sts')
-    async getStsToken(@Request() req) {
-        const { userId, sessionId } = req.user;
-        return {
-            ...await this.ossService.getStsToken(`${userId}`),
-            userId,
-        }
-    }
+  @UseGuards(AuthGuard('jwt'))
+  @Get('sts')
+  async getStsToken(@Request() req) {
+    const { userId } = req.user;
+    return {
+      ...(await this.ossService.getStsToken(`${userId}`)),
+      userId,
+    };
+  }
 }

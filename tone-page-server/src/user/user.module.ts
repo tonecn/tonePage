@@ -8,12 +8,12 @@ import { AuthModule } from 'src/auth/auth.module';
 import { UserSessionService } from './services/user-session.service';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([User, UserSession]),
-        forwardRef(() => AuthModule),// 解决循环依赖问题
-    ],
-    controllers: [UserController],
-    providers: [UserService, UserSessionService],
-    exports: [UserService, UserSessionService],
+  imports: [
+    TypeOrmModule.forFeature([User, UserSession]),
+    forwardRef(() => AuthModule), // 解决循环依赖问题
+  ],
+  controllers: [UserController],
+  providers: [UserService, UserSessionService],
+  exports: [UserService, UserSessionService],
 })
-export class UserModule { }
+export class UserModule {}

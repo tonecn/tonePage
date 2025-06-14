@@ -1,47 +1,46 @@
-import { InjectRepository } from "@nestjs/typeorm";
-import { Injectable } from "@nestjs/common";
-import { UserSession } from "../entities/user-session.entity";
-import { Repository } from "typeorm";
+import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable } from '@nestjs/common';
+import { UserSession } from '../entities/user-session.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserSessionService {
-    constructor(
-        @InjectRepository(UserSession)
-        private readonly userSessionRepository: Repository<UserSession>,
-    ) { }
+  constructor(
+    @InjectRepository(UserSession)
+    private readonly userSessionRepository: Repository<UserSession>,
+  ) {}
 
+  async createSession(userId: string, sessionId: string): Promise<UserSession> {
+    const session = this.userSessionRepository.create({
+      userId,
+      sessionId,
+    });
+    return await this.userSessionRepository.save(session);
+  }
 
-    async createSession(userId: string, sessionId: string): Promise<UserSession> {
-        const session = this.userSessionRepository.create({
-            userId,
-            sessionId,
-        });
-        return await this.userSessionRepository.save(session);
+  async isSessionValid(userId: string, sessionId: string): Promise<boolean> {
+    const session = await this.userSessionRepository.findOne({
+      where: {
+        userId,
+        sessionId,
+        deletedAt: null,
+      },
+    });
+
+    return !!session;
+  }
+
+  async invalidateSession(userId: string, sessionId: string): Promise<void> {
+    const session = await this.userSessionRepository.findOne({
+      where: {
+        userId,
+        sessionId,
+        deletedAt: null,
+      },
+    });
+
+    if (session) {
+      await this.userSessionRepository.softDelete(session.id);
     }
-
-    async isSessionValid(userId: string, sessionId: string): Promise<boolean> {
-        const session = await this.userSessionRepository.findOne({
-            where: {
-                userId,
-                sessionId,
-                deletedAt: null,
-            }
-        });
-
-        return !!session;
-    }
-
-    async invalidateSession(userId: string, sessionId: string): Promise<void> {
-        const session = await this.userSessionRepository.findOne({
-            where: {
-                userId,
-                sessionId,
-                deletedAt: null,
-            }
-        });
-
-        if (session) {
-            await this.userSessionRepository.softDelete(session.id);
-        }
-    }
+  }
 }

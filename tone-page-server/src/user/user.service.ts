@@ -1,124 +1,138 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { QueryFailedError, Repository } from 'typeorm';
-import { createHash, ECDH } from 'crypto';
+import { createHash } from 'crypto';
 import { v4 as uuid } from 'uuid';
 
-type UserFindOptions = Partial<Pick<User, 'userId' | 'username' | 'phone' | 'email'>>;
+type UserFindOptions = Partial<
+  Pick<User, 'userId' | 'username' | 'phone' | 'email'>
+>;
 
 @Injectable()
 export class UserService {
-    constructor(
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
-    ) { }
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
 
-    async findOne(options: UserFindOptions | UserFindOptions[], additionalOptions?: { withDeleted?: boolean }): Promise<User | null> {
-        if (Object.keys(options).length === 0) {
-            throw new BadRequestException('查询条件不能为空');
-        }
-        return this.userRepository.findOne({
-            where: options,
-            withDeleted: additionalOptions?.withDeleted || false,
-        });
+  async findOne(
+    options: UserFindOptions | UserFindOptions[],
+    additionalOptions?: { withDeleted?: boolean },
+  ): Promise<User | null> {
+    if (Object.keys(options).length === 0) {
+      throw new BadRequestException('查询条件不能为空');
+    }
+    return this.userRepository.findOne({
+      where: options,
+      withDeleted: additionalOptions?.withDeleted || false,
+    });
+  }
+
+  async create(user: Partial<User>): Promise<User> {
+    try {
+      const newUser = this.userRepository.create(user);
+      return await this.userRepository.save(newUser);
+    } catch (error) {
+      if (error instanceof QueryFailedError) {
+        throw new ConflictException(this.getDuplicateErrorMessage(error));
+      }
+      throw new BadRequestException('创建用户失败');
+    }
+  }
+
+  async update(userId: string, user: Partial<User>): Promise<User> {
+    const existingUser = await this.userRepository.findOne({
+      where: { userId },
+    });
+    if (!existingUser) {
+      throw new BadRequestException('User not found');
+    }
+    try {
+      Object.assign(existingUser, user);
+      return await this.userRepository.save(existingUser);
+    } catch (error) {
+      if (error instanceof QueryFailedError) {
+        throw new ConflictException(this.getDuplicateErrorMessage(error));
+      }
+    }
+  }
+
+  async delete(userId: string, soft: boolean) {
+    const existingUser = await this.userRepository.findOne({
+      where: { userId },
+      withDeleted: true,
+    });
+    if (!existingUser) {
+      throw new BadRequestException('用户不存在');
     }
 
-    async create(user: Partial<User>): Promise<User> {
-        try {
-            const newUser = this.userRepository.create(user);
-            return await this.userRepository.save(newUser);
-        } catch (error) {
-            if (error instanceof QueryFailedError) {
-                throw new ConflictException(this.getDuplicateErrorMessage(error));
-            }
-            throw new BadRequestException('创建用户失败');
-        }
+    if (existingUser.deletedAt && soft) {
+      throw new BadRequestException('账户已注销，不得重复操作');
     }
 
-    async update(userId: string, user: Partial<User>): Promise<User> {
-        const existingUser = await this.userRepository.findOne({ where: { userId } });
-        if (!existingUser) {
-            throw new BadRequestException('User not found');
-        }
-        try {
-            Object.assign(existingUser, user);
-            return await this.userRepository.save(existingUser);
-        } catch (error) {
-            if (error instanceof QueryFailedError) {
-                throw new ConflictException(this.getDuplicateErrorMessage(error));
-            }
-        }
+    if (!existingUser.deletedAt && !soft) {
+      throw new BadRequestException('账号未注销，请先注销再执行删除操作');
     }
 
-    async delete(userId: string, soft: boolean) {
-        const existingUser = await this.userRepository.findOne({ where: { userId }, withDeleted: true });
-        if (!existingUser) {
-            throw new BadRequestException('用户不存在');
-        }
+    return soft
+      ? await this.userRepository.softDelete(existingUser.userId)
+      : await this.userRepository.delete(existingUser.userId);
+  }
 
-        if (existingUser.deletedAt && soft) {
-            throw new BadRequestException('账户已注销，不得重复操作')
-        }
+  hashPassword(password: string, salt: string): string {
+    return createHash('sha256').update(`${password}${salt}`).digest('hex');
+  }
 
-        if (!existingUser.deletedAt && !soft) {
-            throw new BadRequestException('账号未注销，请先注销再执行删除操作')
-        }
+  generateSalt(): string {
+    return uuid().replace(/-/g, '');
+  }
 
-        return soft
-            ? await this.userRepository.softDelete(existingUser.userId)
-            : await this.userRepository.delete(existingUser.userId)
+  async setPassword(userId: string, password: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { userId } });
+    if (!user) {
+      throw new BadRequestException('User not found');
     }
+    const salt = this.generateSalt();
+    user.password_hash = this.hashPassword(password, salt);
+    user.salt = salt;
+    return this.userRepository.save(user);
+  }
 
-    hashPassword(password: string, salt: string): string {
-        return createHash('sha256').update(`${password}${salt}`).digest('hex');
+  private getDuplicateErrorMessage(error: QueryFailedError): string {
+    // 根据具体的错误信息返回友好的提示
+    if (error.message.includes('IDX_user_username')) {
+      return '账户名已被使用';
     }
-
-    generateSalt(): string {
-        return uuid().replace(/-/g, '');
+    if (error.message.includes('IDX_user_email')) {
+      return '邮箱已被使用';
     }
-
-    async setPassword(userId: string, password: string): Promise<User> {
-        const user = await this.userRepository.findOne({ where: { userId } });
-        if (!user) {
-            throw new BadRequestException('User not found');
-        }
-        const salt = this.generateSalt();
-        user.password_hash = this.hashPassword(password, salt);
-        user.salt = salt;
-        return this.userRepository.save(user);
+    if (error.message.includes('IDX_user_phone')) {
+      return '手机号已被使用';
     }
+    return '数据已存在，请检查输入';
+  }
 
-    private getDuplicateErrorMessage(error: QueryFailedError): string {
-        // 根据具体的错误信息返回友好的提示
-        if (error.message.includes('IDX_user_username')) {
-            return '账户名已被使用';
-        }
-        if (error.message.includes('IDX_user_email')) {
-            return '邮箱已被使用';
-        }
-        if (error.message.includes('IDX_user_phone')) {
-            return '手机号已被使用';
-        }
-        return '数据已存在，请检查输入';
-    }
+  async list(page = 1, pageSize = 20) {
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
 
-    async list(page = 1, pageSize = 20) {
-        const queryBuilder = this.userRepository.createQueryBuilder('user')
+    queryBuilder.withDeleted();
 
-        queryBuilder.withDeleted();
+    queryBuilder.orderBy('user.createdAt', 'DESC');
 
-        queryBuilder.orderBy('user.createdAt', 'DESC');
+    queryBuilder.skip((page - 1) * pageSize);
+    queryBuilder.take(pageSize);
 
-        queryBuilder.skip((page - 1) * pageSize);
-        queryBuilder.take(pageSize);
-
-        const [items, total] = await queryBuilder.getManyAndCount();
-        return {
-            items,
-            total,
-            page,
-            pageSize,
-        }
-    }
+    const [items, total] = await queryBuilder.getManyAndCount();
+    return {
+      items,
+      total,
+      page,
+      pageSize,
+    };
+  }
 }

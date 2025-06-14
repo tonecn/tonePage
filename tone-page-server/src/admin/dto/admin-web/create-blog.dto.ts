@@ -1,12 +1,12 @@
-import { IsString } from "class-validator";
+import { IsString } from 'class-validator';
 
 export class CreateBlogDto {
-    @IsString()
-    title: string;
+  @IsString()
+  title: string;
 
-    @IsString()
-    description: string;
+  @IsString()
+  description: string;
 
-    @IsString()
-    contentUrl: string;
+  @IsString()
+  contentUrl: string;
 }

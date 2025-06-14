@@ -9,4 +9,4 @@ import { NotificationModule } from 'src/notification/notification.module';
   exports: [VerificationService],
   imports: [NotificationModule],
 })
-export class VerificationModule { }
+export class VerificationModule {}

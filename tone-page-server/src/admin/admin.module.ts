@@ -16,9 +16,7 @@ import { BlogModule } from 'src/blog/blog.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      User,
-    ]),
+    TypeOrmModule.forFeature([User]),
     UserModule,
     RoleModule,
     ResourceModule,
@@ -35,4 +33,4 @@ import { BlogModule } from 'src/blog/blog.module';
     AdminWebBlogController,
   ],
 })
-export class AdminModule { }
+export class AdminModule {}

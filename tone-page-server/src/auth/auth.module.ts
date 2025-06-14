@@ -25,21 +25,12 @@ import { OptionalAuthGuard } from './strategies/OptionalAuthGuard';
         signOptions: {
           expiresIn: configService.get<string>('JWT_EXPIRES_IN', '1d'),
         },
-      })
+      }),
     }),
     VerificationModule,
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    JwtStrategy,
-    OptionalAuthGuard,
-  ],
-  exports: [
-    PassportModule,
-    JwtStrategy,
-    AuthService,
-    OptionalAuthGuard,
-  ]
+  providers: [AuthService, JwtStrategy, OptionalAuthGuard],
+  exports: [PassportModule, JwtStrategy, AuthService, OptionalAuthGuard],
 })
-export class AuthModule { }
+export class AuthModule {}

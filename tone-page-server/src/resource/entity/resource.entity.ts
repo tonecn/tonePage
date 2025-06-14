@@ -1,34 +1,41 @@
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 type ResourceTag = {
-    name: string;
-    type: string;
-}
+  name: string;
+  type: string;
+};
 
 @Entity()
 export class Resource {
-    @PrimaryGeneratedColumn('uuid')
-    @Index()
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  @Index()
+  id: string;
 
-    @Column()
-    title: string;
+  @Column()
+  title: string;
 
-    @Column()
-    description: string;
+  @Column()
+  description: string;
 
-    @Column()
-    imageUrl: string;
+  @Column()
+  imageUrl: string;
 
-    @Column()
-    link: string;
+  @Column()
+  link: string;
 
-    @Column('jsonb')
-    tags: ResourceTag[];
+  @Column('jsonb')
+  tags: ResourceTag[];
 
-    @CreateDateColumn({ precision: 3 })
-    createdAt: Date;
+  @CreateDateColumn({ precision: 3 })
+  createdAt: Date;
 
-    @UpdateDateColumn({ precision: 3 })
-    updatedAt: Date;
+  @UpdateDateColumn({ precision: 3 })
+  updatedAt: Date;
 }

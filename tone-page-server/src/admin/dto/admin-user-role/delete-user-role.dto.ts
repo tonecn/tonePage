@@ -1,6 +1,6 @@
-import { IsUUID } from "class-validator";
+import { IsUUID } from 'class-validator';
 
 export class DeleteUserRoleDto {
-    @IsUUID('4')
-    roleId: string;
+  @IsUUID('4')
+  roleId: string;
 }

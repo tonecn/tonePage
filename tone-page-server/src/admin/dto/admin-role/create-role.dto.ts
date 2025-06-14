@@ -1,9 +1,9 @@
-import { IsString } from "class-validator";
+import { IsString } from 'class-validator';
 
 export class CreateRoleDto {
-    @IsString()
-    name: string
+  @IsString()
+  name: string;
 
-    @IsString()
-    localName: string;
+  @IsString()
+  localName: string;
 }

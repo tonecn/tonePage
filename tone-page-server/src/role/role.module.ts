@@ -10,8 +10,20 @@ import { UserRole } from './entities/user-role.entity';
 import { PermissionService } from './services/permission.service';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Role, Permission, RolePermission, UserRole])],
-    providers: [RolePermissionService, RoleService, UserRoleService, PermissionService],
-    exports: [RolePermissionService, RoleService, UserRoleService, PermissionService],
+  imports: [
+    TypeOrmModule.forFeature([Role, Permission, RolePermission, UserRole]),
+  ],
+  providers: [
+    RolePermissionService,
+    RoleService,
+    UserRoleService,
+    PermissionService,
+  ],
+  exports: [
+    RolePermissionService,
+    RoleService,
+    UserRoleService,
+    PermissionService,
+  ],
 })
-export class RoleModule { }
+export class RoleModule {}

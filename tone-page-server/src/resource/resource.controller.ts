@@ -3,13 +3,10 @@ import { ResourceService } from './resource.service';
 
 @Controller('resource')
 export class ResourceController {
+  constructor(private readonly resourceService: ResourceService) {}
 
-    constructor(
-        private readonly resourceService: ResourceService,
-    ) { }
-
-    @Get()
-    async getResource() {
-        return this.resourceService.findAll();
-    }
+  @Get()
+  async getResource() {
+    return this.resourceService.findAll();
+  }
 }
