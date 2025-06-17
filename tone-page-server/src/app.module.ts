@@ -13,6 +13,7 @@ import { BlogModule } from './blog/blog.module';
 import { RoleModule } from './role/role.module';
 import { AdminModule } from './admin/admin.module';
 import { OssModule } from './oss/oss.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -29,6 +30,12 @@ import { OssModule } from './oss/oss.module';
       synchronize: process.env.NODE_ENV !== 'production', // Set to false in production
     }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
+    ThrottlerModule.forRoot({
+      throttlers: [{
+        limit: 1000,
+        ttl: 60000, // 1 minute
+      }],
+    }),
     UserModule,
     AuthModule,
     VerificationModule,
@@ -42,4 +49,4 @@ import { OssModule } from './oss/oss.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
