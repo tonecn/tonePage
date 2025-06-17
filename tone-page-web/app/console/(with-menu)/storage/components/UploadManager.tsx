@@ -16,11 +16,11 @@ import React, { useRef, useState } from "react";
 import { Progress } from '@/components/ui/progress';
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { OssStore } from "@/lib/oss/OssStore";
 
 interface UploadManagerProps {
     children: React.ReactNode;
-    store?: OSS;
-    basePath?: string;
+    ossStore?: OssStore;
     handleRefreshFileList?: () => void;
 }
 
@@ -31,7 +31,7 @@ interface UploadFileItem {
     progress: number;// 0 ~ 100
 }
 
-export function UploadManager({ children, store, basePath, handleRefreshFileList }: UploadManagerProps) {
+export function UploadManager({ children, ossStore, handleRefreshFileList }: UploadManagerProps) {
     const [filesList, setFileList] = useState<UploadFileItem[]>([]);
 
     const handleFileSelect = (fileList: FileList) => {
@@ -105,10 +105,10 @@ export function UploadManager({ children, store, basePath, handleRefreshFileList
 
     // 开始上传文件
     const startUploadFile = async (fileItem: UploadFileItem) => {
-        if (!store || !basePath) return;
+        if (!ossStore) return;
 
         let checkpoint: any;
-        await store.multipartUpload(`${basePath}/${fileItem.file.name}`, fileItem.file, {
+        await ossStore.storeMeta.store?.multipartUpload(`${ossStore.getWorkDir()}/${fileItem.file.name}`, fileItem.file, {
             checkpoint: checkpoint,
             progress: (p, cpt, res) => {
                 setFileList(currentFileList => {
