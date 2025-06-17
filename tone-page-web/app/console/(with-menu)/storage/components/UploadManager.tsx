@@ -100,6 +100,8 @@ export function UploadManager({ children, ossStore, handleRefreshFileList }: Upl
         } else {
             toast.success(`上传完成，共上传了${needUploadFiles.length}个文件`)
         }
+        // 清空上传成功的文件
+        setFileList(current => current.filter(f => f.status !== 'finish'));
         handleRefreshFileList?.();
     }
 
