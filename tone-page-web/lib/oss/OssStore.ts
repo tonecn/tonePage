@@ -88,7 +88,7 @@ export class OssStore {
 
         let failedCount = 0;
         for (const objectItem of objects) {
-            await this.deleteObject(objectItem.name).catch(e => failedCount++);
+            await this.deleteObject(objectItem.id).catch(e => failedCount++);
         }
 
         return { all: objects.length, failed: failedCount };
