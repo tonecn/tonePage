@@ -7,13 +7,20 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { CreateResourceDto } from 'src/admin/dto/admin-web/create-resource.dto';
+import { Role } from 'src/auth/role.enum';
+import { Roles } from 'src/common/decorators/role.decorator';
+import { RolesGuard } from 'src/common/guard/roles.guard';
 import { ResourceService } from 'src/resource/resource.service';
 
 @Controller('/admin/web/resource')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.Admin)
 export class AdminWebResourceController {
-  constructor(private readonly resourceService: ResourceService) {}
+  constructor(private readonly resourceService: ResourceService) { }
 
   @Get()
   async list() {

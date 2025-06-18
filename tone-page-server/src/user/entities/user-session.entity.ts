@@ -25,3 +25,7 @@ export class UserSession {
   @DeleteDateColumn({ nullable: true, precision: 3 })
   deletedAt: Date;
 }
+
+/**
+ * 考虑是否使用sessionId代替id，以节省存储空间
+ */

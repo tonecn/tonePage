@@ -1,3 +1,4 @@
+import { Role } from 'src/auth/role.enum';
 import {
   BeforeInsert,
   Column,
@@ -84,4 +85,7 @@ export class User {
 
   @DeleteDateColumn({ nullable: true, precision: 3 })
   deletedAt: Date;
+
+  @Column('simple-array', { default: '' })
+  roles: Role[];
 }

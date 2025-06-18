@@ -7,11 +7,18 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { CreateBlogDto } from 'src/admin/dto/admin-web/create-blog.dto';
+import { Role } from 'src/auth/role.enum';
 import { BlogService } from 'src/blog/blog.service';
+import { Roles } from 'src/common/decorators/role.decorator';
+import { RolesGuard } from 'src/common/guard/roles.guard';
 
 @Controller('/admin/web/blog')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.Admin)
 export class AdminWebBlogController {
   constructor(private readonly adminWebBlogService: BlogService) {}
 

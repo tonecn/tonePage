@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ListDto } from '../dto/admin-user/list.dto';
 import { CreateDto } from '../dto/admin-user/create.dto';
@@ -15,10 +16,16 @@ import { UserService } from 'src/user/user.service';
 import { UpdateDto } from '../dto/admin-user/update.dto';
 import { UpdatePasswordDto } from '../dto/admin-user/update-password.dto';
 import { RemoveUserDto } from '../dto/admin-user/remove.dto';
+import { RolesGuard } from 'src/common/guard/roles.guard';
+import { Roles } from 'src/common/decorators/role.decorator';
+import { Role } from 'src/auth/role.enum';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('admin/user')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.Admin)
 export class AdminUserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Get()
   async list(@Query() listDto: ListDto) {

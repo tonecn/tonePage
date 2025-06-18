@@ -18,8 +18,11 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
+  ) { }
 
+  /**
+   * @deprecated 尽量不使用该方法
+   */
   async findOne(
     options: UserFindOptions | UserFindOptions[],
     additionalOptions?: { withDeleted?: boolean },
@@ -30,6 +33,14 @@ export class UserService {
     return this.userRepository.findOne({
       where: options,
       withDeleted: additionalOptions?.withDeleted || false,
+    });
+  }
+
+  async findById(userId: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: {
+        userId,
+      }
     });
   }
 
@@ -114,7 +125,7 @@ export class UserService {
     if (error.message.includes('IDX_user_phone')) {
       return '手机号已被使用';
     }
-    return '数据已存在，请检查输入';
+    return '该登陆方式异常，请更换其他登陆方式或联系管理员';
   }
 
   async list(page = 1, pageSize = 20) {

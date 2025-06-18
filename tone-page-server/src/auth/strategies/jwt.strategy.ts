@@ -1,12 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UserSessionService } from 'src/user/services/user-session.service';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
+    private readonly userService: UserService,
     private readonly userSessionService: UserSessionService,
     private readonly configService: ConfigService,
   ) {
@@ -28,9 +30,14 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new UnauthorizedException('登录凭证已过期，请重新登录');
     }
 
+    const user = await this.userService.findById(userId);
+    if (!user) {
+      throw new BadRequestException('用户不存在');
+    }
+
     return {
-      userId,
-      sessionId,
+      ...user,
+      sessionId
     };
   }
 }
