@@ -24,6 +24,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
+import { User } from "@/lib/types/user"
 // This is sample data.
 const data = {
   user: {
@@ -98,7 +99,7 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ user, isUserLoading, ...props }: React.ComponentProps<typeof Sidebar> & { user: User | undefined, isUserLoading: boolean }) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -124,7 +125,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser />
+        <NavUser user={user} isUserLoading={isUserLoading} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

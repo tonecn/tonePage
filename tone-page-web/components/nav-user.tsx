@@ -26,39 +26,17 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import useSWR from "swr"
-import { authApi, UserApi } from "@/lib/api"
+import { authApi } from "@/lib/api"
 import { Skeleton } from "./ui/skeleton"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { ApiError } from "next/dist/server/api-utils"
 import SetPassword from "./nav-user/SetPassword"
 import { useState } from "react"
+import { User } from "@/lib/types/user"
 
-export function NavUser({ }: {}) {
+export function NavUser({ user, isUserLoading }: { user: User | undefined, isUserLoading: boolean }) {
   const { isMobile } = useSidebar();
   const router = useRouter();
-
-  const { data: user, isLoading, error } = useSWR(
-    '/api/user/me',
-    () => UserApi.me(),
-    {
-      onError: (error) => {
-        if (error.statusCode === 401) {
-          localStorage.removeItem('token');
-          toast.info('登录凭证已失效，请重新登录');
-          router.replace('/console/login');
-        }
-      }
-    }
-  );
-
-  if (!isLoading && !error && !user) {
-    console.log(isLoading, error, user)
-    router.replace('/console/login');
-    localStorage.removeItem('token');
-    toast.error('账户状态异常，请重新登录');
-  }
 
   async function logout() {
     try {
@@ -96,7 +74,7 @@ export function NavUser({ }: {}) {
                   </>
                 }
                 {
-                  isLoading && <div className="w-full flex items-center gap-2">
+                  isUserLoading && <div className="w-full flex items-center gap-2">
                     <Skeleton className="h-8 w-8 rounded-full" />
                     <div className="flex-1 flex flex-col gap-1">
                       <Skeleton className="w-full h-4" />
@@ -128,7 +106,7 @@ export function NavUser({ }: {}) {
                   </div>
                 }
                 {
-                  isLoading && <div className="flex items-center gap-2">
+                  isUserLoading && <div className="flex items-center gap-2">
                     <Skeleton className="h-8 w-8 rounded-full" />
                     <div className="flex-1 flex flex-col gap-1">
                       <Skeleton className="w-full h-4" />
