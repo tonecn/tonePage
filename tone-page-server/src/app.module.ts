@@ -10,7 +10,6 @@ import { NotificationModule } from './notification/notification.module';
 import { PassportModule } from '@nestjs/passport';
 import { ResourceModule } from './resource/resource.module';
 import { BlogModule } from './blog/blog.module';
-import { RoleModule } from './role/role.module';
 import { AdminModule } from './admin/admin.module';
 import { OssModule } from './oss/oss.module';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -42,7 +41,6 @@ import { ThrottlerModule } from '@nestjs/throttler';
     NotificationModule,
     ResourceModule,
     BlogModule,
-    RoleModule,
     AdminModule,
     OssModule,
   ],
