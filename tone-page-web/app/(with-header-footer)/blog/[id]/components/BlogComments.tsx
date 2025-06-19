@@ -3,12 +3,15 @@ import { BlogCommentTool } from "./BlogCommentTool";
 import { BlogApi } from "@/lib/api";
 import { BlogComment } from "@/lib/types/blogComment";
 import { useState } from "react";
+import { useUserMe } from "@/hooks/user/use-user-me";
 
 export function BlogComments({ blogId }: { blogId: string }) {
-    const { data, isLoading, error, mutate } = useSWR(
+    const { data, mutate } = useSWR(
         `/api/blog/${blogId}/comments`,
         () => BlogApi.getComments(blogId),
     )
+
+    const { user } = useUserMe();
 
     const insertComment = async (newOne: BlogComment) => {
         await mutate(
@@ -32,6 +35,13 @@ export function BlogComments({ blogId }: { blogId: string }) {
                 replayTarget={replayTarget}
                 handleClearReplayTarget={() => setReplayTarget(null)}
             />
+
+            <div className="text-sm text-zinc-600">
+                {
+                    user ? (<span>当前账户：{user.nickname}</span>) : (<span>当前未登录，留言名称为匿名，登录可前往控制台</span>)
+                }
+            </div>
+
             <div className="flex flex-col">
                 {
                     data.filter(d => !d.parentId)
