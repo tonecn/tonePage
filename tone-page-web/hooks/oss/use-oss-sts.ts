@@ -3,12 +3,12 @@ import { toast } from "sonner";
 import useSWR from "swr";
 
 export function useOssSts() {
-    const { data: stsTokenData, isLoading, error } = useSWR(
+    const { data: stsTokenData, isLoading, error, mutate } = useSWR(
         '/api/oss/sts',
         () => OssApi.getStsToken(),
         {
             shouldRetryOnError: false,
-            refreshInterval: 59 * 60 * 1000,
+            // refreshInterval: 59 * 60 * 1000,
             revalidateOnFocus: false,
             onError: (e) => {
                 toast.error(`${e.message || e}`)
@@ -20,5 +20,6 @@ export function useOssSts() {
         stsTokenData,
         isLoading,
         error,
+        mutate,
     }
 }

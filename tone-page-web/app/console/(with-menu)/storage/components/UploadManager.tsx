@@ -16,7 +16,7 @@ import { Progress } from '@/components/ui/progress';
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { OssStore } from "@/lib/oss/OssStore";
-import { Checkpoint } from "ali-oss";
+import OSS, { Checkpoint } from "ali-oss";
 
 interface UploadManagerProps {
     children: React.ReactNode;
@@ -82,7 +82,12 @@ export function UploadManager({ children, ossStore, handleRefreshFileList }: Upl
     }
 
     const [isUploading, setIsUploading] = useState(false);
+    /** 开始上传文件 */
     const handleUpload = async () => {
+        if (!ossStore) return;
+        let store: OSS;
+        try { store = ossStore.getStore(); } catch { return toast.error(`初始化失败`) };
+
         const needUploadFiles = filesList.filter(f => f.status !== 'finish');
         if (needUploadFiles.length === 0) return toast.info('请选择需要上传的文件');
 
@@ -90,7 +95,7 @@ export function UploadManager({ children, ossStore, handleRefreshFileList }: Upl
         setIsUploading(true);
         for (const fileItem of needUploadFiles) {
             fileItem.status = 'uploading';
-            await startUploadFile(fileItem).catch(() => { fileItem.status = 'failed'; failCount++; });
+            await startUploadFile(store, fileItem, ossStore.getWorkDir()).catch(() => { fileItem.status = 'failed'; failCount++; });
             fileItem.status = 'finish';
         }
         setIsUploading(false);
@@ -105,12 +110,11 @@ export function UploadManager({ children, ossStore, handleRefreshFileList }: Upl
         handleRefreshFileList?.();
     }
 
-    // 开始上传文件
-    const startUploadFile = async (fileItem: UploadFileItem) => {
-        if (!ossStore) return;
-
+    // 上传单个文件
+    const startUploadFile = async (store: OSS, fileItem: UploadFileItem, workDir?: string) => {
         let checkpoint: Checkpoint | undefined;
-        await ossStore.storeMeta.store?.multipartUpload(`${ossStore.getWorkDir()}/${fileItem.file.name}`, fileItem.file, {
+
+        await store.multipartUpload(`${workDir ? `${workDir}/` : ''}${fileItem.file.name}`, fileItem.file, {
             checkpoint: checkpoint,
             progress: (p, cpt) => {
                 setFileList(currentFileList => {

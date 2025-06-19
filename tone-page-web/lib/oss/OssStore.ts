@@ -1,5 +1,7 @@
 import { useOssStore } from "@/hooks/admin/web/blog/use-oss-store";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
+import { StsToken } from "../api/oss";
+import OSS from "ali-oss";
 
 export interface OssObjectItem {
     id: string;
@@ -14,25 +16,23 @@ export type OssObjectList = OssObjectItem[] | null;
 export class OssStore {
 
     private setObjectList?: Dispatch<SetStateAction<OssObjectList>>;
+    public store?: OSS;
+    private workDir: string;
 
-    public storeMeta: ReturnType<typeof useOssStore>;
-
-    constructor(private options: {
-        prefix?: string;
-        prefixAddUserId?: boolean;
-        objectList?: () => (OssObjectList | null);
+    constructor(options: {
+        workDir?: string;
         setObjectList?: Dispatch<SetStateAction<OssObjectList>>;
     } = {}) {
+        this.workDir = options.workDir ?? '';
         this.setObjectList = options.setObjectList;
+    }
 
-        this.storeMeta = useOssStore({
-            region: 'oss-cn-chengdu',
-            bucket: 'tone-personal',
-            onStsTokenDataChanged: (data) => {
-                if (!data) return;
-                this.loadObjectList();
-            }
-        });
+    public setStore(store: OSS | undefined) {
+        this.store = store;
+    }
+
+    public setSetObjectList(setObjectList: Dispatch<SetStateAction<OssObjectList>>) {
+        this.setObjectList = setObjectList;
     }
 
     public async loadObjectList() {
@@ -40,7 +40,7 @@ export class OssStore {
             throw new Error('setObjectList need provided');
         }
 
-        const store = await this.getStore();
+        const store = this.getStore();
         this.setObjectList(null);
 
         const workDir = this.getWorkDir();
@@ -70,17 +70,15 @@ export class OssStore {
     }
 
     public async deleteObject(objectItem: OssObjectItem) {
-        if (!this.storeMeta.store || !this.storeMeta.stsTokenData) {
-            throw new Error('初始化失败，请刷新界面重试');
-        }
+        const store = this.getStore();
 
         const objectName = this.getObjectNameByLocalname(objectItem.name);
-        const delRes = await this.storeMeta.store.delete(objectName).catch(() => null);
+        const delRes = await store.delete(objectName).catch(() => null);
         if (!delRes) throw new Error('删除失败');
     }
 
     public async deleteCheckedObjects(objectItems: OssObjectItem[]) {
-        if (!this.storeMeta.store || !this.storeMeta.stsTokenData) {
+        if (!this.getStore()) {
             throw new Error('初始化失败，请刷新界面重试');
         }
 
@@ -95,11 +93,12 @@ export class OssStore {
     }
 
     public async downloadObject(objectItem: OssObjectItem) {
-        if (!this.storeMeta.store || !this.storeMeta.stsTokenData) {
+        const store = this.getStore();
+        if (!store) {
             throw new Error('初始化失败，请刷新界面重试');
         }
 
-        const url = this.storeMeta.store.signatureUrl(this.getObjectNameByLocalname(objectItem.name));
+        const url = store.signatureUrl(this.getObjectNameByLocalname(objectItem.name));
         const a = document.createElement('a');
         a.href = url;
         a.download = objectItem.name;
@@ -109,11 +108,14 @@ export class OssStore {
         document.body.removeChild(a);
     }
 
-    private async getStore() {
-        if (!this.storeMeta.store || !this.storeMeta.stsTokenData) {
+    /**
+     * @throws Error
+     */
+    public getStore() {
+        if (!this.store) {
             throw new Error('初始化失败，请刷新界面重试');
         }
-        return this.storeMeta.store;
+        return this.store;
     }
 
     private getObjectNameByLocalname(localName: string) {
@@ -121,13 +123,10 @@ export class OssStore {
     }
 
     public getWorkDir() {
-        const { stsTokenData } = this.storeMeta;
-        if (!stsTokenData) return;
+        return this.workDir;
+    }
 
-        if (this.options.prefixAddUserId) {
-            return `${this.options.prefix ? `${this.options.prefix}/` : ''}${stsTokenData.userId}`;
-        } else {
-            return this.options.prefix;
-        }
+    public setWorkDir(dir: string) {
+        this.workDir = dir;
     }
 }

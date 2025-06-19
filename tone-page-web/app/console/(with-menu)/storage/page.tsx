@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Delete, Download, RefreshCcw, Upload } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
     DropdownMenu,
@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { UploadManager } from './components/UploadManager';
 import { OssObjectItem, OssObjectList, OssStore } from '@/lib/oss/OssStore';
+import { useOssStore } from '@/hooks/admin/web/blog/use-oss-store';
+import OSS from 'ali-oss';
 
 
 const formatSizeNumber = (n: number) => {
@@ -29,17 +31,41 @@ const formatSizeNumber = (n: number) => {
     }
 }
 
-
+const ossStore = new OssStore();
 
 export default function Page() {
     const [objectList, setObjectList] = useState<OssObjectList>(null)
 
-    const ossStore = new OssStore({
-        prefix: 'tone-page',
-        prefixAddUserId: true,
-        objectList: () => objectList,
-        setObjectList,
-    });
+    ossStore.setSetObjectList(setObjectList);
+
+    const storeMeta = useOssStore();
+
+    useEffect(() => {
+        const data = storeMeta.stsTokenData;
+        if (!data) return;
+
+        const store = new OSS({
+            region: 'oss-cn-chengdu',
+            bucket: 'tone-personal',
+            accessKeyId: data.AccessKeyId,
+            accessKeySecret: data.AccessKeySecret,
+            stsToken: data.SecurityToken,
+            refreshSTSToken: async () => {
+                await storeMeta.refresh();
+                if (!storeMeta.stsTokenData) throw new Error();
+                const { AccessKeyId, AccessKeySecret, SecurityToken } = storeMeta.stsTokenData;
+                return {
+                    accessKeyId: AccessKeyId,
+                    accessKeySecret: AccessKeySecret,
+                    stsToken: SecurityToken,
+                };
+            },
+        })
+
+        ossStore.setStore(store);
+        ossStore.setWorkDir(`tone-page/${data.userId}`)
+        ossStore.loadObjectList();
+    }, [storeMeta.stsTokenData]);
 
     const handleRefreshFileList = async () => ossStore.loadObjectList().catch(e => toast.error(e.message));
     const handleCheckboxChange = ossStore.handleObjectCheckedStateChanged.bind(ossStore);
