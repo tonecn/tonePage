@@ -6,7 +6,7 @@ import AddBlog from "./components/AddBlog";
 import { Button } from "@/components/ui/button";
 
 export default function Page() {
-    const { blogs, error, isLoading, refresh } = useBlogList();
+    const { blogs, refresh } = useBlogList();
 
     return (
         <>

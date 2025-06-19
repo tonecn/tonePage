@@ -10,11 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "../ui/button";
 
-interface UserProfileProps {
-
-}
-
-export default function ({ onOpenChange, ...props }: UserProfileProps & React.ComponentProps<FC<DialogProps>>) {
+export default function UserProfile({ onOpenChange, ...props }: React.ComponentProps<FC<DialogProps>>) {
     return (
         <Dialog onOpenChange={onOpenChange} {...props}>
             <DialogContent className="sm:max-w-[425px]">

@@ -46,7 +46,7 @@ export function NavUser({ user, isUserLoading }: { user: User | undefined, isUse
       localStorage.removeItem(UserApi.USER_ME_CACHE_KEY)
       toast.success('登出成功');
       router.replace('/console/login');
-    } catch (error) {
+    } catch {
       toast.error('登出失败，请稍后再试');
     }
   }

@@ -9,7 +9,6 @@ import {
     DrawerFooter,
     DrawerHeader,
     DrawerTitle,
-    DrawerTrigger,
 } from "@/components/ui/drawer"
 import { useState } from "react";
 import { AdminApi } from "@/lib/api";

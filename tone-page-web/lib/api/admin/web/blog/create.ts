@@ -1,7 +1,9 @@
 import fetcher from "@/lib/api/fetcher";
 
 type CreateBlogParams = {
-
+    title: string;
+    description: string;
+    contentUrl: string;
 }
 
 export async function create(data: CreateBlogParams) {

@@ -2,8 +2,8 @@ import { User } from "@/lib/types/user";
 import fetcher from "../../fetcher";
 
 export type updateUser = {
-    username: string;
-    nickname: string;
+    username: string ;
+    nickname: string ;
     email: string | null;
     phone: string | null;
 }

@@ -13,6 +13,7 @@ import 'react-photo-view/dist/react-photo-view.css';
 import rehypeRaw from 'rehype-raw'
 import { Skeleton } from "@/components/ui/skeleton";
 import { BlogComments } from "./components/BlogComments";
+import Image from "next/image";
 
 export default function Blog() {
     const params = useParams();
@@ -50,29 +51,28 @@ export default function Blog() {
                         <ReactMarkdown
                             remarkPlugins={[remarkGfm]}
                             rehypePlugins={[rehypeRaw, rehypeHighlight]}
-                            children={data.content}
                             components={{
-                                h1: ({ node, ...props }) => <h1 className="text-3xl font-bold py-2" {...props} />,
-                                h2: ({ node, ...props }) => <h2 className="text-2xl font-bold py-1" {...props} />,
-                                h3: ({ node, ...props }) => <h3 className="text-xl font-bold py-0.5" {...props} />,
-                                h4: ({ node, ...props }) => <h4 className="text-lg font-bold" {...props} />,
-                                h5: ({ node, ...props }) => <h5 className="text-md font-bold" {...props} />,
-                                p: ({ node, ...props }) => <p className="py-1 text-zinc-700" {...props} />,
-                                img: ({ node, src, ...props }) => (
+                                h1: ({ ...props }) => <h1 className="text-3xl font-bold py-2" {...props} />,
+                                h2: ({ ...props }) => <h2 className="text-2xl font-bold py-1" {...props} />,
+                                h3: ({ ...props }) => <h3 className="text-xl font-bold py-0.5" {...props} />,
+                                h4: ({ ...props }) => <h4 className="text-lg font-bold" {...props} />,
+                                h5: ({ ...props }) => <h5 className="text-md font-bold" {...props} />,
+                                p: ({ ...props }) => <p className="py-1 text-zinc-700" {...props} />,
+                                img: ({ src }) => (
                                     <PhotoProvider>
                                         <PhotoView src={src as string}>
-                                            <img src={src}  {...props} className="cursor-pointer" />
+                                            <Image src={src as string} alt="加载失败" />
                                         </PhotoView>
                                     </PhotoProvider>
                                 ),
-                                th: ({ node, ...props }) => <th className="text-ellipsis text-nowrap border border-zinc-300 p-2" {...props} />,
-                                td: ({ node, ...props }) => <td className="border border-zinc-300 p-1" {...props} />,
-                                table: ({ node, ...props }) => <div className="overflow-x-auto"><table {...props} /></div>,
-                                pre: ({ node, ...props }) => <pre className="rounded-sm overflow-hidden shadow" {...props} />,
-                                blockquote: ({ node, ...props }) => <blockquote className="pl-3 border-l-5" {...props} />,
-                                a: ({ node, ...props }) => <a className="hover:underline" {...props} />,
+                                th: ({ ...props }) => <th className="text-ellipsis text-nowrap border border-zinc-300 p-2" {...props} />,
+                                td: ({ ...props }) => <td className="border border-zinc-300 p-1" {...props} />,
+                                table: ({ ...props }) => <div className="overflow-x-auto"><table {...props} /></div>,
+                                pre: ({ ...props }) => <pre className="rounded-sm overflow-hidden shadow" {...props} />,
+                                blockquote: ({ ...props }) => <blockquote className="pl-3 border-l-5" {...props} />,
+                                a: ({ ...props }) => <a className="hover:underline" {...props} />,
                             }}
-                        />
+                        >{data.content}</ReactMarkdown>
                     </>
                 )}
 

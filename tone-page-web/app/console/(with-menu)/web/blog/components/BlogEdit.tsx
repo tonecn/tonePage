@@ -1,6 +1,6 @@
 "use client"
 
-import React, { use, useState } from "react"
+import React, { useState } from "react"
 import {
     Dialog,
     DialogContent,
@@ -13,25 +13,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { Textarea } from "@/components/ui/textarea"
-import { Plus } from "lucide-react"
-import { Resource } from "@/lib/types/resource"
 import { AdminApi } from "@/lib/api"
 import useSWR from "swr"
 import { ApiError } from "next/dist/server/api-utils"
-import { Skeleton } from "@/components/ui/skeleton"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-
 
 interface BlogEditProps {
     id: string;
@@ -41,7 +25,7 @@ interface BlogEditProps {
 
 export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
     const [open, setOpen] = useState(false)
-    const { data: blog, error, isLoading, mutate } = useSWR(
+    const { data: blog, mutate } = useSWR(
         open ? `/api/admin/web/blog/${id}` : null,
         () => AdminApi.web.blog.get(id),
         {

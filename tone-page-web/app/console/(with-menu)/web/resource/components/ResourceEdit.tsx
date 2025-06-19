@@ -43,7 +43,7 @@ interface ResourceEditProps {
 export default function ResourceEdit({ children, id, onRefresh }: ResourceEditProps) {
     const [open, setOpen] = useState(false);
 
-    const { data: resource, error, isLoading, mutate } = useSWR<Resource>(
+    const { data: resource, isLoading, mutate } = useSWR<Resource>(
         open ? [`/api/admin/web/resource/${id}`] : null,
         () => AdminApi.web.resource.get(id),
         {

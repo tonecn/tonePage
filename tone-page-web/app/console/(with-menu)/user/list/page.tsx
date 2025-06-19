@@ -8,14 +8,14 @@ import { useState } from "react";
 import { UserInfoEditor } from "./components/user-info-editor";
 import { User } from "@/lib/types/user";
 import { CreateUserEditor } from "./components/create-user-editor";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { AdminApi } from "@/lib/api";
 import { toast } from "sonner";
 import { ApiError } from "next/dist/server/api-utils";
 
 
 export default function Page() {
-    const { users, isLoading, error, total, page, pageSize, mutate, refresh } = useUserList();
+    const { users, isLoading, error, mutate, refresh } = useUserList();
     const [editorUserId, setEditorUserId] = useState("");
 
     const handleUserUpdateLocal = async (newUser: User) => {

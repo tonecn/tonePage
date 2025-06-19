@@ -45,7 +45,7 @@ export function BlogComments({ blogId }: { blogId: string }) {
             <div className="flex flex-col">
                 {
                     data.filter(d => !d.parentId)
-                        .map((d, dIndex) => (
+                        .map((d) => (
                             <div key={d.id} className="border-b border-zinc-300 py-2 last:border-none">
                                 <h1 className="text-zinc-500">{d.user ? d.user.nickname : '匿名'}</h1>
                                 <div className="whitespace-pre-wrap break-all">{d.content}</div>

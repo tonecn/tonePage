@@ -17,7 +17,6 @@ import { Label } from "@/components/ui/label"
 import { useUser } from "@/hooks/admin/user/use-user";
 import { User } from "@/lib/types/user";
 import { Skeleton } from "@/components/ui/skeleton";
-import { updateUser } from "@/lib/api/admin/user";
 import { AdminApi } from "@/lib/api";
 import { toast } from "sonner";
 import {
@@ -42,10 +41,15 @@ export function UserInfoEditor({
 }) {
     const { user, isLoading, error } = useUser(userId);
 
-    const [saveLoading, setSaveLoading] = React.useState(false);
-    const handleSave = async (user: updateUser) => {
+    // const [saveLoading, setSaveLoading] = React.useState(false);
+    const handleSave = async (user: {
+        username: string;
+        nickname: string;
+        email: string | null;
+        phone: string | null;
+    }) => {
         try {
-            setSaveLoading(true);
+            // setSaveLoading(true);
             const res = await AdminApi.user.update(userId, user);
             if (res) {
                 toast.success("保存成功");
@@ -57,14 +61,14 @@ export function UserInfoEditor({
         } catch (error) {
             toast.error((error as Error).message || "保存失败");
         } finally {
-            setSaveLoading(false);
+            // setSaveLoading(false);
         }
     }
 
-    const [removeLoading, setRemoveLoading] = React.useState(false);
+    // const [removeLoading, setRemoveLoading] = React.useState(false);
     const handleRemove = async (userId: string) => {
         try {
-            setRemoveLoading(true);
+            // setRemoveLoading(true);
             await AdminApi.user.remove(userId, true);
             toast.success("注销成功");
             onUserSoftDelete(userId);
@@ -72,22 +76,22 @@ export function UserInfoEditor({
         } catch (error) {
             toast.error((error as Error).message || "注销失败");
         } finally {
-            setRemoveLoading(false);
+            // setRemoveLoading(false);
         }
     }
 
     const [passwordDialogOpen, setPasswordDialogOpen] = React.useState(false);
-    const [setPasswordLoading, setSetPasswordLoading] = React.useState(false);
+    // const [setPasswordLoading, setSetPasswordLoading] = React.useState(false);
     const handleSetPassword = async (userId: string, password: string) => {
         try {
-            setSetPasswordLoading(true);
+            // setSetPasswordLoading(true);
             await AdminApi.user.setPassword(userId, password);
             toast.success("密码修改成功");
             setPasswordDialogOpen(false);
         } catch (error) {
             toast.error((error as Error).message || "密码修改失败");
         } finally {
-            setSetPasswordLoading(false);
+            // setSetPasswordLoading(false);
         }
     }
 
@@ -109,8 +113,8 @@ export function UserInfoEditor({
                         e.preventDefault()
                         const formData = new FormData(e.currentTarget);
                         handleSave({
-                            username: formData.get("username")?.toString()!,
-                            nickname: formData.get("nickname")?.toString()!,
+                            username: formData.get("username")?.toString() as unknown as string,
+                            nickname: formData.get("nickname")?.toString() as unknown as string,
                             email: formData.get("email")?.toString() || null,
                             phone: formData.get("phone")?.toString() || null,
                         })

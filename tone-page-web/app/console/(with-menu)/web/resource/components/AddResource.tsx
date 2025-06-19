@@ -153,7 +153,7 @@ export default function AddResource({ children, refresh }: AddResourceProps) {
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button type="submit" onClick={handleSubmit}>保存</Button>
+                    <Button type="submit" onClick={handleSubmit} disabled={loading}>保存</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

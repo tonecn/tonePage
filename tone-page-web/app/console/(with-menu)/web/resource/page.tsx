@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import AddResource from "./components/AddResource";
 
 export default function Page() {
-    const { resources, error, isLoading, mutate, refresh } = useResourceList();
+    const { resources, refresh } = useResourceList();
 
     return (
         <>

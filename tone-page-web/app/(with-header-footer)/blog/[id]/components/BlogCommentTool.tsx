@@ -41,8 +41,8 @@ export function BlogCommentTool({ blogId, onInsertComment, replayTarget, handleC
                 onInsertComment(res);
                 handleClearReplayTarget();
             }
-        } catch (error: any) {
-            if (error.statusCode === 429) {
+        } catch (error) {
+            if ((error as { statusCode: number }).statusCode === 429) {
                 return toast.error('操作太频繁了，稍后再试吧')
             }
             toast.error('发布失败')
