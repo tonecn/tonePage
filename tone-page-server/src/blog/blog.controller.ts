@@ -94,10 +94,10 @@ export class BlogController {
 
     const comment = {
       ...commentData,
-      blogId: id,
-      user: user,
-      ip: ip,
-      address: address,
+      blog,
+      user,
+      ip,
+      address,
     };
 
     return await this.blogService.createComment(comment);

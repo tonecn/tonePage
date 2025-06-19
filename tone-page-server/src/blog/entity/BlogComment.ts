@@ -8,6 +8,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Blog } from './Blog.entity';
 
 @Entity()
 export class BlogComment {
@@ -33,8 +34,9 @@ export class BlogComment {
   @JoinColumn({ name: 'userId' })
   user: User | null;
 
-  @Column({ type: 'uuid', nullable: true })
-  blogId: string | null;
+  @ManyToOne(() => Blog)
+  @JoinColumn({ name: 'blogId' })
+  blog: Blog | null;
 
   @Column({ type: 'uuid', nullable: true })
   parentId: string | null;
