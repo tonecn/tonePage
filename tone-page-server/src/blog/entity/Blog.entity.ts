@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { BlogComment } from './BlogComment';
+import { BlogComment } from './BlogComment.entity';
 
 @Entity()
 export class Blog {
