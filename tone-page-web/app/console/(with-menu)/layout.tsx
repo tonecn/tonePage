@@ -12,38 +12,26 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { useUserMe } from "@/hooks/user/use-user-me";
 import { UserApi } from "@/lib/api";
 import { useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect } from "react";
 import { toast } from "sonner";
-import useSWR from "swr";
 
 export default function ConsoleMenuLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
-    const isClientSide = typeof window !== 'undefined';
     const router = useRouter();
 
-    const { data: user, isLoading, error, mutate } = useSWR(
-        '/api/user/me',
-        async () => UserApi.me(),
-        {
-            onError: (error) => {
-                if (error.statusCode === 401) {
-                    if (isClientSide) {
-                        localStorage.removeItem('token');
-                    }
-                    toast.info('登录凭证已失效，请重新登录');
-                    router.replace('/console/login');
-                }
-            },
-            revalidateIfStale: false,
-            revalidateOnFocus: false,
-            revalidateOnReconnect: false,
+    const { user, isLoading, error } = useUserMe({
+        onError: (e) => {
+            if (e.statusCode === 401) {
+                toast.info('登录凭证已失效，请重新登录');
+                router.replace('/console/login');
+            }
         }
-    );
+    });
 
     if (!isLoading && !error && !user) {
         router.replace('/console/login');
