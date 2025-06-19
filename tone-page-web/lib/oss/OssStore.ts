@@ -1,7 +1,7 @@
 import { useOssStore } from "@/hooks/admin/web/blog/use-oss-store";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
-interface OssObjectItem {
+export interface OssObjectItem {
     id: string;
     name: string;
     size: number;// Byte
@@ -9,22 +9,21 @@ interface OssObjectItem {
     isChecked: boolean;
 };
 
-type OssObjectList = null | OssObjectItem[];
+export type OssObjectList = OssObjectItem[] | null;
 
 export class OssStore {
 
-    private objectList: OssObjectList = null;
-    private setObjectList: Dispatch<SetStateAction<OssObjectList>>;
+    private setObjectList?: Dispatch<SetStateAction<OssObjectList>>;
 
     public storeMeta: ReturnType<typeof useOssStore>;
 
     constructor(private options: {
         prefix?: string;
         prefixAddUserId?: boolean;
+        objectList?: () => (OssObjectList | null);
+        setObjectList?: Dispatch<SetStateAction<OssObjectList>>;
     } = {}) {
-        const [objectList, setObjectList] = useState<OssObjectList>(null);
-        this.objectList = objectList;
-        this.setObjectList = setObjectList;
+        this.setObjectList = options.setObjectList;
 
         this.storeMeta = useOssStore({
             region: 'oss-cn-chengdu',
@@ -36,11 +35,11 @@ export class OssStore {
         });
     }
 
-    get useObjectList() {
-        return this.objectList;
-    }
-
     public async loadObjectList() {
+        if (!this.setObjectList) {
+            throw new Error('setObjectList need provided');
+        }
+
         const store = await this.getStore();
         this.setObjectList(null);
 
@@ -58,6 +57,10 @@ export class OssStore {
     }
 
     public handleObjectCheckedStateChanged(id: string, value: boolean) {
+        if (!this.setObjectList) {
+            throw new Error('setObjectList need provided');
+        }
+
         this.setObjectList(current => current ? current.map(objectItem => {
             if (objectItem.id === id) {
                 return { ...objectItem, isChecked: value }
@@ -66,41 +69,37 @@ export class OssStore {
         }) : null)
     }
 
-    public async deleteObject(id: string) {
+    public async deleteObject(objectItem: OssObjectItem) {
         if (!this.storeMeta.store || !this.storeMeta.stsTokenData) {
             throw new Error('初始化失败，请刷新界面重试');
         }
-        const fileItem = (this.objectList || []).find(i => i.id === id);
-        if (!fileItem) throw new Error('文件不存在');
 
-        const objectName = this.getObjectName(fileItem.name);
+        const objectName = this.getObjectNameByLocalname(objectItem.name);
         const delRes = await this.storeMeta.store.delete(objectName).catch(() => null);
         if (!delRes) throw new Error('删除失败');
     }
 
-    public async deleteCheckedObjects() {
+    public async deleteCheckedObjects(objectItems: OssObjectItem[]) {
         if (!this.storeMeta.store || !this.storeMeta.stsTokenData) {
             throw new Error('初始化失败，请刷新界面重试');
         }
 
-        const objects = (this.objectList || []).filter(i => i.isChecked);
-        if (objects.length === 0) throw new Error('请选择需要删除的文件');
+        if (objectItems.length === 0) throw new Error('请选择需要删除的文件');
 
         let failedCount = 0;
-        for (const objectItem of objects) {
-            await this.deleteObject(objectItem.id).catch(e => failedCount++);
+        for (const objectItem of objectItems) {
+            await this.deleteObject(objectItem).catch(e => failedCount++);
         }
 
-        return { all: objects.length, failed: failedCount };
+        return { all: objectItems.length, failed: failedCount };
     }
 
-    public async downloadObject(id: string) {
+    public async downloadObject(objectItem: OssObjectItem) {
         if (!this.storeMeta.store || !this.storeMeta.stsTokenData) {
             throw new Error('初始化失败，请刷新界面重试');
         }
 
-        const objectItem = this.getObjectItemById(id);
-        const url = this.storeMeta.store.signatureUrl(this.getObjectName(objectItem.name));
+        const url = this.storeMeta.store.signatureUrl(this.getObjectNameByLocalname(objectItem.name));
         const a = document.createElement('a');
         a.href = url;
         a.download = objectItem.name;
@@ -117,19 +116,8 @@ export class OssStore {
         return this.storeMeta.store;
     }
 
-    private getObjectName(localName: string) {
+    private getObjectNameByLocalname(localName: string) {
         return `${this.getWorkDir()}/${localName}`;
-    }
-
-    private getObjectNameById(id: string) {
-        const objectItem = this.getObjectItemById(id);
-        return this.getObjectName(objectItem.name);
-    }
-
-    private getObjectItemById(id: string) {
-        const objectItem = (this.objectList || []).find(i => i.id === id);
-        if (!objectItem) throw new Error('文件不存在');
-        return objectItem;
     }
 
     public getWorkDir() {
@@ -142,9 +130,4 @@ export class OssStore {
             return this.options.prefix;
         }
     }
-
-    get isLoading() {
-        return this.storeMeta.isLoading;
-    }
-
 }

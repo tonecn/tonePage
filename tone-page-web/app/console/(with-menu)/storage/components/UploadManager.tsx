@@ -10,13 +10,13 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import OSS from "ali-oss";
-import { ArrowUpFromLine, Check, CloudUpload, ClubIcon, Coins, File, Files, X } from "lucide-react";
+import { Check, CloudUpload, File, Files, X } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { Progress } from '@/components/ui/progress';
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { OssStore } from "@/lib/oss/OssStore";
+import { Checkpoint } from "ali-oss";
 
 interface UploadManagerProps {
     children: React.ReactNode;
@@ -37,7 +37,7 @@ export function UploadManager({ children, ossStore, handleRefreshFileList }: Upl
     const handleFileSelect = (fileList: FileList) => {
         setFileList(currentFileList => {
             const newFiles: UploadFileItem[] = [];
-            for (let file of fileList) {
+            for (const file of fileList) {
                 const repeatFile = currentFileList.find(f =>
                     f.file.name === file.name &&
                     f.file.size === file.size &&
@@ -90,7 +90,7 @@ export function UploadManager({ children, ossStore, handleRefreshFileList }: Upl
         setIsUploading(true);
         for (const fileItem of needUploadFiles) {
             fileItem.status = 'uploading';
-            await startUploadFile(fileItem).catch(e => { fileItem.status = 'failed'; failCount++; });
+            await startUploadFile(fileItem).catch(() => { fileItem.status = 'failed'; failCount++; });
             fileItem.status = 'finish';
         }
         setIsUploading(false);
@@ -109,10 +109,10 @@ export function UploadManager({ children, ossStore, handleRefreshFileList }: Upl
     const startUploadFile = async (fileItem: UploadFileItem) => {
         if (!ossStore) return;
 
-        let checkpoint: any;
+        let checkpoint: Checkpoint | undefined;
         await ossStore.storeMeta.store?.multipartUpload(`${ossStore.getWorkDir()}/${fileItem.file.name}`, fileItem.file, {
             checkpoint: checkpoint,
-            progress: (p, cpt, res) => {
+            progress: (p, cpt) => {
                 setFileList(currentFileList => {
                     return currentFileList.map(f => {
                         if (f.id == fileItem.id) {

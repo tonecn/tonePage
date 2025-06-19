@@ -3,10 +3,8 @@
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useOssStore } from '@/hooks/admin/web/blog/use-oss-store';
-import { ObjectMeta } from 'ali-oss';
-import { Delete, Download, Edit, RefreshCcw, Upload } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { Delete, Download, RefreshCcw, Upload } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
     DropdownMenu,
@@ -15,12 +13,12 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { UploadManager } from './components/UploadManager';
-import { OssStore } from '@/lib/oss/OssStore';
+import { OssObjectItem, OssObjectList, OssStore } from '@/lib/oss/OssStore';
 
 
 const formatSizeNumber = (n: number) => {
     const unit = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'];
-    for (const [i, u] of unit.entries()) {
+    for (const [i] of unit.entries()) {
         if (n < 1024 ** (i + 1)) {
             if (i <= 0) {
                 return `${(n)}${unit[i]}`;
@@ -34,11 +32,14 @@ const formatSizeNumber = (n: number) => {
 
 
 export default function Page() {
+    const [objectList, setObjectList] = useState<OssObjectList>(null)
+
     const ossStore = new OssStore({
         prefix: 'tone-page',
         prefixAddUserId: true,
+        objectList: () => objectList,
+        setObjectList,
     });
-    const objectList = ossStore.useObjectList;
 
     const handleRefreshFileList = async () => ossStore.loadObjectList().catch(e => toast.error(e.message));
     const handleCheckboxChange = ossStore.handleObjectCheckedStateChanged.bind(ossStore);
@@ -47,14 +48,17 @@ export default function Page() {
         return (objectList || []).filter(i => i.isChecked).map(i => i.id);
     }, [objectList])
 
-    const handleDeleteObject = async (id: string) => {
-        await ossStore.deleteObject(id)
+    const handleDeleteObject = async (objectItem: OssObjectItem) => {
+        await ossStore.deleteObject(objectItem)
             .then(() => ossStore.loadObjectList())
             .catch(e => toast.error(`${e.message}`))
     }
 
     const handleDeleteCheckedFiles = async () => {
-        const res = await ossStore.deleteCheckedObjects();
+        if (!objectList) return;
+        const checkedObjects = objectList.filter(o => o.isChecked);
+
+        const res = await ossStore.deleteCheckedObjects(checkedObjects);
 
         if (res.failed > 0) {
             toast.warning(`删除完成，共有${res.failed}个文件删除失败`)
@@ -64,8 +68,8 @@ export default function Page() {
         handleRefreshFileList();
     }
 
-    const handleDownloadObject = async (id: string) => {
-        ossStore.downloadObject(id).catch(e => toast.error(`${e.message}`));
+    const handleDownloadObject = async (objectItem: OssObjectItem) => {
+        ossStore.downloadObject(objectItem).catch(e => toast.error(`${e.message}`));
     }
 
     return (
@@ -90,9 +94,9 @@ export default function Page() {
             </div>
             <Table>
                 <TableCaption>
-                    {/* {(ossStore.isLoading || ( == null && !error)) && <div>加载中...</div>}
-                    {error && <div>{`${error}`}</div>}
-                    {fileList && fileList.length === 0 && <div>暂无文件</div>} */}
+                    {objectList === null && <div>加载中...</div>}
+                    {/* {error && <div>{`${error}`}</div>} */}
+                    {objectList && objectList.length === 0 && <div>暂无文件</div>}
                 </TableCaption>
                 <TableHeader>
                     <TableRow>
@@ -115,9 +119,9 @@ export default function Page() {
                                             {d.name}
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent>
-                                            <DropdownMenuItem onClick={() => handleDownloadObject(d.id)}><Download />下载</DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleDownloadObject(d)}><Download />下载</DropdownMenuItem>
                                             {/* <DropdownMenuItem><Edit />编辑</DropdownMenuItem> */}
-                                            <DropdownMenuItem onClick={() => handleDeleteObject(d.id)}><Delete />删除</DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleDeleteObject(d)}><Delete />删除</DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>
