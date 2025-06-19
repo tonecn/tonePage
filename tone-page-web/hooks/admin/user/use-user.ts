@@ -1,5 +1,6 @@
 import { AdminApi } from "@/lib/api";
 import { User } from "@/lib/types/user";
+import { toast } from "sonner";
 import useSWR from "swr";
 
 export function useUser(userId: string) {
@@ -10,6 +11,9 @@ export function useUser(userId: string) {
             revalidateOnReconnect: false,
             revalidateIfStale: false,
             dedupingInterval: 0,
+            onError: (e) => {
+                toast.error(`${e.message || e}`)
+            }
         }
     )
 

@@ -1,4 +1,5 @@
 import { OssApi } from "@/lib/api";
+import { toast } from "sonner";
 import useSWR from "swr";
 
 export function useOssSts() {
@@ -9,6 +10,9 @@ export function useOssSts() {
             shouldRetryOnError: false,
             refreshInterval: 59 * 60 * 1000,
             revalidateOnFocus: false,
+            onError: (e) => {
+                toast.error(`${e.message || e}`)
+            }
         }
     );
 
