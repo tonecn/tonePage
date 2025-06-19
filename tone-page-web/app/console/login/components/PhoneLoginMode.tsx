@@ -56,7 +56,7 @@ export default function PhoneLoginMode({ onSendCode }: { onSendCode: (data: Send
                             <InputOTPSlot index={5} />
                         </InputOTPGroup>
                     </InputOTP>
-                    <Button type="button" variant="secondary" onClick={handleSendCode}>获取验证码</Button>
+                    <Button type="button" variant="secondary" onClick={handleSendCode} disabled>获取验证码</Button>
                 </div>
             </div>
             <Button type="submit" className="w-full" disabled>
