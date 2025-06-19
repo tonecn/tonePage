@@ -19,6 +19,12 @@ export function useUserMe({ onError }: { onError?: (e: any) => void } = {}) {
             },
             revalidateIfStale: false,
             revalidateOnFocus: false,
+            shouldRetryOnError: (err) => {
+                if (err.statusCode === 401) {
+                    return false;
+                }
+                return true;
+            },
         }
     );
 
