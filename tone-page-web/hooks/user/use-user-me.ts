@@ -6,7 +6,12 @@ export function useUserMe({ onError }: { onError?: (e: any) => void } = {}) {
 
     const { data: user, isLoading, error } = useSWR(
         '/api/user/me',
-        async () => UserApi.me(),
+        async () => {
+            if (isClientSide && !localStorage.getItem('token')) {
+                throw Object.assign(new Error('未登录'), { statusCode: -1 });
+            }
+            return await UserApi.me();
+        },
         {
             onError: (error) => {
                 if (error.statusCode === 401) {
@@ -20,7 +25,7 @@ export function useUserMe({ onError }: { onError?: (e: any) => void } = {}) {
             revalidateIfStale: false,
             revalidateOnFocus: false,
             shouldRetryOnError: (err) => {
-                if (err.statusCode === 401) {
+                if ([-1, 401].includes(err.statusCode)) {
                     return false;
                 }
                 return true;
