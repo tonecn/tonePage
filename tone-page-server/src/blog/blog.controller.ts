@@ -3,23 +3,25 @@ import {
   Body,
   Controller,
   Get,
+  Ip,
   Param,
   ParseUUIDPipe,
   Post,
-  Request,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { OptionalAuthGuard } from 'src/auth/strategies/OptionalAuthGuard';
 import { UserService } from 'src/user/user.service';
 import { createBlogCommentDto } from './dto/create.blogcomment.dto';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('blog')
 export class BlogController {
   constructor(
     private readonly blogService: BlogService,
     private readonly userService: UserService,
-  ) {}
+  ) { }
 
   @Get()
   getBlogs() {
@@ -54,25 +56,22 @@ export class BlogController {
   }
 
   // 该接口允许匿名评论，但仍需验证userId合法性
-  @UseGuards(OptionalAuthGuard)
+  @UseGuards(ThrottlerGuard, OptionalAuthGuard)
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post(':id/comment')
   async createBlogComment(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() commentData: createBlogCommentDto,
-    @Request() req,
+    @Req() req,
+    @Ip() ip,
   ) {
     const { userId } = req.user || {};
     const blog = await this.blogService.findById(id);
     if (!blog) throw new BadRequestException('文章不存在');
 
-    const user = userId ? await this.userService.findOne({ userId }) : null;
+    const user = userId ? await this.userService.findById(userId) : null;
 
     // 获取IP归属地
-    const ip =
-      req.ip ||
-      req.socket.remoteAddress ||
-      req.headers['x-forwarded-for'] ||
-      '未知';
     let address = '未知';
     if (!['::1'].includes(ip)) {
       const addressRes = await (

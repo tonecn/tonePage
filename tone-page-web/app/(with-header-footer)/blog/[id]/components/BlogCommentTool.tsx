@@ -32,12 +32,20 @@ export function BlogCommentTool({ blogId, onInsertComment, replayTarget, handleC
 
     const submit = async () => {
         if (comment.trim().length === 0) return;
-        const res = await BlogApi.createComment(blogId, comment, replayTarget ? replayTarget.id : undefined);
-        if (res) {
-            toast.success('发布成功');
-            setComment('');
-            onInsertComment(res);
-            handleClearReplayTarget();
+
+        try {
+            const res = await BlogApi.createComment(blogId, comment, replayTarget ? replayTarget.id : undefined);
+            if (res) {
+                toast.success('发布成功');
+                setComment('');
+                onInsertComment(res);
+                handleClearReplayTarget();
+            }
+        } catch (error: any) {
+            if (error.statusCode === 429) {
+                return toast.error('操作太频繁了，稍后再试吧')
+            }
+            toast.error('发布失败')
         }
     }
 
