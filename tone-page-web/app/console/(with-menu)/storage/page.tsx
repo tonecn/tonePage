@@ -65,7 +65,7 @@ export default function Page() {
         ossStore.setStore(store);
         ossStore.setWorkDir(`tone-page/${data.userId}`)
         ossStore.loadObjectList();
-    }, [storeMeta.stsTokenData]);
+    }, [storeMeta, storeMeta.stsTokenData]);
 
     const handleRefreshFileList = async () => ossStore.loadObjectList().catch(e => toast.error(e.message));
     const handleCheckboxChange = ossStore.handleObjectCheckedStateChanged.bind(ossStore);

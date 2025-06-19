@@ -1,6 +1,4 @@
-import { useOssStore } from "@/hooks/admin/web/blog/use-oss-store";
 import { Dispatch, SetStateAction } from "react";
-import { StsToken } from "../api/oss";
 import OSS from "ali-oss";
 
 export interface OssObjectItem {
@@ -86,7 +84,7 @@ export class OssStore {
 
         let failedCount = 0;
         for (const objectItem of objectItems) {
-            await this.deleteObject(objectItem).catch(e => failedCount++);
+            await this.deleteObject(objectItem).catch(() => failedCount++);
         }
 
         return { all: objectItems.length, failed: failedCount };
