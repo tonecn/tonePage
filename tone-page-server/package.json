@@ -20,8 +20,11 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@alicloud/credentials": "^2.4.3",
+    "@alicloud/dm20151123": "1.2.6",
     "@alicloud/dysmsapi20170525": "4.1.0",
     "@alicloud/openapi-client": "^0.4.14",
+    "@alicloud/tea-util": "^1.4.10",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^10.0.0",

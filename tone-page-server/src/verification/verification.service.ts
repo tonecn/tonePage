@@ -1,11 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class VerificationService {
   private readonly logger = new Logger(VerificationService.name);
 
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(private readonly notificationService: NotificationService) { }
 
   private pool: Map<
     string,
@@ -18,6 +18,9 @@ export class VerificationService {
     }
   > = new Map();
 
+  /**
+   * @deprecated 该方法暂时弃用，因为没有申请到签名
+   */
   async sendPhoneCode(phone: string, type: 'login') {
     const key = `phone:${phone}:${type}`;
     // 检测是否在冷却时间内
@@ -31,22 +34,41 @@ export class VerificationService {
     // await this.notificationService.sendSMS(phone, type, code);
     // 存储验证码
     this.saveCode(key, code);
+    throw new Error('不允许的登陆方式');
     return true;
   }
 
   async sendEmailCode(email: string, type: 'login') {
     const key = `email:${email}:${type}`;
     // 检测是否在冷却时间内
-    // TODO
+    if (this.isInCooldownPeriod(key)) {
+      throw new BadRequestException('发送过于频繁，请稍后再试');
+    }
 
     // 生成验证码
     const code = this.generateCode();
     this.logger.log(`Email[${email}] code: ${code}`);
     // 发送验证码
-    // TODO
+    await this.notificationService.sendMail({ type: 'login-verify', targetMail: email, code, }).catch(() => {
+      throw new BadRequestException('发送失败，请稍后再试')
+    })
 
     // 存储验证码
     this.saveCode(key, code);
+    return true;
+  }
+
+  private isInCooldownPeriod(key: string) {
+    const item = this.pool.get(key);
+    if (!item) {
+      return false;
+    }
+
+    // 冷却60秒
+    if (Date.now() - item.createdAt > 60 * 1000) {
+      return false;
+    }
+
     return true;
   }
 

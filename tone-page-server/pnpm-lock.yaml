@@ -8,12 +8,21 @@ importers:
 
   .:
     dependencies:
+      '@alicloud/credentials':
+        specifier: ^2.4.3
+        version: 2.4.3
+      '@alicloud/dm20151123':
+        specifier: 1.2.6
+        version: 1.2.6
       '@alicloud/dysmsapi20170525':
         specifier: 4.1.0
         version: 4.1.0
       '@alicloud/openapi-client':
         specifier: ^0.4.14
         version: 0.4.14
+      '@alicloud/tea-util':
+        specifier: ^1.4.10
+        version: 1.4.10
       '@nestjs/common':
         specifier: ^10.0.0
         version: 10.4.17(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -167,6 +176,9 @@ packages:
 
   '@alicloud/darabonba-string@1.0.3':
     resolution: {integrity: sha512-NyWwrU8cAIesWk3uHL1Q7pTDTqLkCI/0PmJXC4/4A0MFNAZ9Ouq0iFBsRqvfyUujSSM+WhYLuTfakQXiVLkTMA==}
+
+  '@alicloud/dm20151123@1.2.6':
+    resolution: {integrity: sha512-6pYgy0D5zmUoxfRYwj0ysX4WPw8IfGimaw3ORFj6hF6lTxWpJ3tteOD72i8rw764eZ78TRc4UyET3U9qCaBeaA==}
 
   '@alicloud/dysmsapi20170525@4.1.0':
     resolution: {integrity: sha512-oUmRp6DTI6gGNbrSQK4lW7EouHIB4C0DCbSEA121NvxHC9XKe4cqiPP2VDqgDQiIK43oiFaHKY3rj+IteOWekA==}
@@ -3431,6 +3443,13 @@ snapshots:
   '@alicloud/darabonba-string@1.0.3':
     dependencies:
       '@alicloud/tea-typescript': 1.8.0
+    transitivePeerDependencies:
+      - supports-color
+
+  '@alicloud/dm20151123@1.2.6':
+    dependencies:
+      '@alicloud/openapi-core': 1.0.4
+      '@darabonba/typescript': 1.0.3
     transitivePeerDependencies:
       - supports-color
 
