@@ -28,31 +28,30 @@ export default function ConsoleMenuLayout({
 
     const getInitialData = () => {
         if (!window || !window.localStorage) return null;
-        const cache = localStorage.getItem(USER_ME_CACHE_KEY);
+        const cache = localStorage.getItem(UserApi.USER_ME_CACHE_KEY);
         if (!cache) return;
         try {
             const user = JSON.parse(cache);
             if (!user || !user.userId) throw new Error();
             return user;
         } catch (error) {
-            localStorage.removeItem(USER_ME_CACHE_KEY);
+            localStorage.removeItem(UserApi.USER_ME_CACHE_KEY);
         }
         return undefined;
     }
 
-    const USER_ME_CACHE_KEY = 'user-me-cache';
     const { data: user, isLoading, error } = useSWR(
         '/api/user/me',
         async () => {
             const data = await UserApi.me();
-            localStorage.setItem(USER_ME_CACHE_KEY, JSON.stringify(data));
+            localStorage.setItem(UserApi.USER_ME_CACHE_KEY, JSON.stringify(data));
             return data;
         },
         {
             onError: (error) => {
                 if (error.statusCode === 401) {
                     localStorage.removeItem('token');
-                    localStorage.removeItem(USER_ME_CACHE_KEY);
+                    localStorage.removeItem(UserApi.USER_ME_CACHE_KEY);
                     toast.info('登录凭证已失效，请重新登录');
                     router.replace('/console/login');
                 }
@@ -67,7 +66,7 @@ export default function ConsoleMenuLayout({
     if (!isLoading && !error && !user) {
         router.replace('/console/login');
         localStorage.removeItem('token');
-        localStorage.removeItem(USER_ME_CACHE_KEY);
+        localStorage.removeItem(UserApi.USER_ME_CACHE_KEY);
         toast.error('账户状态异常，请重新登录');
     }
 

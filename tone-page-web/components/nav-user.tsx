@@ -26,7 +26,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { authApi } from "@/lib/api"
+import { authApi, UserApi } from "@/lib/api"
 import { Skeleton } from "./ui/skeleton"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
@@ -42,6 +42,7 @@ export function NavUser({ user, isUserLoading }: { user: User | undefined, isUse
     try {
       await authApi.logout();
       localStorage.removeItem('token');
+      localStorage.removeItem(UserApi.USER_ME_CACHE_KEY)
       toast.success('登出成功');
       router.replace('/console/login');
     } catch (error) {
