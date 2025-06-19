@@ -4,6 +4,7 @@ import * as React from "react"
 import {
   CloudUpload,
   Inbox,
+  LucideIcon,
   Mail,
   Server,
   SquareTerminal,
@@ -34,7 +35,22 @@ export function AppSidebar({ user, isUserLoading, ...props }: React.ComponentPro
       email: "m@example.com",
       avatar: "/avatars/shadcn.jpg",
     },
-    navMain: [
+    navMain: null as null | {
+      title: string
+      url: string
+      icon?: LucideIcon
+      isActive?: boolean
+      isHidden?: boolean
+      items?: {
+        title: string
+        url: string
+        isHidden?: boolean
+      }[]
+    }[],
+  }
+
+  if (!isUserLoading) {
+    data.navMain = [
       {
         title: "网站管理",
         url: "/console/web",
@@ -101,7 +117,7 @@ export function AppSidebar({ user, isUserLoading, ...props }: React.ComponentPro
         url: "/",
         icon: Undo2,
       },
-    ],
+    ]
   }
 
   return (

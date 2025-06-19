@@ -18,13 +18,12 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useState, useEffect } from "react"
+import { Skeleton } from "./ui/skeleton"
 
 export function NavMain({
   items,
 }: {
-  items: {
+  items: null | {
     title: string
     url: string
     icon?: LucideIcon
@@ -41,7 +40,13 @@ export function NavMain({
     <SidebarGroup>
       <SidebarGroupLabel>菜单</SidebarGroupLabel>
       <SidebarMenu>
-        {items.filter(i => !i.isHidden).map((item) => (
+        {
+          !items && Array(5).fill(null).map((_, i) => (
+            <Skeleton key={i} className="w-full h-7 mt-1" />
+          ))
+        }
+
+        {items && items.filter(i => !i.isHidden).map((item) => (
           (item.items && item.items.length > 0)
             ? (
               <Collapsible

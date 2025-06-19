@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sidebar"
 import { UserApi } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { useEffect, useLayoutEffect } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
 
@@ -22,41 +23,22 @@ export default function ConsoleMenuLayout({
 }: {
     children: React.ReactNode
 }) {
-
+    const isClientSide = typeof window !== 'undefined';
     const router = useRouter();
 
-
-    const getInitialData = () => {
-        if (!window || !window.localStorage) return null;
-        const cache = localStorage.getItem(UserApi.USER_ME_CACHE_KEY);
-        if (!cache) return;
-        try {
-            const user = JSON.parse(cache);
-            if (!user || !user.userId) throw new Error();
-            return user;
-        } catch (error) {
-            localStorage.removeItem(UserApi.USER_ME_CACHE_KEY);
-        }
-        return undefined;
-    }
-
-    const { data: user, isLoading, error } = useSWR(
+    const { data: user, isLoading, error, mutate } = useSWR(
         '/api/user/me',
-        async () => {
-            const data = await UserApi.me();
-            localStorage.setItem(UserApi.USER_ME_CACHE_KEY, JSON.stringify(data));
-            return data;
-        },
+        async () => UserApi.me(),
         {
             onError: (error) => {
                 if (error.statusCode === 401) {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem(UserApi.USER_ME_CACHE_KEY);
+                    if (isClientSide) {
+                        localStorage.removeItem('token');
+                    }
                     toast.info('登录凭证已失效，请重新登录');
                     router.replace('/console/login');
                 }
             },
-            fallbackData: getInitialData(),
             revalidateIfStale: false,
             revalidateOnFocus: false,
             revalidateOnReconnect: false,
