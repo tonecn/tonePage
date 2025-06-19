@@ -33,6 +33,7 @@ import { useRouter } from "next/navigation"
 import SetPassword from "./nav-user/SetPassword"
 import { useState } from "react"
 import { User } from "@/lib/types/user"
+import UserProfile from "./nav-user/UserProfile"
 
 export function NavUser({ user, isUserLoading }: { user: User | undefined, isUserLoading: boolean }) {
   const { isMobile } = useSidebar();
@@ -50,6 +51,7 @@ export function NavUser({ user, isUserLoading }: { user: User | undefined, isUse
     }
   }
 
+  const [userProfileOpen, setUserProfileOpen] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
 
   return (
@@ -117,11 +119,11 @@ export function NavUser({ user, isUserLoading }: { user: User | undefined, isUse
                 }
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTimeout(() => setUserProfileOpen(true), 0)}>
                 <UserRoundCog />
                 账户信息
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTimeout(() => { setPasswordOpen(true) }, 0)}>
+              <DropdownMenuItem onClick={() => setTimeout(() => setPasswordOpen(true), 0)}>
                 <KeyRound />
                 修改密码
               </DropdownMenuItem>
@@ -135,6 +137,7 @@ export function NavUser({ user, isUserLoading }: { user: User | undefined, isUse
         </SidebarMenuItem>
       </SidebarMenu >
 
+      <UserProfile open={userProfileOpen} onOpenChange={setUserProfileOpen} />
       <SetPassword open={passwordOpen} onOpenChange={setPasswordOpen} />
     </>
   )
