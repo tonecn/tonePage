@@ -59,8 +59,8 @@ export default function PhoneLoginMode({ onSendCode }: { onSendCode: (data: Send
                     <Button type="button" variant="secondary" onClick={handleSendCode}>获取验证码</Button>
                 </div>
             </div>
-            <Button type="submit" className="w-full">
-                注册并登录
+            <Button type="submit" className="w-full" disabled>
+                该方式不可用
             </Button>
         </>
     )
