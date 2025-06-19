@@ -63,7 +63,6 @@ export class BlogController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() commentData: createBlogCommentDto,
     @Req() req,
-    @Ip() ip,
   ) {
     const { userId } = req.user || {};
     const blog = await this.blogService.findById(id);
@@ -71,6 +70,7 @@ export class BlogController {
 
     const user = userId ? await this.userService.findById(userId) : null;
 
+    const ip = req.headers['x-forwarded-for'] || req.ip;
     // 获取IP归属地
     let address = '未知';
     if (!['::1'].includes(ip)) {
