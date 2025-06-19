@@ -29,9 +29,11 @@ export function NavMain({
     url: string
     icon?: LucideIcon
     isActive?: boolean
+    isHidden?: boolean
     items?: {
       title: string
       url: string
+      isHidden?: boolean
     }[]
   }[]
 }) {
@@ -39,7 +41,7 @@ export function NavMain({
     <SidebarGroup>
       <SidebarGroupLabel>菜单</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
+        {items.filter(i => !i.isHidden).map((item) => (
           (item.items && item.items.length > 0)
             ? (
               <Collapsible
@@ -58,7 +60,7 @@ export function NavMain({
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      {item.items?.map((subItem) => (
+                      {item.items.filter(i => !i.isHidden).map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton asChild>
                             <Link href={subItem.url}>

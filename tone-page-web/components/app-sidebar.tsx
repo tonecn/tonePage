@@ -25,81 +25,85 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import { User } from "@/lib/types/user"
-// This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "网站管理",
-      url: "/console/web",
-      icon: SquareTerminal,
-      items: [
-        {
-          title: "资源",
-          url: "/console/web/resource",
-        },
-        {
-          title: "博客",
-          url: "/console/web/blog",
-        },
-      ],
-    },
-    {
-      title: "用户管理",
-      url: "/console/user/list",
-      icon: UsersRound,
-    },
-    {
-      title: "邮件系统",
-      url: "/console/mail",
-      icon: Mail,
-      items: [
-        {
-          title: "收件箱",
-          url: "/console/mail/inbox",
-        },
-        {
-          title: "已发送",
-          url: "/console/mail/sent",
-        },
-        {
-          title: "发送邮件",
-          url: "/console/mail/send",
-        },
-        {
-          title: "邮件管理",
-          url: "/console/mail/manage"
-        }
-      ],
-    },
-    {
-      title: "文件存储",
-      url: "/console/storage",
-      icon: CloudUpload,
-    },
-    {
-      title: "虚拟云空间",
-      url: "/console/vspace",
-      icon: Inbox,
-    },
-    {
-      title: "虚拟主机",
-      url: "/console/vserver",
-      icon: Server,
-    },
-    {
-      title: "前往首页",
-      url: "/",
-      icon: Undo2,
-    },
-  ],
-}
+import { Role } from "@/lib/types/role"
 
 export function AppSidebar({ user, isUserLoading, ...props }: React.ComponentProps<typeof Sidebar> & { user: User | undefined, isUserLoading: boolean }) {
+  const data = {
+    user: {
+      name: "shadcn",
+      email: "m@example.com",
+      avatar: "/avatars/shadcn.jpg",
+    },
+    navMain: [
+      {
+        title: "网站管理",
+        url: "/console/web",
+        icon: SquareTerminal,
+        isHidden: !user?.roles.includes(Role.Admin),
+        items: [
+          {
+            title: "资源",
+            url: "/console/web/resource",
+          },
+          {
+            title: "博客",
+            url: "/console/web/blog",
+          },
+        ],
+      },
+      {
+        title: "用户管理",
+        url: "/console/user/list",
+        icon: UsersRound,
+        isHidden: !user?.roles.includes(Role.Admin),
+      },
+      {
+        title: "邮件系统",
+        url: "/console/mail",
+        icon: Mail,
+        items: [
+          {
+            title: "收件箱",
+            url: "/console/mail/inbox",
+          },
+          {
+            title: "已发送",
+            url: "/console/mail/sent",
+          },
+          {
+            title: "发送邮件",
+            url: "/console/mail/send",
+          },
+          {
+            title: "邮件管理",
+            url: "/console/mail/manage",
+            isHidden: !user?.roles.includes(Role.Admin),
+          },
+        ],
+      },
+      {
+        title: "文件存储",
+        url: "/console/storage",
+        icon: CloudUpload,
+      },
+      {
+        title: "虚拟云空间",
+        url: "/console/vspace",
+        icon: Inbox,
+      },
+      {
+        title: "虚拟主机",
+        url: "/console/vserver",
+        icon: Server,
+      },
+      {
+        title: "前往首页",
+        url: "/",
+        icon: Undo2,
+      },
+    ],
+  }
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
