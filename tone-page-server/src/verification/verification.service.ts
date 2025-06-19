@@ -47,14 +47,15 @@ export class VerificationService {
 
     // 生成验证码
     const code = this.generateCode();
+    // 存储验证码
+    this.saveCode(key, code);
     this.logger.log(`Email[${email}] code: ${code}`);
     // 发送验证码
     await this.notificationService.sendMail({ type: 'login-verify', targetMail: email, code, }).catch(() => {
-      throw new BadRequestException('发送失败，请稍后再试')
+      this.clearCode(key);
+      throw new BadRequestException('发送失败，请稍后再试');
     })
 
-    // 存储验证码
-    this.saveCode(key, code);
     return true;
   }
 
@@ -80,6 +81,10 @@ export class VerificationService {
       tryCount: 0,
       maxTryCount: 5,
     });
+  }
+
+  private clearCode(key: string) {
+    this.pool.delete(key);
   }
 
   verifyPhoneCode(phone: string, code: string, type: 'login') {
