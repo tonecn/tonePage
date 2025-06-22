@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Blog } from './entity/Blog.entity';
 import { Repository } from 'typeorm';
 import { BlogComment } from './entity/BlogComment.entity';
+import { BlogPermission } from './Blog.Permission.enum';
+import { createHash } from 'crypto';
 
 @Injectable()
 export class BlogService {
@@ -11,7 +13,7 @@ export class BlogService {
     private readonly blogRepository: Repository<Blog>,
     @InjectRepository(BlogComment)
     private readonly blogCommentRepository: Repository<BlogComment>,
-  ) {}
+  ) { }
 
   async list() {
     return this.blogRepository.find({
@@ -22,7 +24,14 @@ export class BlogService {
     });
   }
 
-  async create(blog: Partial<Blog>) {
+  async create(dto: Partial<Blog> & { password: string }) {
+    const { password, ...blog } = dto;
+    if (blog.permissions.includes(BlogPermission.ByPassword)) {
+      if (password) {
+        blog.password_hash = createHash('sha256').update(`${password}`).digest('hex');
+      }
+    }
+
     const newBlog = this.blogRepository.create(blog);
     return this.blogRepository.save(newBlog);
   }
