@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { BlogComment } from './BlogComment.entity';
-import { BlogPermission } from '../bloga.permission.enum';
+import { BlogPermission } from '../blog.permission.enum';
 
 /** @todo 考虑后续将权限的数据类型替换为json，以提高查询效率 */
 @Entity()
