@@ -4,6 +4,7 @@ import React, { useState } from "react"
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -74,7 +75,10 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>添加博客</DialogTitle>
+                    <DialogTitle>编辑博客</DialogTitle>
+                    <DialogDescription>
+                        保存前请确认博客信息填写正确、权限配置合理
+                    </DialogDescription>
                 </DialogHeader>
                 {
                     blog && (
