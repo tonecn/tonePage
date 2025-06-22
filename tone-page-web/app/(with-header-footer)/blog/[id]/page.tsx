@@ -2,7 +2,7 @@
 
 import { BlogApi } from "@/lib/api";
 import { base62 } from "@/lib/utils";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -17,6 +17,8 @@ import Image from "next/image";
 
 export default function Blog() {
     const params = useParams();
+    const searchParams = useSearchParams();
+
     const hex = Array.from(base62.decode(params.id as string)).map(b => b.toString(16).padStart(2, '0')).join('');
     const id = [
         hex.slice(0, 8),
@@ -26,9 +28,12 @@ export default function Blog() {
         hex.slice(20, 32)
     ].join('-');
 
+    const password = searchParams.get('p');
     const { data, error, isLoading } = useSWR(
         `/api/blog/${id}`,
-        () => BlogApi.get(id),
+        () => BlogApi.get(id, {
+            password: password || undefined,
+        }),
     )
 
     return (
@@ -59,9 +64,9 @@ export default function Blog() {
                                 h5: ({ ...props }) => <h5 className="text-md font-bold" {...props} />,
                                 p: ({ ...props }) => <p className="py-1 text-zinc-700" {...props} />,
                                 img: ({ src }) => (
-                                    <PhotoProvider>
+                                    <PhotoProvider className="w-full">
                                         <PhotoView src={src as string}>
-                                            <Image src={src as string} alt="加载失败" />
+                                            <Image src={src as string} fill alt="加载失败" />
                                         </PhotoView>
                                     </PhotoProvider>
                                 ),

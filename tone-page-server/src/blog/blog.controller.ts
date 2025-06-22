@@ -6,6 +6,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -31,14 +32,14 @@ export class BlogController {
   @Get(':id')
   async getBlog(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Param('p') password: string,
+    @Query('p') password?: string,
   ) {
     const blog = await this.blogService.findById(id);
     if (!blog) throw new BadRequestException('文章不存在或无权限访问');
 
     if (!blog.permissions.includes(BlogPermission.Public)) {
       // 无公开权限，则进一步检查是否有密码保护
-      if (blog.permissions.includes(BlogPermission.ByPassword)) {
+      if (!blog.permissions.includes(BlogPermission.ByPassword)) {
         throw new BadRequestException('文章不存在或无权限访问');
       } else {
         // 判断密码是否正确
