@@ -16,26 +16,12 @@ import { AdminApi } from "@/lib/api";
 import { BlogPermission } from "@/lib/types/Blog.Permission.enum";
 import { useState } from "react";
 import { toast } from "sonner";
+import { BlogPermissionCheckBoxs } from "./BlogPermissionCheckBoxs";
 
 interface AddBlogProps {
     children: React.ReactNode;
     onRefresh: () => void;
 }
-
-const blogPermissions = [
-    {
-        permission: BlogPermission.Public,
-        localText: '公开可读',
-    },
-    {
-        permission: BlogPermission.ByPassword,
-        localText: '受密码保护',
-    },
-    {
-        permission: BlogPermission.List,
-        localText: '显示在列表中',
-    },
-] as const;
 
 export default function AddBlog({ children, onRefresh }: AddBlogProps) {
     const [open, setOpen] = useState(false);
@@ -120,22 +106,15 @@ export default function AddBlog({ children, onRefresh }: AddBlogProps) {
                         </Label>
                         <div className="col-span-3 flex gap-3 gap-x-8 flex-wrap">
                             {
-                                blogPermissions.map((v, i) => (
-                                    <div key={`blog-permission-option-${i}`} className="flex gap-2">
-                                        <Checkbox
-                                            id={`blog-permission-option-checkbox-${i}`}
-                                            checked={blog.permissions.includes(v.permission)}
-                                            onCheckedChange={newChecked => {
-                                                setBlog({
-                                                    ...blog,
-                                                    permissions: newChecked ?
-                                                        [...blog.permissions, v.permission] :
-                                                        [...blog.permissions].filter(p => p !== v.permission),
-                                                })
-                                            }} />
-                                        <Label htmlFor={`blog-permission-option-checkbox-${i}`} className="whitespace-nowrap">{v.localText}</Label>
-                                    </div>
-                                ))
+                                <BlogPermissionCheckBoxs
+                                    permissions={blog.permissions}
+                                    onCheckedChange={(p, n) => setBlog({
+                                        ...blog,
+                                        permissions: n ?
+                                            [...blog.permissions, p] :
+                                            [...blog.permissions].filter(p => p !== p),
+                                    })}
+                                />
                             }
                         </div>
                     </div>
