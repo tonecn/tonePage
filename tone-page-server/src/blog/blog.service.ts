@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Blog } from './entity/Blog.entity';
-import { ArrayContains, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { BlogComment } from './entity/BlogComment.entity';
 import { BlogPermission } from './Blog.Permission.enum';
 import { createHash } from 'crypto';
@@ -13,18 +13,24 @@ export class BlogService {
     private readonly blogRepository: Repository<Blog>,
     @InjectRepository(BlogComment)
     private readonly blogCommentRepository: Repository<BlogComment>,
-  ) { }
+  ) {}
 
-  async list(option: {
-    withAll?: boolean;
-  } = {}) {
-    return (await this.blogRepository.find({
-      order: {
-        createdAt: 'DESC',
-      },
-    }))
-      .filter(i => option.withAll || i.permissions.includes(BlogPermission.List))
-      .map(i => {
+  async list(
+    option: {
+      withAll?: boolean;
+    } = {},
+  ) {
+    return (
+      await this.blogRepository.find({
+        order: {
+          createdAt: 'DESC',
+        },
+      })
+    )
+      .filter(
+        (i) => option.withAll || i.permissions.includes(BlogPermission.List),
+      )
+      .map((i) => {
         if (option.withAll) {
           return i;
         }
@@ -36,7 +42,7 @@ export class BlogService {
           id,
           title,
           viewCount,
-        }
+        };
       });
   }
 
@@ -44,7 +50,9 @@ export class BlogService {
     const { password, ...blog } = dto;
     if (blog.permissions.includes(BlogPermission.ByPassword)) {
       if (password) {
-        blog.password_hash = createHash('sha256').update(`${password}`).digest('hex');
+        blog.password_hash = createHash('sha256')
+          .update(`${password}`)
+          .digest('hex');
       }
     }
 
@@ -58,10 +66,14 @@ export class BlogService {
       throw new Error('博客不存在');
     }
 
-    return (await this.blogRepository.update(id, {
-      ...blog,
-      password_hash: this.hashPassword(password),
-    })).affected > 0;
+    return (
+      (
+        await this.blogRepository.update(id, {
+          ...blog,
+          password_hash: this.hashPassword(password),
+        })
+      ).affected > 0
+    );
   }
 
   async update(id: string, blog: Partial<Blog>) {

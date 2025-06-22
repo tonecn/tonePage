@@ -22,7 +22,7 @@ export class BlogController {
   constructor(
     private readonly blogService: BlogService,
     private readonly userService: UserService,
-  ) { }
+  ) {}
 
   @Get()
   getBlogs() {
@@ -43,7 +43,10 @@ export class BlogController {
         throw new BadRequestException('文章不存在或无权限访问');
       } else {
         // 判断密码是否正确
-        if (!password || this.blogService.hashPassword(password) !== blog.password_hash) {
+        if (
+          !password ||
+          this.blogService.hashPassword(password) !== blog.password_hash
+        ) {
           throw new BadRequestException('文章不存在或无权限访问');
         }
       }

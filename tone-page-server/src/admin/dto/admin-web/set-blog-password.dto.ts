@@ -1,6 +1,6 @@
-import { IsString } from "class-validator";
+import { IsString } from 'class-validator';
 
 export class SetBlogPasswordDto {
-    @IsString()
-    password: string;
+  @IsString()
+  password: string;
 }

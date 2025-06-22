@@ -15,5 +15,5 @@ export class CreateBlogDto {
   permissions: BlogPermission[];
 
   @IsString()
-  password: string;// 允许空串
+  password: string; // 允许空串
 }

@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -11,14 +10,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { UpdatePasswordDto } from 'src/admin/dto/admin-user/update-password.dto';
 import { CreateBlogDto } from 'src/admin/dto/admin-web/create-blog.dto';
 import { SetBlogPasswordDto } from 'src/admin/dto/admin-web/set-blog-password.dto';
 import { UpdateBlogDto } from 'src/admin/dto/admin-web/update-blog.dto';
 import { Role } from 'src/auth/role.enum';
-import { BlogPermission } from 'src/blog/Blog.Permission.enum';
 import { BlogService } from 'src/blog/blog.service';
-import { Blog } from 'src/blog/entity/Blog.entity';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { RolesGuard } from 'src/common/guard/roles.guard';
 
@@ -26,7 +22,7 @@ import { RolesGuard } from 'src/common/guard/roles.guard';
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(Role.Admin)
 export class AdminWebBlogController {
-  constructor(private readonly adminWebBlogService: BlogService) { }
+  constructor(private readonly adminWebBlogService: BlogService) {}
 
   @Get()
   async list() {
