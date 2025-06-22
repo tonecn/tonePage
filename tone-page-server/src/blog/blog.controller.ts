@@ -15,7 +15,7 @@ import { OptionalAuthGuard } from 'src/auth/strategies/OptionalAuthGuard';
 import { UserService } from 'src/user/user.service';
 import { createBlogCommentDto } from './dto/create.blogcomment.dto';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
-import { BlogPermission } from './Blog.Permission.enum';
+import { BlogPermission } from './bloga.permission.enum';
 
 @Controller('blog')
 export class BlogController {

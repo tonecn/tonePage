@@ -1,5 +1,5 @@
 import { IsEnum, IsString } from 'class-validator';
-import { BlogPermission } from 'src/blog/Blog.Permission.enum';
+import { BlogPermission } from 'src/blog/bloga.permission.enum';
 
 export class UpdateBlogDto {
   @IsString()
