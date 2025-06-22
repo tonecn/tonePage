@@ -24,7 +24,7 @@ interface BlogPermissionCheckBoxsProps {
 
 export function BlogPermissionCheckBoxs({ permissions, onCheckedChange }: BlogPermissionCheckBoxsProps) {
     return (
-        <>
+        <div className="flex gap-3 gap-x-8 flex-wrap">
             {
                 blogPermissions.map((v, i) => (
                     <div key={`blog-permission-option-${i}`} className="flex gap-2">
@@ -36,6 +36,6 @@ export function BlogPermissionCheckBoxs({ permissions, onCheckedChange }: BlogPe
                     </div>
                 ))
             }
-        </>
+        </div>
     )
 }

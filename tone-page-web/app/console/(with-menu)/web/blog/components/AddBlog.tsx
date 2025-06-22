@@ -104,7 +104,7 @@ export default function AddBlog({ children, onRefresh }: AddBlogProps) {
                         <Label className="text-right">
                             文章权限
                         </Label>
-                        <div className="col-span-3 flex gap-3 gap-x-8 flex-wrap">
+                        <div className="col-span-3">
                             {
                                 <BlogPermissionCheckBoxs
                                     permissions={blog.permissions}
