@@ -16,6 +16,9 @@ import { toast } from "sonner"
 import { AdminApi } from "@/lib/api"
 import useSWR from "swr"
 import { ApiError } from "next/dist/server/api-utils"
+import { BlogPermissionCheckBoxs } from "./BlogPermissionCheckBoxs"
+import { BlogPermission } from "@/lib/types/Blog.Permission.enum"
+import { SetPasswordDialog } from "./SetPasswordDialog"
 
 interface BlogEditProps {
     id: string;
@@ -43,6 +46,7 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
                 title: blog.title,
                 description: blog.description,
                 contentUrl: blog.contentUrl,
+                permissions: blog.permissions,
             });
             toast.success("更新成功")
             setOpen(false);
@@ -109,6 +113,35 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
                                         onChange={(e) => mutate({ ...blog, contentUrl: e.target.value }, false)}
                                     />
                                 </div>
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="permissions" className="text-right">
+                                        文章权限
+                                    </Label>
+                                    <div className="col-span-3">
+                                        <BlogPermissionCheckBoxs
+                                            permissions={blog.permissions}
+                                            onCheckedChange={(permission, newState) => {
+                                                mutate({
+                                                    ...blog,
+                                                    permissions: newState ?
+                                                        [...blog.permissions, permission] :
+                                                        blog.permissions.filter(p => p !== permission)
+                                                }, false)
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                                {
+                                    blog.permissions.includes(BlogPermission.ByPassword) &&
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="permissions" className="text-right">
+                                            文章保护密码
+                                        </Label>
+                                        <SetPasswordDialog id={id}>
+                                            <Button variant='outline'>修改</Button>
+                                        </SetPasswordDialog>
+                                    </div>
+                                }
                             </div>
                             <DialogFooter>
                                 <div className="w-full flex justify-between">

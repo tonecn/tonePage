@@ -36,6 +36,18 @@ export class BlogService {
     return this.blogRepository.save(newBlog);
   }
 
+  async setPassword(id: string, password: string) {
+    const blog = await this.findById(id);
+    if (!blog) {
+      throw new Error('博客不存在');
+    }
+
+    return (await this.blogRepository.update(id, {
+      ...blog,
+      password_hash: createHash('sha256').update(`${password}`).digest('hex'),
+    })).affected > 0;
+  }
+
   async update(id: string, blog: Partial<Blog>) {
     await this.blogRepository.update(id, blog);
     return this.blogRepository.findOneBy({ id });

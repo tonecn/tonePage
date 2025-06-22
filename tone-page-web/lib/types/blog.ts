@@ -1,3 +1,5 @@
+import { BlogPermission } from "./Blog.Permission.enum";
+
 export interface Blog {
     id: string;
     title: string;
@@ -5,4 +7,5 @@ export interface Blog {
     viewCount: number;
     contentUrl: string;
     createdAt: string;
+    permissions: BlogPermission[];
 }
