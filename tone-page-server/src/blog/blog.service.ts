@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Blog } from './entity/Blog.entity';
-import { Repository } from 'typeorm';
+import { ArrayContains, Repository } from 'typeorm';
 import { BlogComment } from './entity/BlogComment.entity';
 import { BlogPermission } from './Blog.Permission.enum';
 import { createHash } from 'crypto';
@@ -15,13 +15,29 @@ export class BlogService {
     private readonly blogCommentRepository: Repository<BlogComment>,
   ) { }
 
-  async list() {
-    return this.blogRepository.find({
-      where: { deletedAt: null },
+  async list(option: {
+    withAll?: boolean;
+  } = {}) {
+    return (await this.blogRepository.find({
       order: {
         createdAt: 'DESC',
       },
-    });
+    }))
+      .filter(i => option.withAll || i.permissions.includes(BlogPermission.List))
+      .map(i => {
+        if (option.withAll) {
+          return i;
+        }
+
+        const { createdAt, deletedAt, id, title, viewCount } = i;
+        return {
+          createdAt,
+          deletedAt,
+          id,
+          title,
+          viewCount,
+        }
+      });
   }
 
   async create(dto: Partial<Blog> & { password: string }) {
@@ -44,7 +60,7 @@ export class BlogService {
 
     return (await this.blogRepository.update(id, {
       ...blog,
-      password_hash: createHash('sha256').update(`${password}`).digest('hex'),
+      password_hash: this.hashPassword(password),
     })).affected > 0;
   }
 
@@ -60,7 +76,7 @@ export class BlogService {
   }
 
   async findById(id: string) {
-    return this.blogRepository.findOneBy({ id });
+    return await this.blogRepository.findOneBy({ id });
   }
 
   async incrementViewCount(id: string) {
@@ -85,5 +101,9 @@ export class BlogService {
   async createComment(comment: Partial<BlogComment>) {
     const newComment = this.blogCommentRepository.create(comment);
     return this.blogCommentRepository.save(newComment);
+  }
+
+  hashPassword(password: string) {
+    return createHash('sha256').update(`${password}`).digest('hex');
   }
 }

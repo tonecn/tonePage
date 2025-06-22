@@ -30,7 +30,9 @@ export class AdminWebBlogController {
 
   @Get()
   async list() {
-    return this.adminWebBlogService.list();
+    return this.adminWebBlogService.list({
+      withAll: true,
+    });
   }
 
   @Post()

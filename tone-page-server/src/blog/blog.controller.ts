@@ -14,13 +14,14 @@ import { OptionalAuthGuard } from 'src/auth/strategies/OptionalAuthGuard';
 import { UserService } from 'src/user/user.service';
 import { createBlogCommentDto } from './dto/create.blogcomment.dto';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { BlogPermission } from './Blog.Permission.enum';
 
 @Controller('blog')
 export class BlogController {
   constructor(
     private readonly blogService: BlogService,
     private readonly userService: UserService,
-  ) {}
+  ) { }
 
   @Get()
   getBlogs() {
@@ -28,9 +29,24 @@ export class BlogController {
   }
 
   @Get(':id')
-  async getBlog(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  async getBlog(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Param('p') password: string,
+  ) {
     const blog = await this.blogService.findById(id);
-    if (!blog) throw new BadRequestException('文章不存在');
+    if (!blog) throw new BadRequestException('文章不存在或无权限访问');
+
+    if (!blog.permissions.includes(BlogPermission.Public)) {
+      // 无公开权限，则进一步检查是否有密码保护
+      if (blog.permissions.includes(BlogPermission.ByPassword)) {
+        throw new BadRequestException('文章不存在或无权限访问');
+      } else {
+        // 判断密码是否正确
+        if (!password || this.blogService.hashPassword(password) !== blog.password_hash) {
+          throw new BadRequestException('文章不存在或无权限访问');
+        }
+      }
+    }
 
     const blogDataRes = await fetch(`${blog.contentUrl}`);
     const blogContent = await blogDataRes.text();

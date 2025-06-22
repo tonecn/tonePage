@@ -10,6 +10,7 @@ import {
 import { BlogComment } from './BlogComment.entity';
 import { BlogPermission } from '../Blog.Permission.enum';
 
+/** @todo 考虑后续将权限的数据类型替换为json，以提高查询效率 */
 @Entity()
 export class Blog {
   @PrimaryGeneratedColumn('uuid')
