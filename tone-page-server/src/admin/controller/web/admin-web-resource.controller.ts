@@ -20,7 +20,7 @@ import { ResourceService } from 'src/resource/resource.service';
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(Role.Admin)
 export class AdminWebResourceController {
-  constructor(private readonly resourceService: ResourceService) { }
+  constructor(private readonly resourceService: ResourceService) {}
 
   @Get()
   async list() {

@@ -25,7 +25,7 @@ import { AuthGuard } from '@nestjs/passport';
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(Role.Admin)
 export class AdminUserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   @Get()
   async list(@Query() listDto: ListDto) {

@@ -53,7 +53,7 @@ export default function Page() {
             refreshSTSToken: async () => {
                 await storeMeta.refresh();
                 if (!storeMeta.stsTokenData) throw new Error();
-                const { AccessKeyId, AccessKeySecret, SecurityToken } = data;
+                const { AccessKeyId, AccessKeySecret, SecurityToken } = storeMeta.stsTokenData;
                 return {
                     accessKeyId: AccessKeyId,
                     accessKeySecret: AccessKeySecret,
@@ -65,6 +65,7 @@ export default function Page() {
         ossStore.setStore(store);
         ossStore.setWorkDir(`tone-page/${data.userId}`)
         ossStore.loadObjectList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- storeMeta引用会导致无限循环，依赖stsTokenData即可
     }, [storeMeta.stsTokenData]);
 
     const handleRefreshFileList = async () => ossStore.loadObjectList().catch(e => toast.error(e.message));

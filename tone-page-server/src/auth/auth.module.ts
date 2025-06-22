@@ -10,7 +10,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { VerificationModule } from 'src/verification/verification.module';
 import { OptionalAuthGuard } from './strategies/OptionalAuthGuard';
-import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports: [

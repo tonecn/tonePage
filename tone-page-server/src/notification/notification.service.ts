@@ -1,14 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 
 import Dm20151123, * as $Dm20151123 from '@alicloud/dm20151123';
-import OpenApi, * as $OpenApi from '@alicloud/openapi-client';
-import Client, * as $dm from "@alicloud/dm20151123";
-import Util, * as $Util from '@alicloud/tea-util';
+import * as $OpenApi from '@alicloud/openapi-client';
+// import Client, * as $dm from '@alicloud/dm20151123';
+import * as $Util from '@alicloud/tea-util';
 import Credential, { Config } from '@alicloud/credentials';
 
 @Injectable()
 export class NotificationService {
-
   private dm: Dm20151123;
 
   constructor() {
@@ -23,7 +22,7 @@ export class NotificationService {
     this.dm = new Dm20151123(config);
   }
 
-  private getMailHtmlBody(option: { type: 'login-verify', code: string }) {
+  private getMailHtmlBody(option: { type: 'login-verify'; code: string }) {
     if (option.type === 'login-verify') {
       return `<!DOCTYPE html>
       <html>
@@ -76,25 +75,31 @@ export class NotificationService {
               </div>
           </div>
       </body>
-      </html>`
+      </html>`;
     } else {
       throw new Error('未配置的模版');
     }
   }
 
-
-  async sendMail(option: { type: 'login-verify', targetMail: string, code: string; }) {
+  async sendMail(option: {
+    type: 'login-verify';
+    targetMail: string;
+    code: string;
+  }) {
     const runtime = new $Util.RuntimeOptions({});
 
     const singleSendMailRequest = new $Dm20151123.SingleSendMailRequest({
-      accountName: "security@tonesc.cn",
+      accountName: 'security@tonesc.cn',
       addressType: 1,
       replyToAddress: false,
       toAddress: `${option.targetMail}`,
-      subject: "【特恩的日志】登陆验证码",
-      htmlBody: this.getMailHtmlBody({ type: 'login-verify', code: option.code }),
-      textBody: "",
-    })
+      subject: '【特恩的日志】登陆验证码',
+      htmlBody: this.getMailHtmlBody({
+        type: 'login-verify',
+        code: option.code,
+      }),
+      textBody: '',
+    });
 
     try {
       await this.dm.singleSendMailWithOptions(singleSendMailRequest, runtime);

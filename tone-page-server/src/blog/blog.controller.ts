@@ -3,7 +3,6 @@ import {
   Body,
   Controller,
   Get,
-  Ip,
   Param,
   ParseUUIDPipe,
   Post,
@@ -21,7 +20,7 @@ export class BlogController {
   constructor(
     private readonly blogService: BlogService,
     private readonly userService: UserService,
-  ) { }
+  ) {}
 
   @Get()
   getBlogs() {

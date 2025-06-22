@@ -30,10 +30,12 @@ import { ThrottlerModule } from '@nestjs/throttler';
     }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     ThrottlerModule.forRoot({
-      throttlers: [{
-        limit: 1000,
-        ttl: 60000, // 1 minute
-      }],
+      throttlers: [
+        {
+          limit: 1000,
+          ttl: 60000, // 1 minute
+        },
+      ],
     }),
     UserModule,
     AuthModule,
@@ -47,4 +49,4 @@ import { ThrottlerModule } from '@nestjs/throttler';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

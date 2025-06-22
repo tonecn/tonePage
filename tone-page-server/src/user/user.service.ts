@@ -18,7 +18,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   /**
    * @deprecated 尽量不使用该方法
@@ -40,7 +40,7 @@ export class UserService {
     return this.userRepository.findOne({
       where: {
         userId,
-      }
+      },
     });
   }
 

@@ -5,7 +5,7 @@ import { NotificationService } from 'src/notification/notification.service';
 export class VerificationService {
   private readonly logger = new Logger(VerificationService.name);
 
-  constructor(private readonly notificationService: NotificationService) { }
+  constructor(private readonly notificationService: NotificationService) {}
 
   private pool: Map<
     string,
@@ -51,10 +51,12 @@ export class VerificationService {
     this.saveCode(key, code);
     this.logger.log(`Email[${email}] code: ${code}`);
     // 发送验证码
-    await this.notificationService.sendMail({ type: 'login-verify', targetMail: email, code, }).catch(() => {
-      this.clearCode(key);
-      throw new BadRequestException('发送失败，请稍后再试');
-    })
+    await this.notificationService
+      .sendMail({ type: 'login-verify', targetMail: email, code })
+      .catch(() => {
+        this.clearCode(key);
+        throw new BadRequestException('发送失败，请稍后再试');
+      });
 
     return true;
   }

@@ -11,7 +11,7 @@ export class BlogService {
     private readonly blogRepository: Repository<Blog>,
     @InjectRepository(BlogComment)
     private readonly blogCommentRepository: Repository<BlogComment>,
-  ) { }
+  ) {}
 
   async list() {
     return this.blogRepository.find({

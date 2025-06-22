@@ -1,11 +1,17 @@
-import { BadRequestException, Body, Controller, Post, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { SendVerificationCodeDto } from './dto/send-verification-code.dto';
 import { VerificationService } from './verification.service';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('verification')
 export class VerificationController {
-  constructor(private readonly verificationService: VerificationService) { }
+  constructor(private readonly verificationService: VerificationService) {}
 
   @Post('send')
   @UseGuards(ThrottlerGuard)
