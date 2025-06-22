@@ -66,7 +66,7 @@ export default function Blog() {
                                 img: ({ src }) => (
                                     <PhotoProvider className="w-full">
                                         <PhotoView src={src as string}>
-                                            <Image src={src as string} fill alt="加载失败" />
+                                            <Image src={src as string} alt="加载失败" />
                                         </PhotoView>
                                     </PhotoProvider>
                                 ),
