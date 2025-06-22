@@ -53,7 +53,7 @@ export default function Page() {
             refreshSTSToken: async () => {
                 await storeMeta.refresh();
                 if (!storeMeta.stsTokenData) throw new Error();
-                const { AccessKeyId, AccessKeySecret, SecurityToken } = storeMeta.stsTokenData;
+                const { AccessKeyId, AccessKeySecret, SecurityToken } = data;
                 return {
                     accessKeyId: AccessKeyId,
                     accessKeySecret: AccessKeySecret,
@@ -65,7 +65,7 @@ export default function Page() {
         ossStore.setStore(store);
         ossStore.setWorkDir(`tone-page/${data.userId}`)
         ossStore.loadObjectList();
-    }, [storeMeta, storeMeta.stsTokenData]);
+    }, [storeMeta.stsTokenData]);
 
     const handleRefreshFileList = async () => ossStore.loadObjectList().catch(e => toast.error(e.message));
     const handleCheckboxChange = ossStore.handleObjectCheckedStateChanged.bind(ossStore);
