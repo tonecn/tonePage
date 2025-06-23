@@ -22,7 +22,7 @@ export class BlogController {
   constructor(
     private readonly blogService: BlogService,
     private readonly userService: UserService,
-  ) {}
+  ) { }
 
   @Get()
   getBlogs() {
@@ -71,6 +71,12 @@ export class BlogController {
     const blog = await this.blogService.findById(id);
     if (!blog) throw new BadRequestException('文章不存在');
 
+    /** @todo 对文章可读性进行更详细的判定 */
+
+    if (!blog.permissions.includes(BlogPermission.Public) && !blog.permissions.includes(BlogPermission.ByPassword)) {
+      throw new BadRequestException('文章不存在或未公开');
+    }
+
     return await this.blogService.getComments(id);
   }
 
@@ -86,6 +92,10 @@ export class BlogController {
     const { userId } = req.user || {};
     const blog = await this.blogService.findById(id);
     if (!blog) throw new BadRequestException('文章不存在');
+
+    if (!blog.permissions.includes(BlogPermission.AllowComments)) {
+      throw new BadRequestException('作者关闭了该文章的评论功能');
+    }
 
     const user = userId ? await this.userService.findById(userId) : null;
 
