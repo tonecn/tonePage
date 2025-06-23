@@ -77,7 +77,7 @@ export class BlogController {
       throw new BadRequestException('文章不存在或未公开');
     }
 
-    return await this.blogService.getComments(id);
+    return await this.blogService.getComments(blog);
   }
 
   // 该接口允许匿名评论，但仍需验证userId合法性

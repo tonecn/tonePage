@@ -13,7 +13,7 @@ export class BlogService {
     private readonly blogRepository: Repository<Blog>,
     @InjectRepository(BlogComment)
     private readonly blogCommentRepository: Repository<BlogComment>,
-  ) {}
+  ) { }
 
   async list(
     option: {
@@ -95,14 +95,9 @@ export class BlogService {
     await this.blogRepository.increment({ id }, 'viewCount', 1);
   }
 
-  async getComments(blogId: string) {
-    const blog = await this.findById(blogId);
-    if (!blog) {
-      throw new Error('文章不存在');
-    }
-
+  async getComments(blog: Blog) {
     return this.blogCommentRepository.find({
-      where: { blog },
+      where: { blog: { id: blog.id } },
       relations: ['user'],
       order: {
         createdAt: 'DESC',
