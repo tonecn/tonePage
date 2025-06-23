@@ -13,7 +13,7 @@ export class BlogService {
     private readonly blogRepository: Repository<Blog>,
     @InjectRepository(BlogComment)
     private readonly blogCommentRepository: Repository<BlogComment>,
-  ) { }
+  ) {}
 
   async list(
     option: {
@@ -104,30 +104,36 @@ export class BlogService {
       },
     });
 
-    return comments.map(comment => {
-      const { blog, user, ...rest } = comment;
+    return comments.map((comment) => {
+      const { user, ...rest } = comment;
+      delete rest.blog;
       return {
         ...rest,
-        user: user ? {
-          userId: user.userId,
-          username: user.username,
-          nickname: user.nickname,
-        } : null,
-      }
-    })
+        user: user
+          ? {
+              userId: user.userId,
+              username: user.username,
+              nickname: user.nickname,
+            }
+          : null,
+      };
+    });
   }
 
   async createComment(comment: Partial<BlogComment>) {
     const newComment = this.blogCommentRepository.create(comment);
     const savedComment = await this.blogCommentRepository.save(newComment, {});
-    const { blog, user, ...commentWithoutBlog } = savedComment;
+    const { user, ...commentWithoutBlog } = savedComment;
+    delete commentWithoutBlog.blog;
     return {
       ...commentWithoutBlog,
-      user: user ? {
-        userId: user.userId,
-        username: user.username,
-        nickname: user.nickname,
-      } : null,
+      user: user
+        ? {
+            userId: user.userId,
+            username: user.username,
+            nickname: user.nickname,
+          }
+        : null,
     };
   }
 

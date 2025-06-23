@@ -22,7 +22,7 @@ export class BlogController {
   constructor(
     private readonly blogService: BlogService,
     private readonly userService: UserService,
-  ) { }
+  ) {}
 
   @Get()
   getBlogs() {
@@ -73,7 +73,10 @@ export class BlogController {
 
     /** @todo 对文章可读性进行更详细的判定 */
 
-    if (!blog.permissions.includes(BlogPermission.Public) && !blog.permissions.includes(BlogPermission.ByPassword)) {
+    if (
+      !blog.permissions.includes(BlogPermission.Public) &&
+      !blog.permissions.includes(BlogPermission.ByPassword)
+    ) {
       throw new BadRequestException('文章不存在或未公开');
     }
 

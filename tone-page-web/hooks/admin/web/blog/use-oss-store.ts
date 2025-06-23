@@ -1,6 +1,5 @@
 import { useOssSts } from "@/hooks/oss/use-oss-sts";
 import { StsToken } from "@/lib/api/oss";
-import OSS from "ali-oss";
 import { useEffect } from "react";
 
 export function useOssStore(options: { onStsTokenDataChanged?: (data: StsToken | undefined) => void; } = {}) {
@@ -10,7 +9,6 @@ export function useOssStore(options: { onStsTokenDataChanged?: (data: StsToken |
         options.onStsTokenDataChanged?.(stsTokenData);
     }, [stsTokenData]);
 
-    /** @todo */
     const refresh = async () => {
         await mutate();
     }
