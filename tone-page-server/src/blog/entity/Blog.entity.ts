@@ -45,6 +45,6 @@ export class Blog {
   password_hash: string | null;
 
   // 关系
-  @OneToMany(() => BlogComment, (blog) => blog.id)
+  @OneToMany(() => BlogComment, (comment) => comment.blog)
   comments: BlogComment[];
 }
