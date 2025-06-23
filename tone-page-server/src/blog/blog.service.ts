@@ -96,13 +96,25 @@ export class BlogService {
   }
 
   async getComments(blog: Blog) {
-    return this.blogCommentRepository.find({
+    const comments = await this.blogCommentRepository.find({
       where: { blog: { id: blog.id } },
       relations: ['user'],
       order: {
         createdAt: 'DESC',
       },
     });
+
+    return comments.map(comment => {
+      const { blog, user, ...rest } = comment;
+      return {
+        ...rest,
+        user: user ? {
+          userId: user.userId,
+          username: user.username,
+          nickname: user.nickname,
+        } : null,
+      }
+    })
   }
 
   async createComment(comment: Partial<BlogComment>) {
