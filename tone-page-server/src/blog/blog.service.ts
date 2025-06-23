@@ -107,7 +107,9 @@ export class BlogService {
 
   async createComment(comment: Partial<BlogComment>) {
     const newComment = this.blogCommentRepository.create(comment);
-    return this.blogCommentRepository.save(newComment);
+    const savedComment = await this.blogCommentRepository.save(newComment, {});
+    const { blog, ...commentWithoutBlog } = savedComment;
+    return commentWithoutBlog;
   }
 
   hashPassword(password: string) {
