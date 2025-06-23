@@ -15,6 +15,10 @@ const blogPermissions = [
         permission: BlogPermission.List,
         localText: '显示在列表中',
     },
+    {
+        permission: BlogPermission.AllowComments,
+        localText: '允许评论',
+    }
 ] as const;
 
 interface BlogPermissionCheckBoxsProps {
