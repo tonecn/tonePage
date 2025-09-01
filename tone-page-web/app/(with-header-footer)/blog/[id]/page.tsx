@@ -66,7 +66,9 @@ export default function Blog() {
                                 img: ({ src }) => (
                                     <PhotoProvider className="w-full">
                                         <PhotoView src={src as string}>
-                                            <Image src={src as string} width={0} height={0} style={{ width: '100%', height: 'auto' }} unoptimized alt="加载失败" />
+                                            <div style={{ width: '100%' }}>
+                                                <Image src={src as string} width={0} height={0} style={{ width: '100%', height: 'auto' }} unoptimized alt="加载失败" />
+                                            </div>
                                         </PhotoView>
                                     </PhotoProvider>
                                 ),
