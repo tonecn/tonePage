@@ -1,6 +1,6 @@
 import { Blog } from "@/lib/types/blog";
-import fetcher from "../fetcher";
+import { apiFetch } from "../client";
 
 export async function list() {
-    return fetcher<Blog[]>('/api/blog');
+    return apiFetch<Blog[]>('/api/blog');
 }

@@ -1,9 +1,5 @@
-"use client"
-
-import { Skeleton } from "@/components/ui/skeleton";
 import { BlogApi } from "@/lib/api";
 import { useCallback } from "react"
-import useSWR from "swr";
 import {
     Alert,
     AlertDescription,
@@ -12,7 +8,7 @@ import {
 import { AlertCircle } from "lucide-react";
 import { base62 } from "@/lib/utils";
 
-export default function Blog() {
+export default async function Blog() {
     const formatNumber = useCallback((num: number) => {
         if (num >= 1000) {
             return (num / 1000).toFixed(1) + 'K';
@@ -22,29 +18,18 @@ export default function Blog() {
         return num.toString();
     }, []);
 
-    const { data: blogs, error, isLoading } = useSWR(
-        '/api/blogs',
-        () => BlogApi.list(),
-    )
+    let errorMsg = '';
+    const blogs = await BlogApi.list().catch(e => { errorMsg = `${e}`; return null });
 
     return (
         <div className="max-w-120 w-auto mx-auto my-10 flex flex-col gap-8">
             {
-                isLoading && (
-                    <div className="w-full">
-                        <Skeleton className="w-full h-5" />
-                        <Skeleton className="w-full h-10 mt-1" />
-                        <Skeleton className="w-full h-5 mt-5" />
-                    </div>
-                )
-            }
-            {
-                error && (
+                errorMsg && (
                     <Alert variant="destructive" className="w-full">
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>出错啦</AlertTitle>
                         <AlertDescription>
-                            {error.message}
+                            {errorMsg}
                         </AlertDescription>
                     </Alert>
                 )
