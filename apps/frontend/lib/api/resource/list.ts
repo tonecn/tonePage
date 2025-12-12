@@ -1,6 +1,6 @@
 import { Resource } from "@/lib/types/resource";
-import fetcher from "../fetcher";
+import { apiFetch } from "../client";
 
 export async function list() {
-    return fetcher<Resource[]>('/api/resource');
+    return apiFetch<Resource[]>('/api/resource');
 }

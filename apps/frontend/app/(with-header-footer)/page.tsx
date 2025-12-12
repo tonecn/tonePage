@@ -1,4 +1,3 @@
-'use client';
 import favicon from '../favicon.ico';
 import Image from 'next/image';
 

@@ -1,6 +1,3 @@
-"use client";
-
-import useSWR from "swr";
 import { ResourceCard } from "./components/ResourceCard";
 import { ResourceApi } from "@/lib/api";
 import {
@@ -9,13 +6,10 @@ import {
     AlertTitle,
 } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 
-export default function Resources() {
-    const { data, isLoading, error } = useSWR(
-        '/api/resource',
-        () => ResourceApi.list(),
-    );
+export default async function Resources() {
+    let errorMsg = '';
+    const data = await ResourceApi.list().catch(e => { errorMsg = `${e}`; return null; });
 
     return (
         <div className="flex-1 flex flex-col items-center">
@@ -24,13 +18,13 @@ export default function Resources() {
                 <a className="text-zinc-600">《使用条款和隐私政策》</a>
                 ，继续使用或浏览表示您接受协议条款。</p>
             {
-                error && (
+                errorMsg && (
                     <div className="mt-10 mx-5">
                         <Alert variant="destructive">
                             <AlertCircle className="h-4 w-4" />
                             <AlertTitle>出错了</AlertTitle>
                             <AlertDescription>
-                                {error.message}
+                                {errorMsg}
                             </AlertDescription>
                         </Alert>
                     </div>
@@ -38,12 +32,6 @@ export default function Resources() {
             }
 
             <div className="mt-6 sm:mt-10 md:mt-15 w-full flex flex-col md:w-auto md:mx-auto md:grid grid-cols-2 2xl:gap-x-35 lg:gap-x-20 gap-x-10 lg:gap-y-10 gap-y-5 sm:mb-10 duration-300">
-                {isLoading && (
-                    [...Array(3).map((_, i) => (
-                        <Skeleton key={i} className="h-35 w-full md:w-92 lg:w-100 md:rounded-xl rounded-none duration-300" />
-                    ))]
-                )}
-
                 {data && data.map((resource) => (
                     <ResourceCard
                         key={resource.id}
