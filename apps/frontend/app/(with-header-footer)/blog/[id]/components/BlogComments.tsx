@@ -1,3 +1,4 @@
+'use client';
 import useSWR from "swr";
 import { BlogCommentTool } from "./BlogCommentTool";
 import { BlogApi } from "@/lib/api";
