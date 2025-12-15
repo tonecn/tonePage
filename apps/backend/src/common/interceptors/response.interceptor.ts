@@ -15,7 +15,8 @@ export class ResponseInterceptor implements NestInterceptor {
   ): Observable<any> | Promise<Observable<any>> {
     return next.handle().pipe(
       map((data) => ({
-        statusCode: 200,
+        success: true,
+        code: 0,
         message: '请求成功',
         data,
       })),

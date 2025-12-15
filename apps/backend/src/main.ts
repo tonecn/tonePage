@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { GlobalExceptionsFilter } from './common/filters/global.exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,15 +19,12 @@ async function bootstrap() {
           ? Object.values(error.constraints)[0]
           : '验证失败';
 
-        throw new BadRequestException({
-          message: firstConstraint,
-          error: 'Bad Request',
-          statusCode: 400,
-        });
+        throw new BadRequestException(firstConstraint);
       },
     }),
   );
   app.useGlobalInterceptors(new ResponseInterceptor());
+  app.useGlobalFilters(new GlobalExceptionsFilter());
   await app.listen(process.env.PORT ?? 3001);
 }
 bootstrap();
