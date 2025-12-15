@@ -1,47 +1,51 @@
-"use client";
-
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { Mail } from "lucide-react";
+import { Button } from "./ui/button";
 
-async function handleCopy(text: string) {
-    try {
-        await navigator.clipboard.writeText(text);
-        toast.success("复制成功");
-    } catch (error) {
-        if (error instanceof Error) {
-            toast.error(`复制失败 ${error.message}`);
-        }
-    }
-}
+const EMAIL = "tonesc.cn@gmail.com";
 
 export default function Footer() {
     return (
-        <footer className="border-t border-zinc-300 h-3 relative">
-            <div className="bg-zinc-50 h-20 flex sm:justify-between justify-center items-center sm:px-20 flex-col sm:flex-row">
-                <div className="flex flex-col items-center sm:block">
-                    <a href="https://beian.miit.gov.cn/" className="text-sm text-zinc-500 hover:border-zinc-500 border-b border-transparent">备案号：渝ICP备2023009516号-1</a>
-                    <div className="text-sm text-zinc-500 cursor-default">© 2025 TONE Page. All rights reserved.</div>
+        <footer className="border-t border-zinc-300">
+            <div className="bg-zinc-50 px-4 py-3 md:py-5 sm:px-10 md:px-20 flex flex-col sm:flex-row justify-between items-center gap-4 transition-all">
+                {/* 版权与备案信息 */}
+                <div className="text-center sm:text-left">
+                    <a
+                        href="https://beian.miit.gov.cn/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block text-sm text-zinc-500 hover:text-zinc-700 hover:underline focus:outline-none focus:underline"
+                    >
+                        备案号：渝ICP备2023009516号-1
+                    </a>
+                    <p className="mt-1 text-sm text-zinc-500">
+                        © {new Date().getFullYear()} TONE Page. All rights reserved.
+                    </p>
                 </div>
-                <div>
+
+                {/* 联系方式弹出框 */}
+                <address className="not-italic">
                     <Popover>
-                        <PopoverTrigger>
-                            <div className="cursor-pointer text-zinc-600 hover:border-zinc-600 border-b border-transparent">联系我</div>
+                        <PopoverTrigger asChild>
+                            <Button variant='outline' size='sm' >
+                                <Mail className="text-zinc-600" />
+                            </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-60 mr-5">
-                            <div className="flex items-center">
-                                <div className="text-sm text-nowrap">电子邮箱:</div>
-                                <Button variant="link" className="cursor-pointer select-text" onClick={() => handleCopy('tone@ctbu.net.cn')}>tone@ctbu.net.cn</Button>
-                            </div>
+                        <PopoverContent className="w-fit">
+                            <a
+                                href={`mailto:${EMAIL}`}
+                                className="text-sm text-zinc-800 hover:underline focus:outline-none focus:underline"
+                            >
+                                {EMAIL}
+                            </a>
                         </PopoverContent>
                     </Popover>
-                </div>
+                </address>
             </div>
         </footer>
-    )
+    );
 }
-
