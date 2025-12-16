@@ -1,5 +1,5 @@
 'use client';
-import { authApi, verificationApi } from "@/lib/api";
+// import { authApi, verificationApi } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Header from "@/components/Header";
@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { KeyRound, Phone, Mail } from "lucide-react";
+import { KeyRound, Phone, FileKey2 } from "lucide-react";
 import EmailLoginMode from "./components/EmailLoginMode";
 import PasswordLoginMode from "./components/PasswordLoginMode";
 import PhoneLoginMode from "./components/PhoneLoginMode";
@@ -15,56 +15,53 @@ import { LoginFormData, SendCodeFormData, SubmitMode } from "./components/types"
 import { useCallback, useState } from "react";
 import LoginBG from './components/login-bg.jpg';
 import Image from "next/image";
-import { ApiError } from "@/lib/api/fetcher";
+import { handleAPIError } from "@/lib/api/common";
+// import { ApiError } from "@/lib/api/fetcher";
 
 export default function Login() {
     const router = useRouter();
     const [loginMode, setLoginMode] = useState<SubmitMode>('password');
 
-    const handleForgetPassword = useCallback(() => {
-        toast.warning('开发中，敬请期待！暂时可通过发送邮件至网站管理员进行密码重置。');
-    }, []);
+    // const handleSendCode = async (data: SendCodeFormData) => {
+    //     try {
+    //         const res = await verificationApi.send({
+    //             type: 'login',
+    //             targetType: data.type,
+    //             phone: data.phone,
+    //             email: data.email,
+    //         })
 
-    const handleSendCode = async (data: SendCodeFormData) => {
-        try {
-            const res = await verificationApi.send({
-                type: 'login',
-                targetType: data.type,
-                phone: data.phone,
-                email: data.email,
-            })
+    //         if (res) {
+    //             toast.success('验证码已发送，请注意查收');
+    //             return true;
+    //         } else {
+    //             throw new Error();
+    //         }
+    //     } catch (error) {
+    //         toast.error((error as ApiError).message || '验证码发送失败，请稍后再试');
+    //         return false;
+    //     }
+    // }
 
-            if (res) {
-                toast.success('验证码已发送，请注意查收');
-                return true;
-            } else {
-                throw new Error();
-            }
-        } catch (error) {
-            toast.error((error as ApiError).message || '验证码发送失败，请稍后再试');
-            return false;
-        }
-    }
+    // const handleSubmit = async (data: LoginFormData) => {
+    //     try {
+    //         const res = await authApi.login({
+    //             ...data,
+    //         });
 
-    const handleSubmit = async (data: LoginFormData) => {
-        try {
-            const res = await authApi.login({
-                ...data,
-            });
-
-            if (res.token) {
-                toast.success('登录成功');
-                localStorage.setItem('token', res.token);
-                router.replace('/console');
-                return true;
-            } else {
-                throw new Error();
-            }
-        } catch (error) {
-            toast.error((error as ApiError).message || '登录失败，请稍后再试');
-            return false;
-        }
-    }
+    //         if (res.token) {
+    //             toast.success('登录成功');
+    //             localStorage.setItem('token', res.token);
+    //             router.replace('/console');
+    //             return true;
+    //         } else {
+    //             throw new Error();
+    //         }
+    //     } catch (error) {
+    //         toast.error((error as ApiError).message || '登录失败，请稍后再试');
+    //         return false;
+    //     }
+    // }
 
     return (
         <>
@@ -74,23 +71,31 @@ export default function Login() {
                     <div className={cn("flex flex-col gap-6")}>
                         <Card className="overflow-hidden p-0">
                             <CardContent className="grid p-0 md:grid-cols-2">
-                                <form className="p-6 md:p-8" onSubmit={(e) => {
+                                <form className="p-6 md:p-8" onSubmit={async e => {
                                     e.preventDefault();
                                     const formData = new FormData(e.currentTarget);
-                                    handleSubmit({
-                                        type: loginMode,
-                                        account: formData.get('account')?.toString(),
-                                        password: formData.get('password')?.toString(),
-                                        phone: formData.get('phone')?.toString(),
-                                        email: formData.get('email')?.toString(),
-                                        code: formData.get('code')?.toString(),
+
+                                    let handler = (await (async () => {
+                                        if (loginMode === 'password') {
+                                            return import('./components/PasswordLoginMode');
+                                        }
+                                    })())?.handleSubmit;
+                                    if (!handler) {
+                                        return toast.error('登陆状态异常');
+                                    }
+
+                                    handler(formData).then((user) => {
+                                        localStorage.setItem('user_profile', JSON.stringify(user));
+                                        // to main page
+                                    }, (e) => {
+                                        handleAPIError(e, ({ message }) => toast.error(message))
                                     })
                                 }}>
                                     <div className="flex flex-col gap-6">
 
-                                        {loginMode === 'password' ? <PasswordLoginMode forgetPassword={handleForgetPassword} /> : null}
-                                        {loginMode === 'phone' ? <PhoneLoginMode onSendCode={handleSendCode} /> : null}
-                                        {loginMode === 'email' ? <EmailLoginMode onSendCode={handleSendCode} /> : null}
+                                        {loginMode === 'password' ? <PasswordLoginMode /> : null}
+                                        {/* {loginMode === 'phone' ? <PhoneLoginMode onSendCode={handleSendCode} /> : null} */}
+                                        {/* {loginMode === 'email' ? <EmailLoginMode onSendCode={handleSendCode} /> : null} */}
 
                                         <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                                             <span className="bg-card text-muted-foreground relative z-10 px-2">
@@ -105,7 +110,7 @@ export default function Login() {
                                                 <Phone />
                                             </Button>
                                             <Button variant={loginMode === 'email' ? 'default' : 'outline'} type="button" className="w-full" onClick={() => setLoginMode('email')}>
-                                                <Mail />
+                                                <FileKey2 />
                                             </Button>
                                         </div>
 
@@ -142,7 +147,7 @@ export default function Login() {
                         </div>
                     </div >
                 </div>
-            </div>
+            </div >
             <Footer />
         </>
     )
