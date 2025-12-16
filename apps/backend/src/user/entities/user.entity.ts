@@ -11,6 +11,12 @@ import {
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 
+export type RoleItem = Role | {
+  role: Role;
+  expiresAt?: Date;
+  [key: string]: any;
+}
+
 @Entity()
 @Index('IDX_user_userid', ['userId'], { unique: true })
 @Index('IDX_user_username', ['username'], { unique: true })
@@ -86,6 +92,6 @@ export class User {
   @DeleteDateColumn({ nullable: true, precision: 3 })
   deletedAt: Date;
 
-  @Column('simple-array', { default: '' })
-  roles: Role[];
+  @Column({ type: 'jsonb', default: [] })
+  roles: RoleItem[];
 }
