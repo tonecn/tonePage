@@ -22,7 +22,7 @@ export class BlogController {
   constructor(
     private readonly blogService: BlogService,
     private readonly userService: UserService,
-  ) {}
+  ) { }
 
   @Get()
   getBlogs() {
@@ -100,7 +100,7 @@ export class BlogController {
       throw new BadRequestException('作者关闭了该文章的评论功能');
     }
 
-    const user = userId ? await this.userService.findById(userId) : null;
+    const user = userId ? await this.userService.findOne({ userId }) : null;
 
     const ip = req.headers['x-forwarded-for'] || req.ip;
     // 获取IP归属地

@@ -1,0 +1,46 @@
+/**
+ * 全局业务错误码规范：
+ * - 每个模块分配一个 1000 起始的段（如 USER: -1000~1999, AUTH: -2000~2999）
+ * - 代码结构：{ 模块名大写 }_{ 错误语义 }
+ */
+
+export const ErrorCode = {
+    // 通用错误（0 ~ 999）
+    COMMON_INTERNAL_ERROR: -1,
+    COMMON_INVALID_PARAM: -2,
+    COMMON_NOT_FOUND: -3,
+
+    // 用户模块（1000 ~ 1999）
+    USER_NOT_FOUND: -1001,
+    USER_ALREADY_EXISTS: -1002,
+    USER_ACCOUNT_DISABLED: -1003,
+    USER_FIND_OPTIONS_EMPTY: -1004,
+    USER_ACCOUNT_DEACTIVATED: -1005,
+
+    // 认证模块（2000 ~ 2999）
+    AUTH_INVALID_CREDENTIALS: -2001,
+    AUTH_SMS_CODE_EXPIRED: -2002,
+    AUTH_SMS_CODE_INCORRECT: -2003,
+    AUTH_PASSKEY_NOT_REGISTERED: -2004,
+    AUTH_SESSION_EXPIRED: -2005,
+
+    // 博客模块（3000 ~ 3999）
+    BLOG_NOT_FOUND: -3001,
+    BLOG_PERMISSION_DENIED: -3002,
+
+    // 验证模块（4000 ~ 4999）
+    VERIFICATION_CODE_EXPIRED: -4001,
+    VERIFICATION_CODE_INCORRECT: -4002,
+
+    // 通知模块（5000 ~ 5999）
+    NOTIFICATION_SEND_FAILED: -5001,
+
+    // 资源模块（6000 ~ 6999）
+    RESOURCE_UPLOAD_FAILED: -6001,
+    RESOURCE_NOT_FOUND: -6002,
+
+    // 管理员模块（7000 ~ 7999）
+    ADMIN_FORBIDDEN: -7001,
+} as const;
+
+export type ErrorCodeType = typeof ErrorCode[keyof typeof ErrorCode];

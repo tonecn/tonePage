@@ -5,7 +5,7 @@ import { NotificationService } from 'src/notification/notification.service';
 export class VerificationService {
   private readonly logger = new Logger(VerificationService.name);
 
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(private readonly notificationService: NotificationService) { }
 
   private pool: Map<
     string,
@@ -121,7 +121,10 @@ export class VerificationService {
     return 0;
   }
 
-  private generateCode() {
+  /**
+   * 生成100000～999999的随机纯数字验证码
+   */
+  private generateCode(): string {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
 }

@@ -8,18 +8,18 @@ import Credential, { Config } from '@alicloud/credentials';
 
 @Injectable()
 export class NotificationService {
-  private dm: Dm20151123;
+  // private dm: Dm20151123;
 
   constructor() {
-    const credentialsConfig = new Config({
-      type: 'access_key',
-      accessKeyId: process.env.ALIYUN_ACCESS_KEY_ID,
-      accessKeySecret: process.env.ALIYUN_ACCESS_KEY_SECRET,
-    });
-    const credential = new Credential(credentialsConfig);
-    const config = new $OpenApi.Config({ credential });
-    config.endpoint = 'dm.aliyuncs.com';
-    this.dm = new Dm20151123(config);
+    // const credentialsConfig = new Config({
+    //   type: 'access_key',
+    //   accessKeyId: process.env.ALIYUN_ACCESS_KEY_ID,
+    //   accessKeySecret: process.env.ALIYUN_ACCESS_KEY_SECRET,
+    // });
+    // const credential = new Credential(credentialsConfig);
+    // const config = new $OpenApi.Config({ credential });
+    // config.endpoint = 'dm.aliyuncs.com';
+    // this.dm = new Dm20151123(config);
   }
 
   private getMailHtmlBody(option: { type: 'login-verify'; code: string }) {
@@ -86,27 +86,28 @@ export class NotificationService {
     targetMail: string;
     code: string;
   }) {
-    const runtime = new $Util.RuntimeOptions({});
+    // const runtime = new $Util.RuntimeOptions({});
 
-    const singleSendMailRequest = new $Dm20151123.SingleSendMailRequest({
-      accountName: 'security@tonesc.cn',
-      addressType: 1,
-      replyToAddress: false,
-      toAddress: `${option.targetMail}`,
-      subject: '【特恩的日志】登陆验证码',
-      htmlBody: this.getMailHtmlBody({
-        type: 'login-verify',
-        code: option.code,
-      }),
-      textBody: '',
-    });
+    // const singleSendMailRequest = new $Dm20151123.SingleSendMailRequest({
+    //   accountName: 'security@tonesc.cn',
+    //   addressType: 1,
+    //   replyToAddress: false,
+    //   toAddress: `${option.targetMail}`,
+    //   subject: '【特恩的日志】登陆验证码',
+    //   htmlBody: this.getMailHtmlBody({
+    //     type: 'login-verify',
+    //     code: option.code,
+    //   }),
+    //   textBody: '',
+    // });
 
-    try {
-      await this.dm.singleSendMailWithOptions(singleSendMailRequest, runtime);
-    } catch (error) {
-      console.error(error);
-      throw new BadRequestException('邮件发送失败');
-    }
+    // try {
+    //   await this.dm.singleSendMailWithOptions(singleSendMailRequest, runtime);
+    // } catch (error) {
+    //   console.error(error);
+    //   throw new BadRequestException('邮件发送失败');
+    // }
+    throw new Error('not implement')
   }
 
   /**

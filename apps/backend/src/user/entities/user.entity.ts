@@ -95,3 +95,13 @@ export class User {
   @Column({ type: 'jsonb', default: [] })
   roles: RoleItem[];
 }
+
+export class UserPublicProfile {
+  userId: string;
+  nickname: string;
+  avatar: string | null;
+  email: string | null;
+  phone: string | null;
+  roles: RoleItem[];
+  createdAt: Date;
+}

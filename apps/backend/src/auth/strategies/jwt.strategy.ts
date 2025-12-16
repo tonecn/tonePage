@@ -26,15 +26,14 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   async validate(payload: any) {
     const { userId, sessionId } = payload ?? {};
 
-    const isValidSession = await this.userSessionService.isSessionValid(
+    await this.userSessionService.isSessionValid(
       userId,
       sessionId,
-    );
-    if (!isValidSession) {
-      throw new UnauthorizedException('登录凭证已过期，请重新登录');
-    }
+    ).catch((e) => {
+      throw new UnauthorizedException(`${e}`);
+    });
 
-    const user = await this.userService.findById(userId);
+    const user = await this.userService.findOne({ userId });
     if (!user) {
       throw new BadRequestException('用户不存在');
     }

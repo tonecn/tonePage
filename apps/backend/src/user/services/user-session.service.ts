@@ -8,39 +8,45 @@ export class UserSessionService {
   constructor(
     @InjectRepository(UserSession)
     private readonly userSessionRepository: Repository<UserSession>,
-  ) {}
+  ) { }
 
-  async createSession(userId: string, sessionId: string): Promise<UserSession> {
+  async createSession(userId: string): Promise<UserSession> {
     const session = this.userSessionRepository.create({
       userId,
-      sessionId,
     });
-    return await this.userSessionRepository.save(session);
+    return this.userSessionRepository.save(session);
   }
 
-  async isSessionValid(userId: string, sessionId: string): Promise<boolean> {
+  /**
+   * @throws string 无效原因
+   */
+  async isSessionValid(userId: string, sessionId: string): Promise<void> {
     const session = await this.userSessionRepository.findOne({
       where: {
         userId,
         sessionId,
-        deletedAt: null,
       },
+      withDeleted: true,
     });
 
-    return !!session;
-  }
-
-  async invalidateSession(userId: string, sessionId: string): Promise<void> {
-    const session = await this.userSessionRepository.findOne({
-      where: {
-        userId,
-        sessionId,
-        deletedAt: null,
-      },
-    });
-
-    if (session) {
-      await this.userSessionRepository.softDelete(session.id);
+    if (session === null) {
+      throw '登陆凭证无效';
     }
+
+    if (session.deletedAt !== null) {
+      throw session.disabledReason || '登陆凭证无效';
+    }
+
+    return null;
+  }
+
+  async invalidateSession(userId: string, sessionId: string, reason?: string): Promise<void> {
+    await this.userSessionRepository.update(
+      { userId, sessionId, deletedAt: null },
+      {
+        deletedAt: new Date(),
+        disabledReason: reason || null,
+      }
+    )
   }
 }

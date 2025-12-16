@@ -2,12 +2,14 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { User, UserPublicProfile } from './entities/user.entity';
 import { QueryFailedError, Repository } from 'typeorm';
 import { createHash } from 'crypto';
 import { v4 as uuid } from 'uuid';
+import { BusinessException } from 'src/common/exceptions/business.exception';
 
 type UserFindOptions = Partial<
   Pick<User, 'userId' | 'username' | 'phone' | 'email'>
@@ -18,26 +20,54 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
+  ) { }
 
-  /**
-   * @deprecated 尽量不使用该方法
-   */
   async findOne(
     options: UserFindOptions | UserFindOptions[],
     additionalOptions?: { withDeleted?: boolean },
   ): Promise<User | null> {
-    if (Object.keys(options).length === 0) {
-      throw new BadRequestException('查询条件不能为空');
+    if (Array.isArray(options)) {
+      if (options.length === 0) {
+        throw new BusinessException({
+          message: '查询条件不能为空',
+        });
+      }
+
+      const users = await this.userRepository.find({
+        where: options,
+        withDeleted: additionalOptions?.withDeleted ?? false,
+        take: 1,
+      });
+      return users[0] || null;
     }
+
+    if (!options || typeof options !== 'object' || Object.keys(options).length === 0) {
+      throw new BusinessException({
+        message: '查询条件不能为空',
+      });
+    }
+
     return this.userRepository.findOne({
       where: options,
-      withDeleted: additionalOptions?.withDeleted || false,
+      withDeleted: additionalOptions?.withDeleted ?? false,
     });
   }
 
-  async findById(userId: string): Promise<User | null> {
+  /**
+   * 仅包含用户可见字段
+   */
+  async findById(userId: string): Promise<UserPublicProfile | null> {
     return this.userRepository.findOne({
+      select: {
+        avatar: true,
+        createdAt: true,
+        email: true,
+        nickname: true,
+        username: true,
+        phone: true,
+        roles: true,
+        userId: true,
+      },
       where: {
         userId,
       },
