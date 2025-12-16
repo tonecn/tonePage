@@ -8,7 +8,5 @@ export interface User {
     phone?: string;
     avatar?: string;
     createdAt: string;
-    updatedAt: string;
-    deletedAt: string | null;
     roles: Role[];
 }
