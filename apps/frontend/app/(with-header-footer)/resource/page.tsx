@@ -1,15 +1,15 @@
 import { ResourceCard } from "./components/ResourceCard";
-import { ResourceApi } from "@/lib/api";
 import {
     Alert,
     AlertDescription,
     AlertTitle,
 } from "@/components/ui/alert"
+import { ResourceAPI } from "@/lib/api/server";
 import { AlertCircle } from "lucide-react";
 
 export default async function Resources() {
     let errorMsg = '';
-    const data = await ResourceApi.list().catch(e => { errorMsg = `${e}`; return null; });
+    const data = await ResourceAPI.list().catch(e => { errorMsg = `${e}`; return null; });
 
     return (
         <div className="flex-1 flex flex-col items-center">

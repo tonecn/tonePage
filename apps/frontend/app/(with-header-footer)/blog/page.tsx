@@ -1,4 +1,3 @@
-import { BlogApi } from "@/lib/api";
 import { useCallback } from "react"
 import {
     Alert,
@@ -7,6 +6,7 @@ import {
 } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { base62 } from "@/lib/utils";
+import { BlogAPI } from "@/lib/api/server";
 
 export default async function Blog() {
     const formatNumber = useCallback((num: number) => {
@@ -19,7 +19,7 @@ export default async function Blog() {
     }, []);
 
     let errorMsg = '';
-    const blogs = await BlogApi.list().catch(e => { errorMsg = `${e}`; return null });
+    const blogs = await BlogAPI.list().catch(e => { errorMsg = `${e}`; return null });
 
     return (
         <div className="max-w-120 w-auto mx-auto my-10 flex flex-col gap-8">

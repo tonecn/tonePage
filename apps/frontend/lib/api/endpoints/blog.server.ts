@@ -1,5 +1,6 @@
+import { Blog } from "@/lib/types/blog";
 import { serverFetch } from "../server";
 
 export async function list() {
-    return serverFetch('/api/blog')
+    return serverFetch<Blog[]>('/api/blog')
 }
