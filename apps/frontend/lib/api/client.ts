@@ -46,3 +46,4 @@ export async function clientFetch<T = unknown>(
 
 
 export * as AuthAPI from './endpoints/auth.client'
+export * as UserAPI from './endpoints/user.client'
