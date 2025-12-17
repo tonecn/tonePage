@@ -15,6 +15,9 @@ import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { Response } from 'express';
 import { UserService } from 'src/user/user.service';
 import { AuthGuard } from './guards/auth.guard';
+import { SmsLoginDto } from './dto/sms-login.dto';
+import { SmsService } from 'src/sms/sms.service';
+import { UserSession } from 'src/user/entities/user-session.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -22,26 +25,11 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly userService: UserService,
     private readonly userSessionService: UserSessionService,
+    private readonly smsService: SmsService,
   ) { }
 
-  // @Post('login')
-  // @UseGuards(ThrottlerGuard)
-  // @Throttle({ default: { limit: 20, ttl: 60000 } })
-  // async login(@Body() loginDto: LoginDto) {
-  //   switch (loginDto.type) {
-  //     case 'password':
-  //       return this.authService.loginWithPassword(loginDto);
-  //     case 'phone':
-  //       return this.authService.loginWithPhone(loginDto);
-  //     case 'email':
-  //       return this.authService.loginWithEmail(loginDto);
-  //     default:
-  //       throw new BadRequestException('服务器错误');
-  //   }
-  // }
-
-  private setUserSession(res: Response, sessionId: string) {
-    res.cookie('session', sessionId, {
+  private setUserSession(res: Response, session: UserSession) {
+    res.cookie('session', session.sessionId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -57,20 +45,22 @@ export class AuthController {
   ) {
     const { identifier, password } = loginDto;
     const session = await this.authService.loginWithPassword(identifier, password);
-    this.setUserSession(res, session.sessionId);
+    this.setUserSession(res, session);
     return {
       user: await this.userService.findById(session.userId),
     };
   }
 
-  @Post('sms/send')
-  async sendSms() {
-    throw new NotImplementedException();
-  }
-
   @Post('login/sms')
-  async loginBySms() {
-    throw new NotImplementedException();
+  async loginBySms(
+    @Body() dto: SmsLoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { phone, code } = dto;
+    await this.smsService.checkSms(phone, 'login', code);
+    // 验证通过，（注册并）登陆
+    const session = await this.authService.loginWithPhone(phone);
+    this.setUserSession(res, session);
   }
 
   @Post('passkey/login/options')

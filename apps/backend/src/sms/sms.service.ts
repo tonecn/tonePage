@@ -170,7 +170,6 @@ export class SmsService {
 
             record.usedAt = new Date();
             await this.smsRecordRepository.save(record);
-            return true;
         } else {
             throw new InternalServerErrorException('未知的Sms类型');
         }

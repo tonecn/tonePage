@@ -11,7 +11,6 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly userSessionService: UserSessionService,
-    private readonly verificationService: VerificationService,
   ) { }
 
   async loginWithPassword(identifier: string, password: string) {
@@ -51,27 +50,7 @@ export class AuthService {
     return this.userSessionService.createSession(userId);
   }
 
-  async loginWithPhone(data: { phone: string; code: string; }) {
-    const { phone, code } = data;
-    // 先判断验证码是否正确
-    const isValid = this.verificationService.verifyPhoneCode(
-      phone,
-      code,
-      'login',
-    );
-    switch (isValid) {
-      case 0:
-        break;
-      case -1:
-        throw new BadRequestException('验证码已过期');
-      case -2:
-        throw new BadRequestException('验证码错误');
-      case -3:
-        throw new BadRequestException('验证码已失效');
-      default:
-        throw new BadRequestException('验证码错误');
-    }
-
+  async loginWithPhone(phone: string) {
     // 判断用户是否存在，若不存在则进行注册
     let user = await this.userService.findOne({ phone }, { withDeleted: true });
     if (user && user.deletedAt !== null) {
@@ -80,7 +59,7 @@ export class AuthService {
 
     if (!user) {
       // 执行注册操作
-      user = await this.userService.create({ phone: phone });
+      user = await this.userService.register({ phone });
     }
 
     if (!user || !user.userId) {
@@ -88,9 +67,7 @@ export class AuthService {
       throw new BadRequestException('请求失败，请稍后再试');
     }
 
-    return {
-      userId: user.userId
-    };
+    return this.userSessionService.createSession(user.userId);
   }
 
   private hashPassword(password: string, salt: string): string {

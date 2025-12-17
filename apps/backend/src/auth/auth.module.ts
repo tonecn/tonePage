@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { VerificationModule } from 'src/verification/verification.module';
 import { AuthGuard } from './guards/auth.guard';
 import { OptionalAuthGuard } from './guards/optional-auth.guard';
+import { SmsModule } from 'src/sms/sms.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { OptionalAuthGuard } from './guards/optional-auth.guard';
     forwardRef(() => UserModule),
     TypeOrmModule.forFeature([UserSession]),
     VerificationModule,
+    SmsModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, AuthGuard, OptionalAuthGuard],

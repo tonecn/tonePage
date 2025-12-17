@@ -41,7 +41,7 @@ export class AdminUserController {
 
   @Post()
   async create(@Body() createDto: CreateDto) {
-    return this.userService.create({
+    return this.userService.register({
       ...createDto,
       ...(createDto.password &&
         (() => {

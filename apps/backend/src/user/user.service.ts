@@ -74,7 +74,7 @@ export class UserService {
     });
   }
 
-  async create(user: Partial<User>): Promise<User> {
+  async register(user: Partial<User>): Promise<User> {
     try {
       const newUser = this.userRepository.create(user);
       return await this.userRepository.save(newUser);
