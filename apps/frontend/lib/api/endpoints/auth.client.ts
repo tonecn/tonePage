@@ -17,7 +17,7 @@ export async function loginByPassword(identifier: string, password: string) {
         throw new APIError('密码长度只能为6~32位')
     }
 
-    return clientFetch<User>('/api/auth/login/password', {
+    return clientFetch<{ user: User }>('/api/auth/login/password', {
         method: 'POST',
         body: JSON.stringify({
             identifier,
