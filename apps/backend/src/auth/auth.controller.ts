@@ -61,6 +61,9 @@ export class AuthController {
     // 验证通过，（注册并）登陆
     const session = await this.authService.loginWithPhone(phone);
     this.setUserSession(res, session);
+    return {
+      user: await this.userService.findById(session.userId),
+    }
   }
 
   @Post('passkey/login/options')
