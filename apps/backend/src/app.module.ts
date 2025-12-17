@@ -12,6 +12,7 @@ import { BlogModule } from './blog/blog.module';
 import { AdminModule } from './admin/admin.module';
 import { OssModule } from './oss/oss.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { CaptchaModule } from './captcha/captcha.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     BlogModule,
     AdminModule,
     OssModule,
+    CaptchaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
