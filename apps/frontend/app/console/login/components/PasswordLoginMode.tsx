@@ -2,10 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import LoginHeader from "./LoginHeader";
 import { Label } from "@/components/ui/label"
-import { FormEvent, useCallback } from "react";
+import { useCallback } from "react";
 import { toast } from "sonner";
 import { AuthAPI } from "@/lib/api/client";
-import { handleAPIError } from "@/lib/api/common";
 
 export default function PasswordLoginMode() {
     const handleForgetPassword = useCallback(() => {
