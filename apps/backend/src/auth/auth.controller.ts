@@ -10,11 +10,11 @@ import {
 } from '@nestjs/common';
 import { LoginByPasswordDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
-import { AuthGuard } from '@nestjs/passport';
 import { UserSessionService } from 'src/user/services/user-session.service';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { Response } from 'express';
 import { UserService } from 'src/user/user.service';
+import { AuthGuard } from './guards/auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -40,8 +40,8 @@ export class AuthController {
   //   }
   // }
 
-  private setUserToken(res: Response, token: string) {
-    res.cookie('token', token, {
+  private setUserSession(res: Response, sessionId: string) {
+    res.cookie('session', sessionId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -56,11 +56,10 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const { identifier, password } = loginDto;
-    const loginRes = await this.authService.loginWithPassword(identifier, password);
-    const { userId, token } = loginRes;
-    this.setUserToken(res, token);
+    const session = await this.authService.loginWithPassword(identifier, password);
+    this.setUserSession(res, session.sessionId);
     return {
-      user: await this.userService.findById(userId),
+      user: await this.userService.findById(session.userId),
     };
   }
 
@@ -84,7 +83,7 @@ export class AuthController {
     throw new NotImplementedException();
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard)
   @Post('logout')
   async logout(@Request() req) {
     const { userId, sessionId } = req.user;

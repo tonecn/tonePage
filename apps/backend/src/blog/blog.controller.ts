@@ -11,11 +11,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
-import { OptionalAuthGuard } from 'src/auth/strategies/OptionalAuthGuard';
 import { UserService } from 'src/user/user.service';
 import { createBlogCommentDto } from './dto/create.blogcomment.dto';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { BlogPermission } from './blog.permission.enum';
+import { OptionalAuthGuard } from 'src/auth/guards/optional-auth.guard';
 
 @Controller('blog')
 export class BlogController {

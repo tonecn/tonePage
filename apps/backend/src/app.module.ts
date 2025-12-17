@@ -7,7 +7,6 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { VerificationModule } from './verification/verification.module';
 import { NotificationModule } from './notification/notification.module';
-import { PassportModule } from '@nestjs/passport';
 import { ResourceModule } from './resource/resource.module';
 import { BlogModule } from './blog/blog.module';
 import { AdminModule } from './admin/admin.module';
@@ -28,7 +27,6 @@ import { ThrottlerModule } from '@nestjs/throttler';
       entities: [],
       synchronize: process.env.NODE_ENV !== 'production', // Set to false in production
     }),
-    PassportModule.register({ defaultStrategy: 'jwt' }),
     ThrottlerModule.forRoot({
       throttlers: [
         {

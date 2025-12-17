@@ -9,20 +9,20 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { CreateBlogDto } from 'src/admin/dto/admin-web/create-blog.dto';
 import { SetBlogPasswordDto } from 'src/admin/dto/admin-web/set-blog-password.dto';
 import { UpdateBlogDto } from 'src/admin/dto/admin-web/update-blog.dto';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { Role } from 'src/auth/role.enum';
 import { BlogService } from 'src/blog/blog.service';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { RolesGuard } from 'src/common/guard/roles.guard';
 
 @Controller('/admin/web/blog')
-@UseGuards(AuthGuard('jwt'), RolesGuard)
+@UseGuards(AuthGuard, RolesGuard)
 @Roles(Role.Admin)
 export class AdminWebBlogController {
-  constructor(private readonly adminWebBlogService: BlogService) {}
+  constructor(private readonly adminWebBlogService: BlogService) { }
 
   @Get()
   async list() {

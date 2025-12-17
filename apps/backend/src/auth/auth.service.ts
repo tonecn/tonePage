@@ -1,8 +1,6 @@
 import { createHash } from 'crypto';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
-import { User } from 'src/user/entities/user.entity';
-import { JwtService } from '@nestjs/jwt';
 import { UserSessionService } from 'src/user/services/user-session.service';
 import { VerificationService } from 'src/verification/verification.service';
 import { BusinessException } from 'src/common/exceptions/business.exception';
@@ -12,7 +10,6 @@ import { ErrorCode } from 'src/common/constants/error-codes';
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly jwtService: JwtService,
     private readonly userSessionService: UserSessionService,
     private readonly verificationService: VerificationService,
   ) { }
@@ -49,11 +46,9 @@ export class AuthService {
       });
     }
 
-    // 登录成功，颁发token
-    return {
-      token: await this.generateToken(user),
-      userId: user.userId,
-    };
+    const { userId } = user;
+
+    return this.userSessionService.createSession(userId);
   }
 
   async loginWithPhone(data: { phone: string; code: string; }) {
@@ -93,9 +88,8 @@ export class AuthService {
       throw new BadRequestException('请求失败，请稍后再试');
     }
 
-    // 登录，颁发token
     return {
-      token: await this.generateToken(user),
+      userId: user.userId
     };
   }
 
@@ -103,18 +97,4 @@ export class AuthService {
     return createHash('sha256').update(`${password}${salt}`).digest('hex');
   }
 
-  private async generateToken(user: User) {
-    // 存储
-    const sessionRes = await this.userSessionService.createSession(
-      user.userId,
-    );
-
-    const payload = {
-      userId: user.userId,
-      sessionId: sessionRes.sessionId,
-    };
-
-    // 颁发token
-    return this.jwtService.sign(payload);
-  }
 }

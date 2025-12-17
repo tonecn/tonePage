@@ -19,13 +19,13 @@ import { RemoveUserDto } from '../dto/admin-user/remove.dto';
 import { RolesGuard } from 'src/common/guard/roles.guard';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { Role } from 'src/auth/role.enum';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @Controller('admin/user')
-@UseGuards(AuthGuard('jwt'), RolesGuard)
+@UseGuards(AuthGuard, RolesGuard)
 @Roles(Role.Admin)
 export class AdminUserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Get()
   async list(@Query() listDto: ListDto) {

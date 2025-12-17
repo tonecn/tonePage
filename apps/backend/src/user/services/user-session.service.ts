@@ -17,32 +17,19 @@ export class UserSessionService {
     return this.userSessionRepository.save(session);
   }
 
-  /**
-   * @throws string 无效原因
-   */
-  async isSessionValid(userId: string, sessionId: string): Promise<void> {
+  async getSession(sessionId: string) {
     const session = await this.userSessionRepository.findOne({
       where: {
-        userId,
         sessionId,
       },
-      withDeleted: true,
     });
 
-    if (session === null) {
-      throw '登陆凭证无效';
-    }
-
-    if (session.deletedAt !== null) {
-      throw session.disabledReason || '登陆凭证无效';
-    }
-
-    return null;
+    return session;
   }
 
-  async invalidateSession(userId: string, sessionId: string, reason?: string): Promise<void> {
+  async invalidateSession(sessionId: string, reason?: string): Promise<void> {
     await this.userSessionRepository.update(
-      { userId, sessionId, deletedAt: null },
+      { sessionId, deletedAt: null },
       {
         deletedAt: new Date(),
         disabledReason: reason || null,
