@@ -25,3 +25,28 @@ export async function loginByPassword(identifier: string, password: string) {
         })
     });
 }
+
+export async function loginBySms(phone: string, code: string) {
+    phone = phone.trim();
+    code = code.trim();
+    if (phone.length === 0 || code.length === 0) {
+        throw new APIError('请输入手机号及短信验证码')
+    }
+
+    if (!/^1[3-9]\d{9}$/.test(phone)) {
+        throw new APIError('请输入合法的中国大陆手机号');
+    }
+
+
+    if (! /\d{6}/.test(code)) {
+        throw new APIError('密码长度只能为6~32位')
+    }
+
+    return clientFetch<{ user: User }>('/api/auth/login/sms', {
+        method: 'POST',
+        body: JSON.stringify({
+            phone,
+            code,
+        })
+    });
+}

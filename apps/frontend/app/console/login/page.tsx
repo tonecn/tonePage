@@ -9,14 +9,14 @@ import { cn } from "@/lib/utils";
 import { KeyRound, Phone, FileKey2 } from "lucide-react";
 import EmailLoginMode from "./components/EmailLoginMode";
 import PasswordLoginMode from "./components/PasswordLoginMode";
-import PhoneLoginMode from "./components/PhoneLoginMode";
+import PhoneLoginMode from "./components/SmsLoginMode";
 import { useState } from "react";
 import LoginBG from './components/login-bg.jpg';
 import Image from "next/image";
 import { handleAPIError } from "@/lib/api/common";
 import { useUserStore } from "@/store/useUserStore";
 
-export type SubmitMode = 'password' | 'phone' | 'passkey';
+export type SubmitMode = 'password' | 'sms' | 'passkey';
 
 export default function Login() {
     const router = useRouter();
@@ -37,6 +37,8 @@ export default function Login() {
                                     let handler = (await (async () => {
                                         if (loginMode === 'password') {
                                             return import('./components/PasswordLoginMode');
+                                        } else if (loginMode === 'sms') {
+                                            return import('./components/SmsLoginMode');
                                         }
                                     })())?.handleSubmit;
                                     if (!handler) {
@@ -54,7 +56,7 @@ export default function Login() {
                                     <div className="flex flex-col gap-6">
 
                                         {loginMode === 'password' ? <PasswordLoginMode /> : null}
-                                        {/* {loginMode === 'phone' ? <PhoneLoginMode onSendCode={handleSendCode} /> : null} */}
+                                        {loginMode === 'sms' ? <PhoneLoginMode /> : null}
                                         {/* {loginMode === 'email' ? <EmailLoginMode onSendCode={handleSendCode} /> : null} */}
 
                                         <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
@@ -64,7 +66,7 @@ export default function Login() {
                                         </div>
                                         <div className="grid grid-cols-3 gap-4">
                                             {
-                                                ([['password', KeyRound], ['phone', Phone], ['passkey', FileKey2]] as const).map(([mode, Icon]) => (
+                                                ([['password', KeyRound], ['sms', Phone], ['passkey', FileKey2]] as const).map(([mode, Icon]) => (
                                                     <Button key={mode} variant={loginMode === mode ? 'default' : 'outline'} type="button" className="w-full" onClick={() => setLoginMode(mode)}>
                                                         <Icon />
                                                     </Button>
@@ -74,7 +76,7 @@ export default function Login() {
 
                                         <div className="text-center text-sm">
                                             还没有账号？{" "}
-                                            <a className="underline underline-offset-4 cursor-pointer" onClick={() => setLoginMode('phone')}>
+                                            <a className="underline underline-offset-4 cursor-pointer" onClick={() => setLoginMode('sms')}>
                                                 注册
                                             </a>
                                         </div>
