@@ -13,6 +13,7 @@ import { AdminModule } from './admin/admin.module';
 import { OssModule } from './oss/oss.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { CaptchaModule } from './captcha/captcha.module';
+import { SmsModule } from './sms/sms.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { CaptchaModule } from './captcha/captcha.module';
     AdminModule,
     OssModule,
     CaptchaModule,
+    SmsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

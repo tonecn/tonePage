@@ -17,29 +17,31 @@ export const ErrorCode = {
     USER_FIND_OPTIONS_EMPTY: -1004,
     USER_ACCOUNT_DEACTIVATED: -1005,
 
-    // 认证模块（2000 ~ 2999）
+    // 认证模块
     AUTH_INVALID_CREDENTIALS: -2001,
-    AUTH_SMS_CODE_EXPIRED: -2002,
-    AUTH_SMS_CODE_INCORRECT: -2003,
-    AUTH_PASSKEY_NOT_REGISTERED: -2004,
-    AUTH_SESSION_EXPIRED: -2005,
+    AUTH_PASSKEY_NOT_REGISTERED: -2002,
+    AUTH_SESSION_EXPIRED: -2003,
 
-    // 博客模块（3000 ~ 3999）
+    // 博客模块
     BLOG_NOT_FOUND: -3001,
     BLOG_PERMISSION_DENIED: -3002,
 
-    // 验证模块（4000 ~ 4999）
+    // 验证模块
     CAPTCHA_RARE_LIMIT: -4001,
 
-    // 通知模块（5000 ~ 5999）
+    // 通知模块
     NOTIFICATION_SEND_FAILED: -5001,
 
-    // 资源模块（6000 ~ 6999）
-    RESOURCE_UPLOAD_FAILED: -6001,
-    RESOURCE_NOT_FOUND: -6002,
+    // Sms模块
+    SMS_CODE_INCORRECT: -6001,
+    SMS_CODE_EXPIRED: -6002,
 
-    // 管理员模块（7000 ~ 7999）
-    ADMIN_FORBIDDEN: -7001,
+    // 资源模块
+    RESOURCE_UPLOAD_FAILED: -7001,
+    RESOURCE_NOT_FOUND: -7002,
+
+    // 管理员模块
+    ADMIN_FORBIDDEN: -8001,
 } as const;
 
 export type ErrorCodeType = typeof ErrorCode[keyof typeof ErrorCode];
