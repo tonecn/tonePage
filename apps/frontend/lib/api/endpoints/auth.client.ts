@@ -4,7 +4,7 @@ import { APIError } from "../common";
 
 export async function loginByPassword(identifier: string, password: string) {
     identifier = identifier.trim();
-    password = identifier.trim();
+    password = password.trim();
     if (identifier.length === 0 || password.length === 0) {
         throw new APIError('请输入账户和密码')
     }
