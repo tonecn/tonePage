@@ -129,12 +129,19 @@ export class SmsService {
                     phone,
                     type,
                     expiredAt: MoreThan(now),
-                    usedAt: null,
                 },
                 order: { createdAt: 'DESC' },
             });
 
             if (!record) {
+                throw new BusinessException({
+                    code: ErrorCode.SMS_CODE_EXPIRED,
+                    message: '验证码已失效，请重新获取',
+                })
+            }
+
+            // 检查被用过没
+            if (record.usedAt !== null) {
                 throw new BusinessException({
                     code: ErrorCode.SMS_CODE_EXPIRED,
                     message: '验证码已失效，请重新获取',
