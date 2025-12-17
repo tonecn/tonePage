@@ -26,7 +26,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { authApi, UserApi } from "@/lib/api"
 import { Skeleton } from "./ui/skeleton"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
@@ -35,20 +34,20 @@ import { useState } from "react"
 import { User } from "@/lib/types/user"
 import UserProfile from "./nav-user/UserProfile"
 
-export function NavUser({ user, isUserLoading }: { user: User | undefined, isUserLoading: boolean }) {
+export function NavUser({ user }: { user: User | null }) {
   const { isMobile } = useSidebar();
   const router = useRouter();
 
   async function logout() {
-    try {
-      await authApi.logout();
-      localStorage.removeItem('token');
-      localStorage.removeItem(UserApi.USER_ME_CACHE_KEY)
-      toast.success('登出成功');
-      router.replace('/console/login');
-    } catch {
-      toast.error('登出失败，请稍后再试');
-    }
+    // try {
+    //   await authApi.logout();
+    //   localStorage.removeItem('token');
+    //   localStorage.removeItem(UserApi.USER_ME_CACHE_KEY)
+    //   toast.success('登出成功');
+    //   router.replace('/console/login');
+    // } catch {
+    //   toast.error('登出失败，请稍后再试');
+    // }
   }
 
   const [userProfileOpen, setUserProfileOpen] = useState(false);
@@ -65,25 +64,24 @@ export function NavUser({ user, isUserLoading }: { user: User | undefined, isUse
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
                 {
-                  user && <>
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={user.avatar} />
-                      <AvatarFallback className="rounded-lg">U</AvatarFallback>
-                    </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-medium">{user.nickname}</span>
-                      <span className="truncate text-xs">{user.username}</span>
+                  user ?
+                    <>
+                      <Avatar className="h-8 w-8 rounded-lg">
+                        <AvatarImage src={user.avatar} />
+                        <AvatarFallback className="rounded-lg">U</AvatarFallback>
+                      </Avatar>
+                      <div className="grid flex-1 text-left text-sm leading-tight">
+                        <span className="truncate font-medium">{user.nickname}</span>
+                        <span className="truncate text-xs">{user.username}</span>
+                      </div>
+                    </> :
+                    <div className="w-full flex items-center gap-2">
+                      <Skeleton className="h-8 w-8 rounded-full" />
+                      <div className="flex-1 flex flex-col gap-1">
+                        <Skeleton className="w-full h-4" />
+                        <Skeleton className="w-full h-4" />
+                      </div>
                     </div>
-                  </>
-                }
-                {
-                  isUserLoading && <div className="w-full flex items-center gap-2">
-                    <Skeleton className="h-8 w-8 rounded-full" />
-                    <div className="flex-1 flex flex-col gap-1">
-                      <Skeleton className="w-full h-4" />
-                      <Skeleton className="w-full h-4" />
-                    </div>
-                  </div>
                 }
                 <ChevronsUpDown className="ml-auto size-4" />
               </SidebarMenuButton>
@@ -96,26 +94,24 @@ export function NavUser({ user, isUserLoading }: { user: User | undefined, isUse
             >
               <DropdownMenuLabel className="p-0 font-normal">
                 {
-                  user &&
-                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={user.avatar} />
-                      <AvatarFallback className="rounded-lg">U</AvatarFallback>
-                    </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-medium">{user.nickname}</span>
-                      <span className="truncate text-xs">{user.username}</span>
+                  user ?
+                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                      <Avatar className="h-8 w-8 rounded-lg">
+                        <AvatarImage src={user.avatar} />
+                        <AvatarFallback className="rounded-lg">U</AvatarFallback>
+                      </Avatar>
+                      <div className="grid flex-1 text-left text-sm leading-tight">
+                        <span className="truncate font-medium">{user.nickname}</span>
+                        <span className="truncate text-xs">{user.username}</span>
+                      </div>
+                    </div> :
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-8 w-8 rounded-full" />
+                      <div className="flex-1 flex flex-col gap-1">
+                        <Skeleton className="w-full h-4" />
+                        <Skeleton className="w-full h-4" />
+                      </div>
                     </div>
-                  </div>
-                }
-                {
-                  isUserLoading && <div className="flex items-center gap-2">
-                    <Skeleton className="h-8 w-8 rounded-full" />
-                    <div className="flex-1 flex flex-col gap-1">
-                      <Skeleton className="w-full h-4" />
-                      <Skeleton className="w-full h-4" />
-                    </div>
-                  </div>
                 }
               </DropdownMenuLabel>
               <DropdownMenuSeparator />

@@ -1,5 +1,4 @@
 'use client';
-// import { authApi, verificationApi } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Header from "@/components/Header";
@@ -11,57 +10,17 @@ import { KeyRound, Phone, FileKey2 } from "lucide-react";
 import EmailLoginMode from "./components/EmailLoginMode";
 import PasswordLoginMode from "./components/PasswordLoginMode";
 import PhoneLoginMode from "./components/PhoneLoginMode";
-import { LoginFormData, SendCodeFormData, SubmitMode } from "./components/types";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import LoginBG from './components/login-bg.jpg';
 import Image from "next/image";
 import { handleAPIError } from "@/lib/api/common";
-// import { ApiError } from "@/lib/api/fetcher";
+import { useUserStore } from "@/store/useUserStore";
+
+export type SubmitMode = 'password' | 'phone' | 'passkey';
 
 export default function Login() {
     const router = useRouter();
     const [loginMode, setLoginMode] = useState<SubmitMode>('password');
-
-    // const handleSendCode = async (data: SendCodeFormData) => {
-    //     try {
-    //         const res = await verificationApi.send({
-    //             type: 'login',
-    //             targetType: data.type,
-    //             phone: data.phone,
-    //             email: data.email,
-    //         })
-
-    //         if (res) {
-    //             toast.success('验证码已发送，请注意查收');
-    //             return true;
-    //         } else {
-    //             throw new Error();
-    //         }
-    //     } catch (error) {
-    //         toast.error((error as ApiError).message || '验证码发送失败，请稍后再试');
-    //         return false;
-    //     }
-    // }
-
-    // const handleSubmit = async (data: LoginFormData) => {
-    //     try {
-    //         const res = await authApi.login({
-    //             ...data,
-    //         });
-
-    //         if (res.token) {
-    //             toast.success('登录成功');
-    //             localStorage.setItem('token', res.token);
-    //             router.replace('/console');
-    //             return true;
-    //         } else {
-    //             throw new Error();
-    //         }
-    //     } catch (error) {
-    //         toast.error((error as ApiError).message || '登录失败，请稍后再试');
-    //         return false;
-    //     }
-    // }
 
     return (
         <>
@@ -84,9 +43,10 @@ export default function Login() {
                                         return toast.error('登陆状态异常');
                                     }
 
-                                    handler(formData).then((user) => {
-                                        localStorage.setItem('user_profile', JSON.stringify(user));
+                                    handler(formData).then((data) => {
+                                        useUserStore.getState().setUser(data.user);
                                         // to main page
+                                        router.replace('/console');
                                     }, (e) => {
                                         handleAPIError(e, ({ message }) => toast.error(message))
                                     })
@@ -103,15 +63,13 @@ export default function Login() {
                                             </span>
                                         </div>
                                         <div className="grid grid-cols-3 gap-4">
-                                            <Button variant={loginMode === 'password' ? 'default' : 'outline'} type="button" className="w-full" onClick={() => setLoginMode('password')}>
-                                                <KeyRound />
-                                            </Button>
-                                            <Button variant={loginMode === 'phone' ? 'default' : 'outline'} type="button" className="w-full" onClick={() => setLoginMode('phone')}>
-                                                <Phone />
-                                            </Button>
-                                            <Button variant={loginMode === 'email' ? 'default' : 'outline'} type="button" className="w-full" onClick={() => setLoginMode('email')}>
-                                                <FileKey2 />
-                                            </Button>
+                                            {
+                                                ([['password', KeyRound], ['phone', Phone], ['passkey', FileKey2]] as const).map(([mode, Icon]) => (
+                                                    <Button key={mode} variant={loginMode === mode ? 'default' : 'outline'} type="button" className="w-full" onClick={() => setLoginMode(mode)}>
+                                                        <Icon />
+                                                    </Button>
+                                                ))
+                                            }
                                         </div>
 
                                         <div className="text-center text-sm">

@@ -14,7 +14,6 @@ import { Label } from "@/components/ui/label"
 import { FC } from "react";
 import { DialogProps } from "@radix-ui/react-dialog";
 import { toast } from "sonner";
-import { UserApi } from "@/lib/api";
 import { ApiError } from "next/dist/server/api-utils";
 
 export default function SetPassword({ onOpenChange, ...props }: React.ComponentProps<FC<DialogProps>>) {
@@ -24,13 +23,13 @@ export default function SetPassword({ onOpenChange, ...props }: React.ComponentP
             return;
         }
 
-        try {
-            await UserApi.updatePassword(password);
-            toast.success('新密码设置成功');
-            onOpenChange?.(false);
-        } catch (error) {
-            toast.error((error as ApiError).message || '新密码设置失败');
-        }
+        // try {
+        //     await UserApi.updatePassword(password);
+        //     toast.success('新密码设置成功');
+        //     onOpenChange?.(false);
+        // } catch (error) {
+        //     toast.error((error as ApiError).message || '新密码设置失败');
+        // }
     }
 
     return (
