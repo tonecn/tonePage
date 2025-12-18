@@ -27,12 +27,21 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
             // 当HttpException传入类型为string时，响应data为null，message为传入的string
             // 其他请况（object/number），响应为传入数据，message为HttpException的错误码
             statusCode = exception.getStatus();
-            const response = exception.getResponse() as Record<string, any>;
-            if (response.message) {
-                errorResponse.message = response.message;
+            const exceptionResponse = exception.getResponse() as Record<string, any>;
+            if (exceptionResponse.message) {
+                errorResponse.message = exceptionResponse.message;
             } else {
                 errorResponse.message = '请求失败';
-                errorResponse.data = response;
+                errorResponse.data = exceptionResponse;
+            }
+
+            if (statusCode === HttpStatus.UNAUTHORIZED && request.cookies?.['session']) {
+                response.clearCookie('session', {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'lax',
+                    path: '/',
+                });
             }
         } else {
             Logger.warn(exception, request.path);
