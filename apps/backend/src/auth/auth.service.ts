@@ -1,8 +1,7 @@
 import { createHash } from 'crypto';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
-import { UserSessionService } from 'src/user/services/user-session.service';
-import { VerificationService } from 'src/verification/verification.service';
+import { UserSessionService } from 'src/auth/service/user-session.service';
 import { BusinessException } from 'src/common/exceptions/business.exception';
 import { ErrorCode } from 'src/common/constants/error-codes';
 

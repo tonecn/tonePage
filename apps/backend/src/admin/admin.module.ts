@@ -8,6 +8,7 @@ import { AdminWebResourceController } from './controller/web/admin-web-resource.
 import { AdminWebBlogController } from './controller/web/admin-web-blog.controller';
 import { ResourceModule } from 'src/resource/resource.module';
 import { BlogModule } from 'src/blog/blog.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { BlogModule } from 'src/blog/blog.module';
     UserModule,
     ResourceModule,
     BlogModule,
+    AuthModule,
   ],
   controllers: [
     AdminController,

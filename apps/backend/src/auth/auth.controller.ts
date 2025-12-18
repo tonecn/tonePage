@@ -10,14 +10,14 @@ import {
 } from '@nestjs/common';
 import { LoginByPasswordDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
-import { UserSessionService } from 'src/user/services/user-session.service';
+import { UserSessionService } from 'src/auth/service/user-session.service';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { Response } from 'express';
 import { UserService } from 'src/user/user.service';
 import { AuthGuard } from './guards/auth.guard';
 import { SmsLoginDto } from './dto/sms-login.dto';
 import { SmsService } from 'src/sms/sms.service';
-import { UserSession } from 'src/user/entities/user-session.entity';
+import { UserSession } from 'src/auth/entity/user-session.entity';
 
 @Controller('auth')
 export class AuthController {

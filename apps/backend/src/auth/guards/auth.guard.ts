@@ -1,7 +1,7 @@
 // auth.guard.ts
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
-import { UserSessionService } from 'src/user/services/user-session.service';
+import { UserSessionService } from 'src/auth/service/user-session.service';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
