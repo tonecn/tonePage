@@ -33,21 +33,23 @@ import SetPassword from "./nav-user/SetPassword"
 import { useState } from "react"
 import { User } from "@/lib/types/user"
 import UserProfile from "./nav-user/UserProfile"
+import { AuthAPI } from "@/lib/api/client"
+import { useUserStore } from "@/store/useUserStore"
 
 export function NavUser({ user }: { user: User | null }) {
   const { isMobile } = useSidebar();
   const router = useRouter();
+  const userStore = useUserStore();
 
   async function logout() {
-    // try {
-    //   await authApi.logout();
-    //   localStorage.removeItem('token');
-    //   localStorage.removeItem(UserApi.USER_ME_CACHE_KEY)
-    //   toast.success('登出成功');
-    //   router.replace('/console/login');
-    // } catch {
-    //   toast.error('登出失败，请稍后再试');
-    // }
+    try {
+      await AuthAPI.logout();
+      userStore.clearUser();
+      toast.success('登出成功');
+      router.replace('/console/login');
+    } catch {
+      toast.error('登出失败，请稍后再试');
+    }
   }
 
   const [userProfileOpen, setUserProfileOpen] = useState(false);
