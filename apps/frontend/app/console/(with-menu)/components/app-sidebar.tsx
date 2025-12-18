@@ -9,6 +9,7 @@ import {
   Server,
   SquareTerminal,
   Undo2,
+  UserPen,
   UsersRound,
 } from "lucide-react"
 
@@ -110,6 +111,11 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
       title: "虚拟主机",
       url: "/console/vserver",
       icon: Server,
+    },
+    {
+      title: "账户信息",
+      url: "/console/profile",
+      icon: UserPen
     },
     {
       title: "前往首页",
