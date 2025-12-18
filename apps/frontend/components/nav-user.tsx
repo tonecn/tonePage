@@ -32,7 +32,6 @@ import { useRouter } from "next/navigation"
 import SetPassword from "./nav-user/SetPassword"
 import { useState } from "react"
 import { User } from "@/lib/types/user"
-import UserProfile from "./nav-user/UserProfile"
 import { AuthAPI } from "@/lib/api/client"
 import { useUserStore } from "@/store/useUserStore"
 
@@ -135,7 +134,7 @@ export function NavUser({ user }: { user: User | null }) {
         </SidebarMenuItem>
       </SidebarMenu >
 
-      <UserProfile open={userProfileOpen} onOpenChange={setUserProfileOpen} />
+      {/* <UserProfile open={userProfileOpen} onOpenChange={setUserProfileOpen} /> */}
       <SetPassword open={passwordOpen} onOpenChange={setPasswordOpen} />
     </>
   )
