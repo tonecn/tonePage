@@ -14,27 +14,23 @@ import { Label } from "@/components/ui/label"
 import { FC } from "react";
 import { DialogProps } from "@radix-ui/react-dialog";
 import { toast } from "sonner";
-import { ApiError } from "next/dist/server/api-utils";
+import { UserAPI } from "@/lib/api/client";
+import { handleAPIError } from "@/lib/api/common";
 
 export default function SetPassword({ onOpenChange, ...props }: React.ComponentProps<FC<DialogProps>>) {
     async function handleSetPassword(password: string) {
-        if (! /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+\-=\[\]{};:'",.<>/?]{6,32}$/.test(password)) {
-            toast.error('新密码不符合规范，请重新输入');
-            return;
+        try {
+            await UserAPI.updatePassword(password);
+            toast.success('新密码设置成功');
+            onOpenChange?.(false);
+        } catch (error) {
+            handleAPIError(error, ({ message }) => toast.error(message || '新密码设置失败'))
         }
-
-        // try {
-        //     await UserApi.updatePassword(password);
-        //     toast.success('新密码设置成功');
-        //     onOpenChange?.(false);
-        // } catch (error) {
-        //     toast.error((error as ApiError).message || '新密码设置失败');
-        // }
     }
 
     return (
         <Dialog onOpenChange={onOpenChange} {...props}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-100">
                 <DialogHeader>
                     <DialogTitle>修改密码</DialogTitle>
                     <DialogDescription>
@@ -57,6 +53,7 @@ export default function SetPassword({ onOpenChange, ...props }: React.ComponentP
                             <Input
                                 id="password"
                                 name="password"
+                                type="password"
                                 defaultValue=""
                                 className="col-span-3"
                             />
