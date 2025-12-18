@@ -194,7 +194,7 @@ export class PasskeyService implements OnModuleDestroy {
         });
 
         if (!passkey) {
-            throw new NotFoundException('未找到可用的通信证');
+            throw new NotFoundException('未找到可用的通行证');
         }
 
         let verification: VerifiedAuthenticationResponse;
