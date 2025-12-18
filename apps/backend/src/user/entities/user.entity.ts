@@ -1,3 +1,4 @@
+import { PasskeyCredential } from 'src/auth/entity/passkey-credential.entity';
 import { Role } from 'src/auth/role.enum';
 import {
   BeforeInsert,
@@ -6,6 +7,7 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -94,6 +96,9 @@ export class User {
 
   @Column({ type: 'jsonb', default: [] })
   roles: RoleItem[];
+
+  @OneToMany(() => PasskeyCredential, credential => credential.user)
+  passkeys?: PasskeyCredential[];
 }
 
 export class UserPublicProfile {
