@@ -83,7 +83,7 @@ export class AuthController {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      path: '/auth/passkey/login',
+      path: '/api/auth/passkey/login',
       maxAge: 1 * 60 * 1000,
     });
     return options;
@@ -117,7 +117,7 @@ export class AuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        path: '/auth/passkey/login',
+        path: '/api/auth/passkey/login',
       });
     }
   }
