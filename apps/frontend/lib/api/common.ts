@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
 export interface APIResponse<T = unknown> {
@@ -64,4 +66,8 @@ export function handleAPIError(error: unknown, handler: (e: APIError) => void): 
 
         throw error;
     }
+}
+
+export function GeneralErrorHandler(e: APIError) {
+    toast.error(`${e.message}`)
 }
