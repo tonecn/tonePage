@@ -10,16 +10,17 @@ import {
     DrawerDescription,
     DrawerHeader,
     DrawerTitle,
-    DrawerTrigger,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { useUserStore } from "@/store/useUserStore";
 
 
 export default function Header() {
     const router = useRouter();
     const pathname = usePathname();
     const [showMenu, setShowMenu] = useState(false);
+    const userStore = useUserStore();
 
     const menuItems = [
         { name: '特恩(TONE)', path: '/' },
@@ -31,8 +32,7 @@ export default function Header() {
     const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
         if (path === '/console') {
             e.preventDefault();
-            const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-            router.push(token ? '/console' : '/console/login');
+            router.push(userStore.user ? '/console' : '/console/login');
             setShowMenu(false);
         } else {
             setShowMenu(false);
