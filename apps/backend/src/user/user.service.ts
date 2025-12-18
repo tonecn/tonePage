@@ -133,15 +133,15 @@ export class UserService {
     return uuid().replace(/-/g, '');
   }
 
-  async setPassword(userId: string, password: string): Promise<User> {
+  async setPassword(userId: string, password: string) {
     const user = await this.userRepository.findOne({ where: { userId } });
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new BadRequestException('用户不存在');
     }
     const salt = this.generateSalt();
     user.password_hash = this.hashPassword(password, salt);
     user.salt = salt;
-    return this.userRepository.save(user);
+    await this.userRepository.save(user);
   }
 
   private getDuplicateErrorMessage(error: QueryFailedError): string {

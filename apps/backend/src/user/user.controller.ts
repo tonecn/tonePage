@@ -18,7 +18,8 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Put('password')
-  async update(@CurrentUser() user: AuthUser, @Body() dto: UpdateUserPasswordDto) {
-    return this.userService.setPassword(user.userId, dto.password);
+  async update(@CurrentUser() user: AuthUser, @Body() dto: UpdateUserPasswordDto): Promise<null> {
+    await this.userService.setPassword(user.userId, dto.password.trim());
+    return null;
   }
 }
