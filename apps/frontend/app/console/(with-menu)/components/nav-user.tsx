@@ -29,11 +29,11 @@ import {
 import { Skeleton } from "../../../../components/ui/skeleton"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import SetPassword from "../../../../components/nav-user/SetPassword"
 import { useState } from "react"
 import { User } from "@/lib/types/user"
 import { AuthAPI } from "@/lib/api/client"
 import { useUserStore } from "@/store/useUserStore"
+import SetPassword from "./nav-user/SetPassword"
 
 export function NavUser({ user }: { user: User | null }) {
   const { isMobile } = useSidebar();
