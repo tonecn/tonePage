@@ -8,7 +8,6 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly authService: AuthService,
   ) { }
 
   @UseGuards(AuthGuard)
