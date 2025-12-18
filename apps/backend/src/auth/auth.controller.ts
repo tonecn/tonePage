@@ -151,9 +151,15 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @Post('logout')
-  async logout(@CurrentUser() user: AuthUser) {
-    const { userId, sessionId } = user;
-    await this.userSessionService.invalidateSession(userId, sessionId);
+  async logout(@CurrentUser() user: AuthUser, @Res({ passthrough: true }) res: Response) {
+    const { sessionId } = user;
+    await this.userSessionService.invalidateSession(sessionId, '用户主动登出');
+    res.clearCookie('session', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+    })
     return true;
   }
 }
