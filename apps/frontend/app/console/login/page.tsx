@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { KeyRound, Phone, FileKey2 } from "lucide-react";
-import EmailLoginMode from "./components/EmailLoginMode";
 import PasswordLoginMode from "./components/PasswordLoginMode";
 import PhoneLoginMode from "./components/SmsLoginMode";
 import { useEffect, useState } from "react";
@@ -15,6 +14,7 @@ import LoginBG from './components/login-bg.jpg';
 import Image from "next/image";
 import { handleAPIError } from "@/lib/api/common";
 import { useUserStore } from "@/store/useUserStore";
+import PasskeyLoginPage from "./components/PasskeyLoginPage";
 
 export type SubmitMode = 'password' | 'sms' | 'passkey';
 
@@ -46,6 +46,8 @@ export default function Login() {
                                             return import('./components/PasswordLoginMode');
                                         } else if (loginMode === 'sms') {
                                             return import('./components/SmsLoginMode');
+                                        } else if (loginMode === 'passkey') {
+                                            return import('./components/PasskeyLoginPage');
                                         }
                                     })())?.handleSubmit;
                                     if (!handler) {
@@ -64,7 +66,7 @@ export default function Login() {
 
                                         {loginMode === 'password' ? <PasswordLoginMode /> : null}
                                         {loginMode === 'sms' ? <PhoneLoginMode /> : null}
-                                        {/* {loginMode === 'email' ? <EmailLoginMode onSendCode={handleSendCode} /> : null} */}
+                                        {loginMode === 'passkey' ? <PasskeyLoginPage /> : null}
 
                                         <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                                             <span className="bg-card text-muted-foreground relative z-10 px-2">
