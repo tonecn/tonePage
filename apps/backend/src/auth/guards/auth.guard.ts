@@ -25,8 +25,7 @@ export class AuthGuard implements CanActivate {
         }
 
         const { userId } = session;
-
-        (request as any).user = {
+        request.user = {
             sessionId,
             userId,
         };
