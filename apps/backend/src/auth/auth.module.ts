@@ -11,6 +11,7 @@ import { OptionalAuthGuard } from './guards/optional-auth.guard';
 import { SmsModule } from 'src/sms/sms.module';
 import { PasskeyCredential } from './entity/passkey-credential.entity';
 import { UserSessionService } from './service/user-session.service';
+import { PasskeyService } from './service/passkey.service';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { UserSessionService } from './service/user-session.service';
     SmsModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthGuard, OptionalAuthGuard, UserSessionService],
-  exports: [AuthService, AuthGuard, OptionalAuthGuard, UserSessionService],
+  providers: [AuthService, UserSessionService, PasskeyService, AuthGuard, OptionalAuthGuard],
+  exports: [AuthService, UserSessionService, PasskeyService, AuthGuard, OptionalAuthGuard],
 })
 export class AuthModule { }

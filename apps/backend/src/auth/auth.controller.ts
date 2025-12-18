@@ -2,9 +2,8 @@ import {
   BadRequestException,
   Body,
   Controller,
-  NotImplementedException,
   Post,
-  Request,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -12,12 +11,17 @@ import { LoginByPasswordDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { UserSessionService } from 'src/auth/service/user-session.service';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { UserService } from 'src/user/user.service';
 import { AuthGuard } from './guards/auth.guard';
 import { SmsLoginDto } from './dto/sms-login.dto';
 import { SmsService } from 'src/sms/sms.service';
 import { UserSession } from 'src/auth/entity/user-session.entity';
+import { PasskeyService } from './service/passkey.service';
+import { v4 as uuidv4 } from 'uuid';
+import { PasskeyLoginDto } from './dto/passkey-login.dto';
+import { AuthUser, CurrentUser } from './decorator/current-user.decorator';
+import { PasskeyRegisterDto } from './dto/passkey-register.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -26,6 +30,7 @@ export class AuthController {
     private readonly userService: UserService,
     private readonly userSessionService: UserSessionService,
     private readonly smsService: SmsService,
+    private readonly passkeyService: PasskeyService,
   ) { }
 
   private setUserSession(res: Response, session: UserSession) {
@@ -66,22 +71,89 @@ export class AuthController {
     }
   }
 
+
   @Post('passkey/login/options')
-  async loginByPasskeyOptions() {
-    throw new NotImplementedException();
+  async loginByPasskeyOptions(
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const tempSessionId = uuidv4();
+    const options = await this.passkeyService.getAuthenticationOptions(tempSessionId);
+
+    res.cookie('passkey_temp_session', tempSessionId, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/auth/passkey/login',
+      maxAge: 1 * 60 * 1000,
+    });
+    return options;
   }
 
   @Post('passkey/login')
-  async loginByPasskey() {
-    throw new NotImplementedException();
+  async loginByPasskey(
+    @Req() req: Request,
+    @Body() body: PasskeyLoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const tempSessionId = req.cookies?.passkey_temp_session;
+    if (!tempSessionId) {
+      throw new BadRequestException('登录失败，请重试');
+    }
+
+    try {
+      const user = await this.passkeyService.login(tempSessionId, body.credentialResponse);
+
+      const session = await this.userSessionService.createSession(user.userId);
+
+      this.setUserSession(res, session);
+
+      return {
+        user: await this.userService.findById(user.userId),
+      };
+    } catch (error) {
+      throw error;
+    } finally {
+      res.clearCookie('passkey_temp_session', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/auth/passkey/login',
+      });
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('passkey/register/options')
+  async getPasskeyRegisterOptions(
+    @CurrentUser() user: AuthUser,
+  ) {
+    const { userId } = user;
+    return this.passkeyService.getRegistrationOptions(userId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('passkey/register')
+  async registerPasskey(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: PasskeyRegisterDto,
+  ) {
+    const { userId } = user;
+    const { credentialResponse, name } = dto;
+
+    const passkey = await this.passkeyService.register(userId, credentialResponse, name.trim());
+
+    return {
+      id: passkey.id,
+      name: passkey.name,
+      createdAt: passkey.createdAt,
+    };
   }
 
   @UseGuards(AuthGuard)
   @Post('logout')
-  async logout(@Request() req) {
-    const { userId, sessionId } = req.user;
+  async logout(@CurrentUser() user: AuthUser) {
+    const { userId, sessionId } = user;
     await this.userSessionService.invalidateSession(userId, sessionId);
-
     return true;
   }
 }
