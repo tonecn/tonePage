@@ -5,7 +5,7 @@ import { Repository } from "typeorm";
 import { User } from "src/user/entities/user.entity";
 import { randomBytes } from 'crypto';
 import { generateAuthenticationOptions, GenerateAuthenticationOptionsOpts, generateRegistrationOptions, GenerateRegistrationOptionsOpts, VerifiedAuthenticationResponse, VerifiedRegistrationResponse, verifyAuthenticationResponse, verifyRegistrationResponse } from "@simplewebauthn/server";
-
+import { isoBase64URL } from '@simplewebauthn/server/helpers';
 
 interface ChallengeEntry {
     value: string;
@@ -156,7 +156,7 @@ export class PasskeyService implements OnModuleDestroy {
             user: { userId } as User,
             name: name || '新的通行证',
             credentialId: credential.id,
-            publicKey: credential.publicKey.toString(),
+            publicKey: isoBase64URL.fromBuffer(credential.publicKey),
             signCount: credential.counter,
             verified: true,
         });
@@ -169,8 +169,6 @@ export class PasskeyService implements OnModuleDestroy {
 
     async getAuthenticationOptions(sessionId: string) {
         const challenge = this.generateChallenge();
-        authenticationChallenges.set(sessionId, challenge);
-
         const opts: GenerateAuthenticationOptionsOpts = {
             rpID: this.rpID,
             challenge,
@@ -178,7 +176,9 @@ export class PasskeyService implements OnModuleDestroy {
             userVerification: 'preferred',
         };
 
-        return generateAuthenticationOptions(opts);
+        const options = await generateAuthenticationOptions(opts);
+        authenticationChallenges.set(sessionId, options.challenge);
+        return options;
     }
 
     async login(sessionId: string, credentialResponse: any): Promise<User> {
@@ -206,7 +206,7 @@ export class PasskeyService implements OnModuleDestroy {
                 expectedRPID: this.rpID,
                 credential: {
                     id: passkey.credentialId,
-                    publicKey: Buffer.from(passkey.publicKey),
+                    publicKey: isoBase64URL.toBuffer(passkey.publicKey),
                     counter: passkey.signCount,
                 },
                 requireUserVerification: false,
