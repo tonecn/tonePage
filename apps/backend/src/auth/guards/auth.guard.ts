@@ -2,12 +2,10 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 import { UserSessionService } from 'src/auth/service/user-session.service';
-import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(
-        private userService: UserService,
         private userSessionService: UserSessionService,
     ) { }
 
@@ -26,13 +24,12 @@ export class AuthGuard implements CanActivate {
             throw new UnauthorizedException('登陆凭证无效，请重新登陆');
         }
 
-        // 附加 user 到 req
-        const user = await this.userService.findOne({ userId: session.userId });
-        if (!user) {
-            throw new UnauthorizedException('用户不存在');
-        }
+        const { userId } = session;
 
-        (request as any).user = { ...user, sessionId };
+        (request as any).user = {
+            sessionId,
+            userId,
+        };
         return true;
     }
 }
