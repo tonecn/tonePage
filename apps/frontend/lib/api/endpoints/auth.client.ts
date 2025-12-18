@@ -1,7 +1,7 @@
 import { User } from "@/lib/types/user";
 import { clientFetch } from "../client";
 import { APIError } from "../common";
-import { PublicKeyCredentialCreationOptionsJSON, RegistrationResponseJSON } from "@simplewebauthn/browser";
+import { PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON, RegistrationResponseJSON } from "@simplewebauthn/browser";
 
 export async function loginByPassword(identifier: string, password: string) {
     identifier = identifier.trim();
@@ -80,13 +80,13 @@ export async function passkeyRegister(name: string, credentialResponse: Registra
 }
 
 export async function getLoginByPasskeyOptions() {
-    return clientFetch('/api/auth/passkey/login/options', {
+    return clientFetch<PublicKeyCredentialRequestOptionsJSON>('/api/auth/passkey/login/options', {
         method: 'POST',
     })
 }
 
 export async function loginByPasskey(credentialResponse: any) {
-    return clientFetch('/api/auth/passkey/login', {
+    return clientFetch<{ user: User }>('/api/auth/passkey/login', {
         method: 'POST',
         body: JSON.stringify({
             credentialResponse,
