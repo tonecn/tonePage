@@ -53,10 +53,10 @@ export class SmsService {
         });
 
         if (recentRecord && recentRecord.createdAt > oneMinuteAgo) {
-            throw new BusinessException({ message: '操作太快了，一分钟后重试吧' }); // 距离上一条不足 1 分钟
+            throw new BusinessException({ message: '操作太快了，稍后再重试吧' }); // 距离上一条不足 1 分钟
         }
 
-        // 2. 检查 24 小时内是否超过 10 条
+        // 2. 检查 24 小时内是否超过 5 条
         const count = await this.smsRecordRepository.count({
             where: {
                 phone,
@@ -65,8 +65,8 @@ export class SmsService {
             },
         });
 
-        if (count >= 10) {
-            throw new BusinessException({ message: '操作太快了，稍后再重试吧' }); // 24 小时超过 10 条
+        if (count >= 5) {
+            throw new BusinessException({ message: '操作太快了，稍后再重试吧' }); // 24 小时超过 5 条
         }
     }
 
