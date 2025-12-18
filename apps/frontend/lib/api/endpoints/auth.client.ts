@@ -1,6 +1,7 @@
 import { User } from "@/lib/types/user";
 import { clientFetch } from "../client";
 import { APIError } from "../common";
+import { PublicKeyCredentialCreationOptionsJSON, RegistrationResponseJSON } from "@simplewebauthn/browser";
 
 export async function loginByPassword(identifier: string, password: string) {
     identifier = identifier.trim();
@@ -53,4 +54,42 @@ export async function loginBySms(phone: string, code: string) {
 
 export async function logout() {
     return clientFetch('/api/auth/logout', { method: 'POST' });
+}
+
+
+// ======== PassKey ========
+export async function getPasskeyRegisterOptions() {
+    return clientFetch<PublicKeyCredentialCreationOptionsJSON>('/api/auth/passkey/register/options', {
+        method: 'POST',
+    });
+}
+
+export async function passkeyRegister(name: string, credentialResponse: RegistrationResponseJSON) {
+    name = name.trim();
+    if (name.length === 0) {
+        throw new APIError('通行证名称不得为空');
+    }
+
+    return clientFetch<{ id: string; name: string; createdAt: string }>('/api/auth/passkey/register', {
+        method: 'POST',
+        body: JSON.stringify({
+            name,
+            credentialResponse,
+        })
+    });
+}
+
+export async function getLoginByPasskeyOptions() {
+    return clientFetch('/api/auth/passkey/login/options', {
+        method: 'POST',
+    })
+}
+
+export async function loginByPasskey(credentialResponse: any) {
+    return clientFetch('/api/auth/passkey/login', {
+        method: 'POST',
+        body: JSON.stringify({
+            credentialResponse,
+        })
+    })
 }
