@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { PasskeyCredential } from "../entity/passkey-credential.entity";
 import { Repository } from "typeorm";
 import { User } from "src/user/entities/user.entity";
-import crypto from 'crypto';
+import { randomBytes } from 'crypto';
 import { generateAuthenticationOptions, GenerateAuthenticationOptionsOpts, generateRegistrationOptions, GenerateRegistrationOptionsOpts, VerifiedAuthenticationResponse, VerifiedRegistrationResponse, verifyAuthenticationResponse, verifyRegistrationResponse } from "@simplewebauthn/server";
 
 
@@ -91,14 +91,17 @@ export class PasskeyService implements OnModuleDestroy {
         authenticationChallenges.stopCleanup();
     }
 
+    private generateChallenge(length: number = 32): string {
+        return randomBytes(length).toString('base64');
+    }
+
     async getRegistrationOptions(userId: string) {
         const user = await this.userRepository.findOneBy({ userId });
         if (!user) {
             throw new NotFoundException('用户不存在');
         }
 
-        const challenge = crypto.randomBytes(32).toString('base64url');
-        registrationChallenges.set(userId, challenge);
+        const challenge = this.generateChallenge();
 
         const opts: GenerateRegistrationOptionsOpts = {
             rpName: this.rpName,
@@ -115,7 +118,9 @@ export class PasskeyService implements OnModuleDestroy {
             timeout: 60000,
         };
 
-        return generateRegistrationOptions(opts);
+        const options = await generateRegistrationOptions(opts);
+        registrationChallenges.set(userId, options.challenge)
+        return options;
     }
 
     async register(userId: string, credentialResponse: any, name: string): Promise<PasskeyCredential> {
@@ -163,7 +168,7 @@ export class PasskeyService implements OnModuleDestroy {
     }
 
     async getAuthenticationOptions(sessionId: string) {
-        const challenge = crypto.randomBytes(32).toString('base64url');
+        const challenge = this.generateChallenge();
         authenticationChallenges.set(sessionId, challenge);
 
         const opts: GenerateAuthenticationOptionsOpts = {
