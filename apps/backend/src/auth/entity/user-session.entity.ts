@@ -3,12 +3,10 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  Index,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity()
-@Index(['sessionId', 'userId'])
 export class UserSession {
   @PrimaryGeneratedColumn('uuid')
   sessionId: string;
