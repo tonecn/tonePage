@@ -12,8 +12,8 @@ import {
   UsersRound,
 } from "lucide-react"
 
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/app/console/(with-menu)/components/nav-main"
+import { NavUser } from "@/app/console/(with-menu)/components/nav-user"
 import {
   Sidebar,
   SidebarContent,

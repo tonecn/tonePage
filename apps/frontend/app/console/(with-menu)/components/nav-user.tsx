@@ -26,10 +26,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { Skeleton } from "./ui/skeleton"
+import { Skeleton } from "../../../../components/ui/skeleton"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import SetPassword from "./nav-user/SetPassword"
+import SetPassword from "../../../../components/nav-user/SetPassword"
 import { useState } from "react"
 import { User } from "@/lib/types/user"
 import { AuthAPI } from "@/lib/api/client"

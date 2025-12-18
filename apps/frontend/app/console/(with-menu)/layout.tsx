@@ -1,6 +1,6 @@
 'use client';
 
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/app/console/(with-menu)/components/app-sidebar"
 import {
     Breadcrumb,
     BreadcrumbItem,
