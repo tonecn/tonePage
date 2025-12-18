@@ -30,9 +30,10 @@ import { SmsModule } from './sms/sms.module';
       synchronize: process.env.NODE_ENV !== 'production', // Set to false in production
     }),
     ThrottlerModule.forRoot({
+      ignoreUserAgents: [/googlebot/i, /bingbot/i],
       throttlers: [
         {
-          limit: 1000,
+          limit: 100,
           ttl: 60000, // 1 minute
         },
       ],
@@ -51,4 +52,4 @@ import { SmsModule } from './sms/sms.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
