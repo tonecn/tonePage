@@ -50,3 +50,7 @@ export async function loginBySms(phone: string, code: string) {
         })
     });
 }
+
+export async function logout() {
+    return clientFetch('/api/auth/logout', { method: 'POST' });
+}
