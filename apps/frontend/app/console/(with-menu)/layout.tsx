@@ -13,8 +13,9 @@ import {
     SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { useUserStore } from "@/store/useUserStore";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 // import { useUserMe } from "@/hooks/user/use-user-me";
-// import { useRouter } from "next/navigation";
 // import { toast } from "sonner";
 
 export default function ConsoleMenuLayout({
@@ -22,13 +23,18 @@ export default function ConsoleMenuLayout({
 }: {
     children: React.ReactNode
 }) {
-    // const router = useRouter();
+    const router = useRouter();
+    const userStore = useUserStore();
 
-    const user = useUserStore().user;
+    useEffect(() => {
+        if (userStore.initialized && !userStore.user) {
+            router.replace('/console/login')
+        }
+    }, [userStore])
 
     return (
         <SidebarProvider>
-            <AppSidebar user={user} />
+            <AppSidebar user={userStore.user} />
             <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
                     <div className="flex items-center gap-2 px-4">
