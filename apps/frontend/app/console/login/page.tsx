@@ -10,7 +10,7 @@ import { KeyRound, Phone, FileKey2 } from "lucide-react";
 import EmailLoginMode from "./components/EmailLoginMode";
 import PasswordLoginMode from "./components/PasswordLoginMode";
 import PhoneLoginMode from "./components/SmsLoginMode";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoginBG from './components/login-bg.jpg';
 import Image from "next/image";
 import { handleAPIError } from "@/lib/api/common";
@@ -21,6 +21,13 @@ export type SubmitMode = 'password' | 'sms' | 'passkey';
 export default function Login() {
     const router = useRouter();
     const [loginMode, setLoginMode] = useState<SubmitMode>('password');
+    const userStore = useUserStore();
+
+    useEffect(() => {
+        if (userStore.user) {
+            router.replace('/console')
+        }
+    }, [userStore])
 
     return (
         <>
