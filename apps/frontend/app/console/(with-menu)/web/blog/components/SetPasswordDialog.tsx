@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { AdminApi } from "@/lib/api";
+import { AdminAPI } from "@/lib/api/client";
 import { base62 } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -32,7 +32,7 @@ export function SetPasswordDialog({ id, children }: SetPasswordDialogProps) {
             return toast.error('请输入密码');
         }
 
-        await AdminApi.web.blog.setPassword(id, password).then(() => {
+        await AdminAPI.setBlogPassword(id, password).then(() => {
             toast.success('修改成功');
             setOpen(false);
         }).catch(e => {

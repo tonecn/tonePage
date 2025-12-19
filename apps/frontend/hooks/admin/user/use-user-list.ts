@@ -1,6 +1,7 @@
 "use client"
 
-import { list, UserListParams, UserListResponse } from '@/lib/api/admin/user'
+import { AdminAPI } from '@/lib/api/client'
+import { UserListParams, UserListResponse } from '@/lib/api/endpoints/admin.client'
 import { useCallback } from 'react'
 import { toast } from 'sonner'
 import useSWR from 'swr'
@@ -8,7 +9,7 @@ import useSWR from 'swr'
 export function useUserList(params?: UserListParams) {
     const { data, error, isLoading, mutate } = useSWR<UserListResponse>(
         ['/api/admin/user', params],
-        () => list(params),
+        () => AdminAPI.listUsers(params),
         {
             onError: (e) => {
                 toast.error(`${e.message || e}`)

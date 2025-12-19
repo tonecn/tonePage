@@ -12,11 +12,11 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AdminApi } from "@/lib/api";
 import { BlogPermission } from "@/lib/types/Blog.Permission.enum";
 import { useState } from "react";
 import { toast } from "sonner";
 import { BlogPermissionCheckBoxs } from "./BlogPermissionCheckBoxs";
+import { AdminAPI } from "@/lib/api/client";
 
 interface AddBlogProps {
     children: React.ReactNode;
@@ -35,7 +35,7 @@ export default function AddBlog({ children, onRefresh }: AddBlogProps) {
 
     const handleSubmit = async () => {
         try {
-            const res = await AdminApi.web.blog.create({
+            const res = await AdminAPI.createBlog({
                 ...blog,
             });
             if (res) {
@@ -62,7 +62,7 @@ export default function AddBlog({ children, onRefresh }: AddBlogProps) {
             <DialogTrigger asChild>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-100">
                 <DialogHeader>
                     <DialogTitle>添加博客</DialogTitle>
                     <DialogDescription>

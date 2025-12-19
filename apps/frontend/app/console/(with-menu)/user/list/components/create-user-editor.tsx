@@ -11,9 +11,9 @@ import {
     DrawerTitle,
 } from "@/components/ui/drawer"
 import { useState } from "react";
-import { AdminApi } from "@/lib/api";
 import { toast } from "sonner";
 import { ApiError } from "next/dist/server/api-utils";
+import { AdminAPI } from "@/lib/api/client";
 
 interface CreateUserEditorProps {
     children: React.ReactNode;
@@ -26,7 +26,7 @@ export function CreateUserEditor({ children, onRefresh }: CreateUserEditorProps)
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         try {
-            await AdminApi.user.create({
+            await AdminAPI.createUser({
                 username: formData.get("username")?.toString() || null,
                 nickname: formData.get("nickname")?.toString() || null,
                 email: formData.get("email")?.toString() || null,

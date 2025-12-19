@@ -1,5 +1,5 @@
 import { useOssSts } from "@/hooks/oss/use-oss-sts";
-import { StsToken } from "@/lib/api/oss";
+import { StsToken } from "@/lib/api/endpoints/oss.client";
 import { useEffect } from "react";
 
 export function useOssStore(options: { onStsTokenDataChanged?: (data: StsToken | undefined) => void; } = {}) {

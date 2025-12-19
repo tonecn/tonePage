@@ -14,12 +14,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { AdminApi } from "@/lib/api"
 import useSWR from "swr"
 import { ApiError } from "next/dist/server/api-utils"
 import { BlogPermissionCheckBoxs } from "./BlogPermissionCheckBoxs"
 import { BlogPermission } from "@/lib/types/Blog.Permission.enum"
 import { SetPasswordDialog } from "./SetPasswordDialog"
+import { AdminAPI } from "@/lib/api/client"
 
 interface BlogEditProps {
     id: string;
@@ -31,7 +31,7 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
     const [open, setOpen] = useState(false)
     const { data: blog, mutate } = useSWR(
         open ? `/api/admin/web/blog/${id}` : null,
-        () => AdminApi.web.blog.get(id),
+        () => AdminAPI.getBlog(id),
         {
             revalidateOnFocus: false,
             revalidateOnReconnect: false,
@@ -43,7 +43,7 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
     const handleSubmit = async () => {
         if (!blog) return;
         try {
-            await AdminApi.web.blog.update(id, {
+            await AdminAPI.updateBlog(id, {
                 title: blog.title,
                 description: blog.description,
                 contentUrl: blog.contentUrl,
@@ -59,7 +59,7 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
 
     const handleDelete = async () => {
         try {
-            await AdminApi.web.blog.remove(id);
+            await AdminAPI.removeBlog(id);
             toast.success("删除成功")
             setOpen(false);
             onRefresh();
@@ -73,7 +73,7 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
             <DialogTrigger asChild>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-100">
                 <DialogHeader>
                     <DialogTitle>编辑博客</DialogTitle>
                     <DialogDescription>

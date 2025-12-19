@@ -1,6 +1,6 @@
 "use client"
 
-import { AdminApi } from "@/lib/api";
+import { AdminAPI } from "@/lib/api/client";
 import { useCallback } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
@@ -8,7 +8,7 @@ import useSWR from "swr";
 export function useBlogList() {
     const { data, error, isLoading, mutate } = useSWR(
         ['/admin/web/blog'],
-        () => AdminApi.web.blog.list(),
+        () => AdminAPI.listBlogs(),
         {
             onError: (e) => {
                 toast.error(`${e.message || e}`)

@@ -17,7 +17,6 @@ import { Label } from "@/components/ui/label"
 import { useUser } from "@/hooks/admin/user/use-user";
 import { User } from "@/lib/types/user";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AdminApi } from "@/lib/api";
 import { toast } from "sonner";
 import {
     Alert,
@@ -27,6 +26,7 @@ import {
 import { AlertCircle } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AdminAPI } from "@/lib/api/client";
 
 export function UserInfoEditor({
     onClose,
@@ -50,7 +50,7 @@ export function UserInfoEditor({
     }) => {
         try {
             // setSaveLoading(true);
-            const res = await AdminApi.user.update(userId, user);
+            const res = await AdminAPI.updateUser(userId, user);
             if (res) {
                 toast.success("保存成功");
                 onUserUpdate(res);
@@ -69,7 +69,7 @@ export function UserInfoEditor({
     const handleRemove = async (userId: string) => {
         try {
             // setRemoveLoading(true);
-            await AdminApi.user.remove(userId, true);
+            await AdminAPI.removeUser(userId, true);
             toast.success("注销成功");
             onUserSoftDelete(userId);
             onClose();
@@ -85,7 +85,7 @@ export function UserInfoEditor({
     const handleSetPassword = async (userId: string, password: string) => {
         try {
             // setSetPasswordLoading(true);
-            await AdminApi.user.setPassword(userId, password);
+            await AdminAPI.setUserPassword(userId, password);
             toast.success("密码修改成功");
             setPasswordDialogOpen(false);
         } catch (error) {

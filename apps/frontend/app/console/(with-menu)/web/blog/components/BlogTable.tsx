@@ -28,7 +28,7 @@ export default function BlogTable({ blogs, error, onRefresh }: BlogTableProps) {
             }
             <TableHeader>
                 <TableRow>
-                    <TableHead className="w-[100px]">Id</TableHead>
+                    <TableHead className="w-25">Id</TableHead>
                     <TableHead>标题</TableHead>
                     <TableHead>描述</TableHead>
                     <TableHead>文章URL</TableHead>

@@ -1,4 +1,4 @@
-import { AdminApi } from "@/lib/api";
+import { AdminAPI } from "@/lib/api/client";
 import { User } from "@/lib/types/user";
 import { toast } from "sonner";
 import useSWR from "swr";
@@ -6,7 +6,7 @@ import useSWR from "swr";
 export function useUser(userId: string) {
     const { data, error, isLoading, mutate } = useSWR<User>(
         ['/api/admin/user', userId],
-        () => AdminApi.user.get(userId),
+        () => AdminAPI.getUser(userId),
         {
             revalidateOnReconnect: false,
             revalidateIfStale: false,
