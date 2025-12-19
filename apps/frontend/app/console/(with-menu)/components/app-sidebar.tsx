@@ -60,6 +60,10 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
           title: "博客",
           url: "/console/web/blog",
         },
+        {
+          title: "配置",
+          url: "/console/web/config",
+        },
       ],
     },
     {
