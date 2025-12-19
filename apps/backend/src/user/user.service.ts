@@ -58,16 +58,7 @@ export class UserService {
    */
   async findById(userId: string): Promise<UserPublicProfile | null> {
     return this.userRepository.findOne({
-      select: {
-        avatar: true,
-        createdAt: true,
-        email: true,
-        nickname: true,
-        username: true,
-        phone: true,
-        roles: true,
-        userId: true,
-      },
+      select: ['userId', 'username', 'nickname', 'phone', 'email', 'avatar', 'roles', 'createdAt'],
       where: {
         userId,
       },
