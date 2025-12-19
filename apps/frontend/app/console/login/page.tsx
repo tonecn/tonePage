@@ -27,7 +27,7 @@ export default function Login() {
         if (userStore.user) {
             router.replace('/console')
         }
-    }, [userStore])
+    }, [userStore, router])
 
     return (
         <>
@@ -41,7 +41,7 @@ export default function Login() {
                                     e.preventDefault();
                                     const formData = new FormData(e.currentTarget);
 
-                                    let handler = (await (async () => {
+                                    const handler = (await (async () => {
                                         if (loginMode === 'password') {
                                             return import('./components/PasswordLoginMode');
                                         } else if (loginMode === 'sms') {

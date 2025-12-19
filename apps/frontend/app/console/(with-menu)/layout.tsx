@@ -15,8 +15,6 @@ import {
 import { useUserStore } from "@/store/useUserStore";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-// import { useUserMe } from "@/hooks/user/use-user-me";
-// import { toast } from "sonner";
 
 export default function ConsoleMenuLayout({
     children,
@@ -30,7 +28,7 @@ export default function ConsoleMenuLayout({
         if (userStore.initialized && !userStore.user) {
             router.replace('/console/login')
         }
-    }, [userStore])
+    }, [userStore, router])
 
     return (
         <SidebarProvider>

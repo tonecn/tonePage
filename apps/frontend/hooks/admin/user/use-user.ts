@@ -1,10 +1,10 @@
 import { AdminAPI } from "@/lib/api/client";
-import { User } from "@/lib/types/user";
+import { UserEntity } from "@/lib/api/endpoints/admin.client";
 import { toast } from "sonner";
 import useSWR from "swr";
 
 export function useUser(userId: string) {
-    const { data, error, isLoading, mutate } = useSWR<User>(
+    const { data, error, isLoading, mutate } = useSWR<UserEntity>(
         ['/api/admin/user', userId],
         () => AdminAPI.getUser(userId),
         {

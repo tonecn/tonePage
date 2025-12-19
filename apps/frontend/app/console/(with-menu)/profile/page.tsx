@@ -3,17 +3,15 @@
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSeparator, FieldSet } from "@/components/ui/field";
 import { useUserStore } from "@/store/useUserStore";
-import { Checkbox } from "@radix-ui/react-checkbox";
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { ReactElement, useMemo, useState } from "react";
+import { ReactElement, useState } from "react";
 import {
     Dialog,
     DialogClose,

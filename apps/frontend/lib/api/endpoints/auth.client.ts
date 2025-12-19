@@ -1,7 +1,7 @@
 import { User } from "@/lib/types/user";
 import { clientFetch } from "../client";
 import { APIError } from "../common";
-import { PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON, RegistrationResponseJSON } from "@simplewebauthn/browser";
+import { AuthenticationResponseJSON, PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON, RegistrationResponseJSON } from "@simplewebauthn/browser";
 
 export async function loginByPassword(identifier: string, password: string) {
     identifier = identifier.trim();
@@ -85,7 +85,8 @@ export async function getLoginByPasskeyOptions() {
     })
 }
 
-export async function loginByPasskey(credentialResponse: any) {
+/** @lint-ignore */
+export async function loginByPasskey(credentialResponse: AuthenticationResponseJSON) {
     return clientFetch<{ user: User }>('/api/auth/passkey/login', {
         method: 'POST',
         body: JSON.stringify({

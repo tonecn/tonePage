@@ -2,7 +2,19 @@ import { Resource } from "@/lib/types/resource";
 import { clientFetch } from "../client";
 import { Blog } from "@/lib/types/blog";
 import { BlogPermission } from "@/lib/types/Blog.Permission.enum";
-import { User } from "@/lib/types/user";
+import { Role } from "@/lib/types/role";
+
+export interface UserEntity {
+    userId: string;
+    username: string;
+    nickname: string;
+    email?: string;
+    phone?: string;
+    avatar?: string;
+    createdAt: string;
+    deletedAt: string | null;
+    roles: Role[];
+}
 
 // ======== Resource ========
 export async function listResources() {
@@ -24,7 +36,7 @@ export async function createResource(data: CreateResourceParams) {
     data.description = data.description.trim();
     data.imageUrl = data.imageUrl.trim();
     data.link = data.link.trim();
-    for (let tag of data.tags) {
+    for (const tag of data.tags) {
         tag.name = tag.name.trim();
     }
 
@@ -59,7 +71,7 @@ export async function updateResource(id: string, data: UpdateResourceParams) {
     data.description = data.description.trim();
     data.imageUrl = data.imageUrl.trim();
     data.link = data.link.trim();
-    for (let tag of data.tags) {
+    for (const tag of data.tags) {
         tag.name = tag.name.trim();
     }
 
@@ -139,18 +151,18 @@ interface CreateUserParams {
 }
 export async function createUser(data: CreateUserParams) {
     type Keys = keyof CreateUserParams;
-    for (let key in data) {
+    for (const key in data) {
         data[key as Keys] = data[key as Keys]?.trim() || null;
     }
 
-    return clientFetch<User>("/api/admin/user", {
+    return clientFetch<UserEntity>("/api/admin/user", {
         method: "POST",
         body: JSON.stringify(data),
     });
 }
 
 export function getUser(id: string) {
-    return clientFetch<User>(`/api/admin/user/${id}`);
+    return clientFetch<UserEntity>(`/api/admin/user/${id}`);
 }
 
 export interface UserListParams {
@@ -158,7 +170,7 @@ export interface UserListParams {
     pageSize?: number
 }
 export interface UserListResponse {
-    items: User[],
+    items: UserEntity[],
     total: number
     page: number
     pageSize: number
@@ -200,8 +212,8 @@ export async function updateUser(userId: string, user: updateUser) {
     user.nickname = user.nickname.trim();
     user.email = user.email?.trim() || null;
     user.phone = user.phone?.trim() || null;
-    
-    return clientFetch<User>(`/api/admin/user/${userId}`, {
+
+    return clientFetch<UserEntity>(`/api/admin/user/${userId}`, {
         body: JSON.stringify(user),
         method: "PUT",
     });

@@ -2,7 +2,7 @@ import { APIResponse, HttpMethod, normalizeAPIError } from './common';
 
 interface ClientFetchRequestOptions extends RequestInit {
     method?: HttpMethod;
-    body?: any;
+    body?: string;
 }
 
 export async function clientFetch<T = unknown>(

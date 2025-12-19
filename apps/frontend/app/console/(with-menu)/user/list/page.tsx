@@ -6,19 +6,19 @@ import { TooltipContent, TooltipProvider, TooltipTrigger, Tooltip } from "@/comp
 import { useUserList } from "@/hooks/admin/user/use-user-list";
 import { useState } from "react";
 import { UserInfoEditor } from "./components/user-info-editor";
-import { User } from "@/lib/types/user";
 import { CreateUserEditor } from "./components/create-user-editor";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { ApiError } from "next/dist/server/api-utils";
 import { AdminAPI } from "@/lib/api/client";
+import { UserEntity } from "@/lib/api/endpoints/admin.client";
 
 
 export default function Page() {
     const { users, isLoading, error, mutate, refresh } = useUserList();
     const [editorUserId, setEditorUserId] = useState("");
 
-    const handleUserUpdateLocal = async (newUser: User) => {
+    const handleUserUpdateLocal = async (newUser: UserEntity) => {
         await mutate(
             (data) => {
                 if (!data) return data;

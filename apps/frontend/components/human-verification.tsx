@@ -8,7 +8,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { ReactNode, useEffect, useState } from "react"
+import { ReactNode, useCallback, useEffect, useState } from "react"
 
 interface HumanVerificationProps {
     open?: boolean;
@@ -18,19 +18,19 @@ interface HumanVerificationProps {
     children: ReactNode;
 }
 
-export function HumanVerification({ open, onOpenChange, onSuccess, onFail, children }: HumanVerificationProps) {
+export function HumanVerification({ open, onOpenChange, onSuccess, children }: HumanVerificationProps) {
     const [i_open, i_setOpen] = useState(false);
-    const setOpen = (o: boolean) => {
+    const setOpen = useCallback((o: boolean) => {
         i_setOpen(o);
         onOpenChange?.(o);
-    };
+    }, [onOpenChange]);
 
     useEffect(() => {
         if (i_open) {
             setOpen(false);
             onSuccess?.();
         }
-    }, [i_open]);
+    }, [i_open, onSuccess, setOpen]);
 
     return (
         <Dialog open={open ?? i_open} onOpenChange={setOpen}>

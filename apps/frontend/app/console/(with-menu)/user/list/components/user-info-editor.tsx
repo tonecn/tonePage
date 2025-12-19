@@ -27,6 +27,7 @@ import { AlertCircle } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AdminAPI } from "@/lib/api/client";
+import { UserEntity } from "@/lib/api/endpoints/admin.client";
 
 export function UserInfoEditor({
     onClose,
@@ -35,7 +36,7 @@ export function UserInfoEditor({
     userId,
 }: {
     onClose: () => void,
-    onUserUpdate: (user: User) => void,
+    onUserUpdate: (user: UserEntity) => void,
     onUserSoftDelete: (userId: string) => void,
     userId: string
 }) {
