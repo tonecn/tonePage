@@ -34,9 +34,19 @@ import { CommonModule } from './common/common.module';
       ignoreUserAgents: [/googlebot/i, /bingbot/i],
       throttlers: [
         {
-          name: '1_min',
+          name: 'min',
           limit: 100,
-          ttl: 60000, // 1 minute
+          ttl: 60 * 1000,
+        },
+        {
+          name: 'hour',
+          limit: 500,
+          ttl: 60 * 60 * 1000,
+        },
+        {
+          name: 'day',
+          limit: 10000,
+          ttl: 24 * 60 * 60 * 1000,
         },
       ],
     }),

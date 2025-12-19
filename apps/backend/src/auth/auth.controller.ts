@@ -45,9 +45,11 @@ export class AuthController {
 
   @Post('login/password')
   @UseGuards(ThrottlerGuard)
-  @Throttle({ 'min': { limit: 10, ttl: 60 * 1000 } })
-  @Throttle({ 'hour': { limit: 20, ttl: 60 * 60 * 1000 } })
-  @Throttle({ 'day': { limit: 50, ttl: 24 * 60 * 60 * 1000 } })
+  @Throttle({
+    'min': { limit: 5, ttl: 60 * 1000 },
+    'hour': { limit: 20, ttl: 60 * 60 * 1000 },
+    'day': { limit: 50, ttl: 24 * 60 * 60 * 1000 }
+  })
   async loginByPassword(
     @Body() loginDto: LoginByPasswordDto,
     @Res({ passthrough: true }) res: Response,
@@ -61,6 +63,10 @@ export class AuthController {
   }
 
   @Post('login/sms')
+  @UseGuards(ThrottlerGuard)
+  @Throttle({
+    'day': { limit: 50, ttl: 24 * 60 * 60 * 1000 }
+  })
   async loginBySms(
     @Body() dto: SmsLoginDto,
     @Res({ passthrough: true }) res: Response,
@@ -77,6 +83,10 @@ export class AuthController {
 
 
   @Post('passkey/login/options')
+  @UseGuards(ThrottlerGuard)
+  @Throttle({
+    'day': { limit: 20, ttl: 24 * 60 * 60 * 1000 }
+  })
   async loginByPasskeyOptions(
     @Res({ passthrough: true }) res: Response,
   ) {
@@ -94,6 +104,10 @@ export class AuthController {
   }
 
   @Post('passkey/login')
+  @UseGuards(ThrottlerGuard)
+  @Throttle({
+    'day': { limit: 20, ttl: 24 * 60 * 60 * 1000 }
+  })
   async loginByPasskey(
     @Req() req: Request,
     @Body() body: PasskeyLoginDto,
