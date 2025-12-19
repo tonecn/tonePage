@@ -7,22 +7,33 @@ import {
 import { AlertCircle } from "lucide-react";
 import { base62 } from "@/lib/utils";
 import { BlogAPI } from "@/lib/api/server";
+import { handleAPIError } from "@/lib/api/common";
+
+const formatNumber = (num: number): string => {
+    if (num >= 1_000_000) {
+        return (num / 1_000_000).toFixed(1) + 'M';
+    }
+    if (num >= 1_000) {
+        return (num / 1_000).toFixed(1) + 'K';
+    }
+    return num.toString();
+};
+
+const getBlogDetailUrl = (id: string): string => {
+    const cleanId = id.replace(/-/g, '');
+    const encoded = base62.encode(Buffer.from(cleanId, 'hex'));
+    return `/blog/${encoded}`;
+};
 
 export default async function Blog() {
-    const formatNumber = useCallback((num: number) => {
-        if (num >= 1000) {
-            return (num / 1000).toFixed(1) + 'K';
-        } else if (num >= 1000000) {
-            return (num / 1000000).toFixed(1) + 'M';
-        }
-        return num.toString();
-    }, []);
-
     let errorMsg = '';
-    const blogs = await BlogAPI.list().catch(e => { errorMsg = `${e}`; return null });
+    const blogs = await BlogAPI.list().catch(e => {
+        handleAPIError(e, ({ message }) => { errorMsg = message });
+        return null;
+    });
 
     return (
-        <div className="max-w-120 w-auto mx-auto my-10 flex flex-col gap-8">
+        <section className="max-w-120 w-auto mx-auto my-10 flex flex-col gap-8">
             {
                 errorMsg && (
                     <Alert variant="destructive" className="w-full">
@@ -36,13 +47,28 @@ export default async function Blog() {
             }
             {
                 blogs && blogs.map((blog) => (
-                    <div className="w-full px-5 cursor-default" key={blog.id}>
-                        <a className="text-2xl font-medium cursor-pointer hover:underline" target="_blank" href={`/blog/${base62.encode(Buffer.from(blog.id.replace(/-/g, ''), 'hex'))}`}>{blog.title}</a>
-                        <p className="text-sm font-medium text-zinc-400">{blog.description}</p>
-                        <p className="text-sm font-medium text-zinc-400 mt-3">{new Date(blog.createdAt).toLocaleString()} · {formatNumber(blog.viewCount)} 次访问</p>
-                    </div>
+                    <article className="w-full px-5 cursor-default" key={blog.id}>
+                        <h2 className="text-2xl font-medium">
+                            <a
+                                className="hover:underline focus:outline-none focus:ring-2 focus:ring-zinc-400 rounded"
+                                href={getBlogDetailUrl(blog.id)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                {blog.title}
+                            </a>
+                        </h2>
+                        <p className="text-sm font-medium text-zinc-600">{blog.description}</p>
+                        <footer className="mt-3 text-sm text-zinc-500 flex items-center gap-2">
+                            <time dateTime={blog.createdAt}>
+                                {new Date(blog.createdAt).toLocaleString('zh-CN')}
+                            </time>
+                            <span>·</span>
+                            <span>{formatNumber(blog.viewCount)} 次访问</span>
+                        </footer>
+                    </article>
                 ))
             }
-        </div>
+        </section>
     )
 }
