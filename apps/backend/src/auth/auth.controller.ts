@@ -44,6 +44,10 @@ export class AuthController {
   }
 
   @Post('login/password')
+  @UseGuards(ThrottlerGuard)
+  @Throttle({ 'min': { limit: 10, ttl: 60 * 1000 } })
+  @Throttle({ 'hour': { limit: 20, ttl: 60 * 60 * 1000 } })
+  @Throttle({ 'day': { limit: 50, ttl: 24 * 60 * 60 * 1000 } })
   async loginByPassword(
     @Body() loginDto: LoginByPasswordDto,
     @Res({ passthrough: true }) res: Response,
