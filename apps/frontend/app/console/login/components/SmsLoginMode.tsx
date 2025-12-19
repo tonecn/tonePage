@@ -38,7 +38,7 @@ export default function SmsLoginMode() {
                 </div>
                 <div className="flex gap-1 overflow-hidden items-center flex-row-reverse">
                     <HumanVerification onSuccess={handleSendCode} >
-                        <Button type="button" variant="secondary">
+                        <Button type="button" variant="secondary" disabled>
                             获取验证码
                         </Button>
                     </HumanVerification>
@@ -63,9 +63,13 @@ export default function SmsLoginMode() {
                     </div>
                 </div>
             </div>
-            <Button type="submit" className="w-full" >
-                注册并登陆
+            <Button type="submit" className="w-full" disabled>
+                控制台还在施工，暂不开放注册功能噢～
             </Button>
+            <div className="hidden" aria-hidden>
+                oi! 当你看到这里，如果有兴趣可以试试绕过前端校验进行注册，后端接口没封，不过登陆之后也确实没啥好玩的
+                玩的开心，如果发现重大漏洞，请手下留情喔～网站右下角有我的邮箱，告之后将以“哈基米（BNB）”答谢～
+            </div>
         </>
     )
 }
