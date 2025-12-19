@@ -8,10 +8,6 @@ trigger:
   event:
     - push
 
-clone:
-  labels:
-    platform: arm64
-
 steps:
   - name: setup docker
     image: docker:dind
