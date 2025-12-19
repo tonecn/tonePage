@@ -8,6 +8,6 @@ import { Resource } from './entity/resource.entity';
   imports: [TypeOrmModule.forFeature([Resource])],
   controllers: [ResourceController],
   providers: [ResourceService],
-  exports: [ResourceService],
+  exports: [ResourceService, TypeOrmModule.forFeature([Resource])],
 })
 export class ResourceModule {}

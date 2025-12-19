@@ -39,3 +39,12 @@ export class Resource {
   @UpdateDateColumn({ precision: 3 })
   updatedAt: Date;
 }
+
+export interface PublicResource {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  link: string;
+  tags: ResourceTag[];
+}

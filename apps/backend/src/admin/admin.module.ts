@@ -9,8 +9,12 @@ import { AdminWebBlogController } from './controller/web/admin-web-blog.controll
 import { ResourceModule } from 'src/resource/resource.module';
 import { BlogModule } from 'src/blog/blog.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { AdminResourceService } from './services/admin.resource.service';
 
 @Module({
+  providers: [
+    AdminResourceService,
+  ],
   imports: [
     TypeOrmModule.forFeature([User]),
     UserModule,

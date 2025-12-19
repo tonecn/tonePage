@@ -10,17 +10,18 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CreateResourceDto } from 'src/admin/dto/admin-web/create-resource.dto';
+import { AdminResourceService } from 'src/admin/services/admin.resource.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { Role } from 'src/auth/role.enum';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { RolesGuard } from 'src/common/guard/roles.guard';
-import { ResourceService } from 'src/resource/resource.service';
 
 @Controller('/admin/web/resource')
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(Role.Admin)
 export class AdminWebResourceController {
-  constructor(private readonly resourceService: ResourceService) { }
+
+  constructor(private readonly resourceService: AdminResourceService) { }
 
   @Get()
   async list() {
@@ -42,7 +43,10 @@ export class AdminWebResourceController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() data: CreateResourceDto,
   ) {
-    return this.resourceService.update(id, data);
+    return this.resourceService.update({
+      ...data,
+      id,
+    });
   }
 
   @Delete(':id')
