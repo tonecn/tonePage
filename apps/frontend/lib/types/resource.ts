@@ -3,6 +3,15 @@ export type TagType = {
     type: string;
 }
 
+export interface PublicResource {
+    id: string;
+    title: string;
+    description: string;
+    imageUrl: string;
+    link: string;
+    tags: TagType[];
+}
+
 export interface Resource {
     id: string;
     title: string;
@@ -10,4 +19,6 @@ export interface Resource {
     imageUrl: string;
     link: string;
     tags: TagType[];
+    createdAt: Date;
+    updatedAt: Date;
 }

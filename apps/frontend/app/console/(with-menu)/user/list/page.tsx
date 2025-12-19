@@ -9,9 +9,9 @@ import { UserInfoEditor } from "./components/user-info-editor";
 import { User } from "@/lib/types/user";
 import { CreateUserEditor } from "./components/create-user-editor";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { AdminApi } from "@/lib/api";
 import { toast } from "sonner";
 import { ApiError } from "next/dist/server/api-utils";
+import { AdminAPI } from "@/lib/api/client";
 
 
 export default function Page() {
@@ -56,7 +56,7 @@ export default function Page() {
     const [deletedUserId, setDeletedUserId] = useState('');
     const handleUserDelete = async (userId: string) => {
         try {
-            await AdminApi.user.remove(userId, false);
+            await AdminAPI.removeUser(userId, false);
             toast.success('删除成功');
             handleUserDeleteLocal(userId, false);
             setDeletedUserId('');

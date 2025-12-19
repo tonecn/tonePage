@@ -13,13 +13,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { AdminApi } from "@/lib/api"
 import { toast } from "sonner"
 import { ApiError } from "next/dist/server/api-utils"
 import { ResourceBadge } from "@/components/resource"
 import AddResourceTag from "./AddResourceTag"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus } from "lucide-react"
+import { AdminAPI } from "@/lib/api/client"
 
 
 interface AddResourceProps {
@@ -42,7 +42,7 @@ export default function AddResource({ children, refresh }: AddResourceProps) {
     const handleSubmit = async () => {
         try {
             setLoading(true);
-            await AdminApi.web.resource.create({
+            await AdminAPI.createResource({
                 ...formData,
             });
             toast.success("添加成功");

@@ -1,10 +1,10 @@
 import { ResourceBadge } from "@/components/resource";
 import { Card, CardContent } from "@/components/ui/card";
-import { Resource } from "@/lib/types/resource";
+import { PublicResource } from "@/lib/types/resource";
 import ResourceCardImage from "./ResourceCardImage";
 
 interface ResourceCardProps extends React.HTMLProps<HTMLAnchorElement> {
-    r: Resource;
+    r: PublicResource;
 }
 
 export function ResourceCard({ r, ...props }: ResourceCardProps) {

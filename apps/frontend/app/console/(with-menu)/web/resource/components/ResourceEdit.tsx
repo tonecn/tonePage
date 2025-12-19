@@ -18,7 +18,6 @@ import AddResourceTag from "./AddResourceTag"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus } from "lucide-react"
 import { Resource } from "@/lib/types/resource"
-import { AdminApi } from "@/lib/api"
 import useSWR from "swr"
 import { ApiError } from "next/dist/server/api-utils"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -33,6 +32,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { AdminAPI } from "@/lib/api/client"
 
 interface ResourceEditProps {
     children: React.ReactNode
@@ -45,7 +45,7 @@ export default function ResourceEdit({ children, id, onRefresh }: ResourceEditPr
 
     const { data: resource, isLoading, mutate } = useSWR<Resource>(
         open ? [`/api/admin/web/resource/${id}`] : null,
-        () => AdminApi.web.resource.get(id),
+        () => AdminAPI.getResource(id),
         {
             revalidateOnFocus: false,
             revalidateOnReconnect: false,
@@ -57,7 +57,7 @@ export default function ResourceEdit({ children, id, onRefresh }: ResourceEditPr
     const handleSubmit = async () => {
         if (!resource) return;
         try {
-            await AdminApi.web.resource.update(id, {
+            await AdminAPI.updateResource(id, {
                 title: resource.title,
                 description: resource.description,
                 imageUrl: resource.imageUrl,
@@ -74,7 +74,7 @@ export default function ResourceEdit({ children, id, onRefresh }: ResourceEditPr
 
     const handleRemove = async (id: string) => {
         try {
-            await AdminApi.web.resource.remove(id);
+            await AdminAPI.removeResource(id);
             toast.success("资源删除成功");
             onRefresh();
             setOpen(false);
