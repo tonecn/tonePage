@@ -13,7 +13,7 @@ export class BlogService {
     private readonly blogRepository: Repository<Blog>,
     @InjectRepository(BlogComment)
     private readonly blogCommentRepository: Repository<BlogComment>,
-  ) {}
+  ) { }
 
   async list(
     option: {
@@ -35,13 +35,14 @@ export class BlogService {
           return i;
         }
 
-        const { createdAt, deletedAt, id, title, viewCount } = i;
+        const { createdAt, deletedAt, id, title, viewCount, description } = i;
         return {
           createdAt,
           deletedAt,
           id,
           title,
           viewCount,
+          description,
         };
       });
   }
@@ -111,10 +112,10 @@ export class BlogService {
         ...rest,
         user: user
           ? {
-              userId: user.userId,
-              username: user.username,
-              nickname: user.nickname,
-            }
+            userId: user.userId,
+            username: user.username,
+            nickname: user.nickname,
+          }
           : null,
       };
     });
@@ -129,10 +130,10 @@ export class BlogService {
       ...commentWithoutBlog,
       user: user
         ? {
-            userId: user.userId,
-            username: user.username,
-            nickname: user.nickname,
-          }
+          userId: user.userId,
+          username: user.username,
+          nickname: user.nickname,
+        }
         : null,
     };
   }
