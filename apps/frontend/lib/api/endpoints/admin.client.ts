@@ -92,7 +92,7 @@ export async function listBlogs() {
     return clientFetch<Blog[]>('/api/admin/web/blog')
 }
 
-export async function removeBlogs(id: string) {
+export async function removeBlog(id: string) {
     // ? Blog
     return clientFetch<Blog>(`/api/admin/web/blog/${id}`, {
         method: 'DELETE',
