@@ -16,6 +16,8 @@ import { createBlogCommentDto } from './dto/create.blogcomment.dto';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { BlogPermission } from './blog.permission.enum';
 import { OptionalAuthGuard } from 'src/auth/guards/optional-auth.guard';
+import { AuthUser, CurrentUser } from 'src/auth/decorator/current-user.decorator';
+import { Request } from 'express';
 
 @Controller('blog')
 export class BlogController {
@@ -85,14 +87,15 @@ export class BlogController {
 
   // 该接口允许匿名评论，但仍需验证userId合法性
   @UseGuards(ThrottlerGuard, OptionalAuthGuard)
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Post(':id/comment')
   async createBlogComment(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() commentData: createBlogCommentDto,
-    @Req() req,
+    @Req() req: Request,
+    @CurrentUser() authUser: AuthUser,
   ) {
-    const { userId } = req.user || {};
+    const { userId } = (authUser ?? {}) as { userId: string | undefined };
     const blog = await this.blogService.findById(id);
     if (!blog) throw new BadRequestException('文章不存在');
 
@@ -102,7 +105,7 @@ export class BlogController {
 
     const user = userId ? await this.userService.findOne({ userId }) : null;
 
-    const ip = req.headers['x-forwarded-for'] || req.ip;
+    const ip = `${req.headers['x-forwarded-for'] || req.ip}`;
     // 获取IP归属地
     let address = '未知';
     if (!['::1'].includes(ip)) {
