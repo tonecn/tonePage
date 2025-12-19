@@ -13,7 +13,11 @@ export class AdminResourceService {
 
 
     async findAll() {
-        return this.resourceRepository.find();
+        return this.resourceRepository.find({
+            order: {
+                updatedAt: 'DESC',
+            }
+        });
     }
 
     async findById(id: string): Promise<Resource> {
