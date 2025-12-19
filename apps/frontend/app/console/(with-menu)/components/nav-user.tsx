@@ -51,7 +51,6 @@ export function NavUser({ user }: { user: User | null }) {
     }
   }
 
-  const [userProfileOpen, setUserProfileOpen] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
 
   return (
@@ -116,7 +115,7 @@ export function NavUser({ user }: { user: User | null }) {
                 }
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setTimeout(() => setUserProfileOpen(true), 0)}>
+              <DropdownMenuItem onClick={() => router.push('/console/profile')}>
                 <UserRoundCog />
                 账户信息
               </DropdownMenuItem>
