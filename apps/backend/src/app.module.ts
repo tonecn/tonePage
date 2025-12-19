@@ -14,6 +14,7 @@ import { OssModule } from './oss/oss.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { CaptchaModule } from './captcha/captcha.module';
 import { SmsModule } from './sms/sms.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { SmsModule } from './sms/sms.module';
     OssModule,
     CaptchaModule,
     SmsModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],
