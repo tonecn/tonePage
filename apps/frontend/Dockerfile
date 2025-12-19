@@ -21,5 +21,7 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/next.config.ts ./
 
+ENV API_BASE=$API_BASE
+
 EXPOSE 3000
 CMD ["pnpm", "start"]
