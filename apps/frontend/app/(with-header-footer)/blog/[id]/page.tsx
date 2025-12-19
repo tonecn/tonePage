@@ -1,6 +1,5 @@
 'use client';
 
-import { BlogApi } from "@/lib/api";
 import { base62 } from "@/lib/utils";
 import { useParams, useSearchParams } from "next/navigation";
 import useSWR from "swr";
@@ -14,6 +13,7 @@ import rehypeRaw from 'rehype-raw'
 import { Skeleton } from "@/components/ui/skeleton";
 import { BlogComments } from "./components/BlogComments";
 import Image from "next/image";
+import { BlogAPI } from "@/lib/api/client";
 
 export default function Blog() {
     const params = useParams();
@@ -31,9 +31,7 @@ export default function Blog() {
     const password = searchParams.get('p');
     const { data, error, isLoading } = useSWR(
         `/api/blog/${id}`,
-        () => BlogApi.get(id, {
-            password: password || undefined,
-        }),
+        () => BlogAPI.getBlog(id, password || undefined),
     )
 
     return (

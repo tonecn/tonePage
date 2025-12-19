@@ -1,18 +1,18 @@
 'use client';
 import useSWR from "swr";
 import { BlogCommentTool } from "./BlogCommentTool";
-import { BlogApi } from "@/lib/api";
 import { BlogComment } from "@/lib/types/blogComment";
 import { useState } from "react";
-import { useUserMe } from "@/hooks/user/use-user-me";
+import { BlogAPI } from "@/lib/api/client";
+import { useUserStore } from "@/store/useUserStore";
 
 export function BlogComments({ blogId }: { blogId: string }) {
     const { data, mutate } = useSWR(
         `/api/blog/${blogId}/comments`,
-        () => BlogApi.getComments(blogId),
+        () => BlogAPI.getComments(blogId),
     )
 
-    const { user } = useUserMe();
+    const { user } = useUserStore();
 
     const insertComment = async (newOne: BlogComment) => {
         await mutate(
