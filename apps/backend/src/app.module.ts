@@ -34,6 +34,7 @@ import { CommonModule } from './common/common.module';
       ignoreUserAgents: [/googlebot/i, /bingbot/i],
       throttlers: [
         {
+          name: '1_min',
           limit: 100,
           ttl: 60000, // 1 minute
         },
