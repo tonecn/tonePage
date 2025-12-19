@@ -21,6 +21,7 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/next.config.ts ./
 
+ARG API_BASE
 ENV API_BASE=$API_BASE
 
 EXPOSE 3000
