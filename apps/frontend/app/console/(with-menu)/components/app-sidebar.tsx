@@ -31,11 +31,6 @@ import { Role } from "@/lib/types/role"
 
 export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sidebar> & { user: User | null }) {
   const data = {
-    user: {
-      name: "shadcn",
-      email: "m@example.com",
-      avatar: "/avatars/shadcn.jpg",
-    },
     navMain: null as null | {
       title: string
       url: string
