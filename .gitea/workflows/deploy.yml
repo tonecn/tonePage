@@ -11,6 +11,8 @@ jobs:
       image: localhost:5000/tiny-ci-runner:latest
       volumes:
         - /etc/k3s-local.yaml:/root/.kube/config:ro
+    env:
+      KUBECONFIG: /root/.kube/config
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
