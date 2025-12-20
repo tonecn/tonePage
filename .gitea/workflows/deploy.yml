@@ -54,21 +54,6 @@ jobs:
             -t localhost:5000/frontend:${IMAGE_TAG} .
           docker push localhost:5000/frontend:${IMAGE_TAG}
 
-      - name: Run database migration job
-        run: |
-          cd /workspace/tone/tonePage/apps/deploy
-
-          kubectl delete job backend-migration --ignore-not-found
-
-          sed "s|IMAGE_TAG|${IMAGE_TAG}|g" backend-migration-job.yaml \
-            | kubectl apply -f -
-
-          kubectl wait \
-            --for=condition=complete \
-            job/backend-migration \
-            --timeout=120s || \
-          kubectl logs -l job-name=backend-migration
-
       - name: Deploy to K3s
         run: |
           cd /workspace/tone/tonePage/apps/deploy
