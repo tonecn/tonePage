@@ -9,7 +9,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: migration
-          image: localhost:5000/backend:IMAGE_TAG
+          image: 192.168.0.200:5000/backend:IMAGE_TAG
           imagePullPolicy: Always
 
           command:
