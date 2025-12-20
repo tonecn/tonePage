@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: localhost:5000/backend:latest
+          ports:
+            - containerPort: 3001
+          env:
+            - name: DATABASE_HOST
+              value: "postgres-service"
+            - name: DATABASE_PORT
+              value: "5432"
+            - name: DATABASE_NAME
+              value: "tone_page"
+            - name: DATABASE_USERNAME
+              value: "tone_page"
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: DATABASE_PASSWORD
+            - name: ALIYUN_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: ALIYUN_ACCESS_KEY_ID
+            - name: ALIYUN_ACCESS_KEY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: ALIYUN_ACCESS_KEY_SECRET
+            - name: ALIYUN_OSS_STS_ROLE_ARN
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: ALIYUN_OSS_STS_ROLE_ARN
+            - name: WEBAUTHN_RP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: WEBAUTHN_RP_ID
+            - name: WEBAUTHN_ORIGIN
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: WEBAUTHN_ORIGIN
+            - name: WEBAUTHN_RP_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: WEBAUTHN_RP_NAME
+            - name: NODE_ENV
+              value: "production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 3001
+      targetPort: 3001
