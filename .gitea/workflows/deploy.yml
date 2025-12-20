@@ -66,7 +66,8 @@ jobs:
           kubectl wait \
             --for=condition=complete \
             job/backend-migration \
-            --timeout=120s
+            --timeout=120s || \
+          kubectl logs -l job-name=backend-migration
 
       - name: Deploy to K3s
         run: |
