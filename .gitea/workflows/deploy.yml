@@ -35,23 +35,6 @@ jobs:
             -t localhost:5000/frontend:latest .
           docker push localhost:5000/frontend:latest
 
-      - name: Debug kubeconfig
-        run: |
-          echo "=== 1. Check if /root/.kube/config exists ==="
-          ls -la /root/.kube/
-
-          echo -e "\n=== 2. Show kubeconfig content (redacted) ==="
-          cat /root/.kube/config | grep -v "certificate\|key"  # 隐藏敏感字段
-
-          echo -e "\n=== 3. Check server address ==="
-          grep "server:" /root/.kube/config
-
-          echo -e "\n=== 4. Test kubectl cluster-info ==="
-          kubectl cluster-info --kubeconfig=/root/.kube/config
-
-          echo -e "\n=== 5. Test kubectl get nodes (quick API test) ==="
-          kubectl get nodes --kubeconfig=/root/.kube/config
-
       - name: Deploy to K3s
         run: |
           cd apps/deploy
