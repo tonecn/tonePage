@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { BlogComments } from "./components/BlogComments";
 import Image from "next/image";
 import { BlogAPI } from "@/lib/api/client";
+import { useEffect } from "react";
 
 export default function Blog() {
     const params = useParams();
@@ -33,6 +34,16 @@ export default function Blog() {
         `/api/blog/${id}`,
         () => BlogAPI.getBlog(id, password || undefined),
     )
+
+    useEffect(() => {
+        if (data) {
+            document.title = `${data.title} - 特恩的日志`;
+            const metaDescription = document.querySelector('meta[name="description"]');
+            if (metaDescription) {
+                metaDescription.setAttribute("content", data.description);
+            }
+        }
+    }, [data]);
 
     return (
         <div className="w-full overflow-x-hidden">
