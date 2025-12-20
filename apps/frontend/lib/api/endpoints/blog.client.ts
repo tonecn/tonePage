@@ -5,6 +5,7 @@ export async function getBlog(id: string, password?: string) {
     return clientFetch<{
         id: string;
         title: string;
+        description: string;
         createdAt: string;
         content: string;
     }>(`/api/blog/${id}` + (password ? `?p=${password}` : ''));
