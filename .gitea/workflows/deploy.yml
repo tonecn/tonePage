@@ -9,6 +9,8 @@ jobs:
   deploy:
     container:
       image: localhost:5000/tiny-ci-runner:latest
+      volumes:
+        - /home/tone/act-runner-config/k3s-local.yaml:/root/.kube/config:ro
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -53,10 +55,10 @@ jobs:
       - name: Deploy to K3s
         run: |
           cd apps/deploy
-          kubectl apply -f postgres-deployment.yaml --kubeconfig=/root/.kube/config
-          kubectl apply -f backend-deployment.yaml --kubeconfig=/root/.kube/config
-          kubectl apply -f frontend-deployment.yaml --kubeconfig=/root/.kube/config
-          kubectl rollout restart deployment/backend --kubeconfig=/root/.kube/config
-          kubectl rollout restart deployment/frontend --kubeconfig=/root/.kube/config
-          kubectl rollout status deployment/backend --timeout=120s --kubeconfig=/root/.kube/config
-          kubectl rollout status deployment/frontend --timeout=120s --kubeconfig=/root/.kube/config
+          kubectl apply -f postgres-deployment.yaml
+          kubectl apply -f backend-deployment.yaml
+          kubectl apply -f frontend-deployment.yaml
+          kubectl rollout restart deployment/backend
+          kubectl rollout restart deployment/frontend
+          kubectl rollout status deployment/backend --timeout=120s
+          kubectl rollout status deployment/frontend --timeout=120s
