@@ -1,3 +1,4 @@
+# .gitea/workflows/deploy.yml
 name: Deploy to K3s
 
 on:
@@ -15,6 +16,7 @@ jobs:
     env:
       IMAGE_TAG: ${{ github.sha }}
       KUBECONFIG: /tmp/.kube/config
+      NODE_ENV: production
 
     steps:
       - name: Write kubeconfig
@@ -51,6 +53,20 @@ jobs:
             --build-arg API_BASE="http://backend-service:3001" \
             -t localhost:5000/frontend:${IMAGE_TAG} .
           docker push localhost:5000/frontend:${IMAGE_TAG}
+
+      - name: Run database migration job
+        run: |
+          cd /workspace/tone/tonePage/apps/deploy
+
+          kubectl delete job backend-migration --ignore-not-found
+
+          sed "s|IMAGE_TAG|${IMAGE_TAG}|g" backend-migration-job.yaml \
+            | kubectl apply -f -
+
+          kubectl wait \
+            --for=condition=complete \
+            job/backend-migration \
+            --timeout=120s
 
       - name: Deploy to K3s
         run: |

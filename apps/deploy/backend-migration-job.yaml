@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backend-migration
+spec:
+  backoffLimit: 0 # 失败不自动重试（防止重复执行）
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migration
+          image: localhost:5000/backend:IMAGE_TAG
+          imagePullPolicy: Always
+
+          command:
+            - sh
+            - -c
+            - |
+              echo "Running database migrations..."
+              node ./node_modules/typeorm/cli.js migration:run \
+                -d dist/data-source.js
+
+          envFrom:
+            # 和 backend Deployment 用同一套
+            - secretRef:
+                name: backend-secret
+            - secretRef:
+                name: postgres-secret
