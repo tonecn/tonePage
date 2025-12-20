@@ -8,7 +8,7 @@ on:
 jobs:
   deploy:
     container:
-      image: ghcr.io/catthehacker/ubuntu:act-latest
+      image: localhost:5000/tiny-ci-runner:latest
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
