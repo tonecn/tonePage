@@ -10,9 +10,9 @@ jobs:
     container:
       image: localhost:5000/tiny-ci-runner:latest
       volumes:
-        - /etc/k3s-local.yaml:/root/.kube/config:ro
+        - /etc/k3s-local.yaml:/tmp/kubeconfig:ro
     env:
-      KUBECONFIG: /root/.kube/config
+      KUBECONFIG: /tmp/kubeconfig
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -37,11 +37,12 @@ jobs:
             -t localhost:5000/frontend:latest .
           docker push localhost:5000/frontend:latest
 
-      - name: Debug kubeconfig existence
+      - name: Debug kubeconfig
         run: |
-          ls -la /root/.kube/
-          grep server /root/.kube/config
-          
+          ls -l /tmp/kubeconfig
+          kubectl config view
+          kubectl get nodes
+
       - name: Deploy to K3s
         run: |
           cd apps/deploy
