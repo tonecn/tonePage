@@ -1,11 +1,10 @@
-import favicon from '../favicon.ico';
 import Image from 'next/image';
 
 export default function Home() {
   return (
     <div className="w-full flex-1 flex flex-col items-center justify-center">
       <Image
-        src={favicon.src}
+        src="/avatar.png"
         alt="TONE's avatar"
         width={180}
         height={180}
