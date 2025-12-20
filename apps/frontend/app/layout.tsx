@@ -1,10 +1,10 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "../components/theme-provider";
-import { metadata } from "./config/metadata";
 import { Toaster } from "sonner";
 import { UserAPI } from "@/lib/api/server";
 import { ClientProvider } from "./ClientProvider";
+import { Metadata } from "next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,7 +16,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export { metadata };
+export const metadata: Metadata = {
+  title: "控制台 - 特恩的日志",
+  description: "登录或注册以解锁更多妙妙小工具",
+};
 
 export default async function RootLayout({
   children,

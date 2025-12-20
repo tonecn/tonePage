@@ -7,6 +7,11 @@ import {
 import { ResourceAPI } from "@/lib/api/server";
 import { AlertCircle } from "lucide-react";
 
+export const metadata = {
+    title: '资源 - 特恩的日志',
+    description: '一些实用工具和学习资源',
+};
+
 export default async function Resources() {
     let errorMsg = '';
     const data = await ResourceAPI.list().catch(e => { errorMsg = `${e}`; return null; });

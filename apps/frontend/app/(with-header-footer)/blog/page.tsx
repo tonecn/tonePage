@@ -24,6 +24,12 @@ const getBlogDetailUrl = (id: string): string => {
     return `/blog/${encoded}`;
 };
 
+
+export const metadata = {
+  title: '日志 - 特恩的日志',
+  description: '我随便发点，你也随便看看～',
+};
+
 export default async function Blog() {
     let errorMsg = '';
     const blogs = await BlogAPI.list().catch(e => {
