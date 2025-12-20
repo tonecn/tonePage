@@ -35,6 +35,16 @@ jobs:
             -t localhost:5000/frontend:latest .
           docker push localhost:5000/frontend:latest
 
+      - name: Debug kubeconfig existence
+        run: |
+          if [ -f /root/.kube/config ]; then
+            echo "✅ /root/.kube/config exists"
+            grep server /root/.kube/config
+          else
+            echo "❌ /root/.kube/config NOT FOUND"
+            ls -la /root/.kube/
+          fi
+          
       - name: Deploy to K3s
         run: |
           cd apps/deploy
