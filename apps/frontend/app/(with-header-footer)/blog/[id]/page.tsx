@@ -59,18 +59,20 @@ export default function Blog() {
                     </div>
                 )}
                 {data && (
-                    <>
-                        <h1 className="text-center text-3xl font-bold mt-10">{data.title}</h1>
-                        <p className="text-sm text-zinc-500 text-center my-5">发布于：{new Date(data.createdAt).toLocaleString()}</p>
+                    <article className="w-full">
+                        <header className="flex flex-col items-center">
+                            <h1 className="text-center text-2xl sm:text-3xl font-bold mt-10 transition-all duration-500">{data.title}</h1>
+                            <time className="text-sm text-zinc-500 text-center my-2 sm:my-5 mb-5 transition-all duration-500">发布于：{new Date(data.createdAt).toLocaleString()}</time>
+                        </header>
                         <ReactMarkdown
                             remarkPlugins={[remarkGfm]}
                             rehypePlugins={[rehypeRaw, rehypeHighlight]}
                             components={{
-                                h1: ({ ...props }) => <h1 className="text-3xl font-bold py-2" {...props} />,
-                                h2: ({ ...props }) => <h2 className="text-2xl font-bold py-1" {...props} />,
-                                h3: ({ ...props }) => <h3 className="text-xl font-bold py-0.5" {...props} />,
-                                h4: ({ ...props }) => <h4 className="text-lg font-bold" {...props} />,
-                                h5: ({ ...props }) => <h5 className="text-md font-bold" {...props} />,
+                                h1: ({ ...props }) => <h2 className="text-3xl font-bold py-2" {...props} />,
+                                h2: ({ ...props }) => <h3 className="text-2xl font-bold py-1" {...props} />,
+                                h3: ({ ...props }) => <h4 className="text-xl font-bold py-0.5" {...props} />,
+                                h4: ({ ...props }) => <h5 className="text-lg font-bold" {...props} />,
+                                h5: ({ ...props }) => <h6 className="text-md font-bold" {...props} />,
                                 p: ({ ...props }) => <p className="py-1 text-zinc-700" {...props} />,
                                 img: ({ src }) => (
                                     <PhotoProvider className="w-full">
@@ -89,7 +91,7 @@ export default function Blog() {
                                 a: ({ ...props }) => <a className="hover:underline" {...props} />,
                             }}
                         >{data.content}</ReactMarkdown>
-                    </>
+                    </article>
                 )}
 
                 {data && (
