@@ -10,7 +10,7 @@ jobs:
     container:
       image: localhost:5000/tiny-ci-runner:latest
       volumes:
-        - /etc/k3s-local.yaml:/root/.kube/config:ro
+        - /home/tone/act-runner-config/k3s-local.yaml:/root/.kube/config:ro
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
