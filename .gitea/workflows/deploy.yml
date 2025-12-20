@@ -9,47 +9,19 @@ jobs:
   deploy:
     container:
       image: localhost:5000/tiny-ci-runner:latest
-      volumes:
-        - /etc/k3s-local.yaml:/tmp/kubeconfig:ro
-    env:
-      KUBECONFIG: /tmp/kubeconfig
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Write kubeconfig
         run: |
-          git clone --depth=1 --branch master \
-            https://git.tonesc.cn/tone/tonePage.git \
-            /workspace/tone/tonePage
-          cd /workspace/tone/tonePage
-          git log -1 --oneline
+          mkdir -p /tmp/.kube
+          cat << 'EOF' > /tmp/.kube/config
+          ${{ secrets.KUBECONFIG_DATA }}
+          EOF
+          chmod 600 /tmp/.kube/config
 
-      - name: Build and push backend image
+      - name: Verify kubeconfig
+        env:
+          KUBECONFIG: /tmp/.kube/config
         run: |
-          cd apps/backend
-          docker build -t localhost:5000/backend:latest .
-          docker push localhost:5000/backend:latest
-
-      - name: Build and push frontend image
-        run: |
-          cd apps/frontend
-          docker build \
-            --build-arg API_BASE="http://backend-service:3001" \
-            -t localhost:5000/frontend:latest .
-          docker push localhost:5000/frontend:latest
-
-      - name: Debug kubeconfig
-        run: |
-          ls -l /tmp/kubeconfig
           kubectl config view
           kubectl get nodes
-
-      - name: Deploy to K3s
-        run: |
-          cd apps/deploy
-          kubectl apply -f postgres-deployment.yaml
-          kubectl apply -f backend-deployment.yaml
-          kubectl apply -f frontend-deployment.yaml
-          kubectl rollout restart deployment/backend
-          kubectl rollout restart deployment/frontend
-          kubectl rollout status deployment/backend --timeout=120s
-          kubectl rollout status deployment/frontend --timeout=120s
