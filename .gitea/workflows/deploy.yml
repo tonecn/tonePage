@@ -7,9 +7,15 @@ on:
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
+
     container:
       image: localhost:5000/tiny-ci-runner:latest
-    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_TAG: ${{ github.sha }}
+      KUBECONFIG: /tmp/.kube/config
+
     steps:
       - name: Write kubeconfig
         run: |
@@ -19,9 +25,54 @@ jobs:
           EOF
           chmod 600 /tmp/.kube/config
 
-      - name: Verify kubeconfig
-        env:
-          KUBECONFIG: /tmp/.kube/config
+      - name: Verify Kubernetes access
         run: |
-          kubectl config view
+          kubectl cluster-info
           kubectl get nodes
+
+      - name: Checkout code
+        run: |
+          git clone --depth=1 --branch master \
+            https://git.tonesc.cn/tone/tonePage.git \
+            /workspace/tone/tonePage
+          cd /workspace/tone/tonePage
+          git log -1 --oneline
+
+      - name: Build and push backend image
+        run: |
+          cd /workspace/tone/tonePage/apps/backend
+          docker build -t localhost:5000/backend:${IMAGE_TAG} .
+          docker push localhost:5000/backend:${IMAGE_TAG}
+
+      - name: Build and push frontend image
+        run: |
+          cd /workspace/tone/tonePage/apps/frontend
+          docker build \
+            --build-arg API_BASE="http://backend-service:3001" \
+            -t localhost:5000/frontend:${IMAGE_TAG} .
+          docker push localhost:5000/frontend:${IMAGE_TAG}
+
+      - name: Deploy to K3s
+        run: |
+          cd /workspace/tone/tonePage/apps/deploy
+
+          # 基础资源
+          kubectl apply -f postgres-deployment.yaml
+          kubectl apply -f backend-deployment.yaml
+          kubectl apply -f frontend-deployment.yaml
+
+          # 更新镜像（触发滚动更新）
+          kubectl set image deployment/backend \
+            backend=localhost:5000/backend:${IMAGE_TAG}
+
+          kubectl set image deployment/frontend \
+            frontend=localhost:5000/frontend:${IMAGE_TAG}
+
+          # 等待滚动完成
+          kubectl rollout status deployment/backend --timeout=120s
+          kubectl rollout status deployment/frontend --timeout=120s
+
+      - name: Post-deploy sanity check
+        run: |
+          kubectl get pods
+          kubectl get svc
