@@ -61,6 +61,7 @@ export class BlogController {
     return {
       id: blog.id,
       title: blog.title,
+      description: blog.description,
       createdAt: blog.createdAt,
       content: blogContent,
     };
