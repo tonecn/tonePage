@@ -7,6 +7,8 @@ on:
 
 jobs:
   deploy:
+    container:
+      image: ghcr.io/catthehacker/ubuntu:act-latest
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
