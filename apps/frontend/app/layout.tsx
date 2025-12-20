@@ -26,7 +26,7 @@ export default async function RootLayout({
   const user = await UserAPI.me().catch(() => null);
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="zh-CN" suppressHydrationWarning>
       <link rel="icon" href="/favicon.ico" />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
@@ -39,10 +39,8 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <main className="flex-1 flex flex-col bg-zinc-50">
-              {children}
-              <Toaster />
-            </main>
+            {children}
+            <Toaster />
           </ThemeProvider>
         </ClientProvider>
       </body>
