@@ -10,7 +10,7 @@ jobs:
     container:
       image: localhost:5000/tiny-ci-runner:latest
       volumes:
-        - /home/tone/act-runner-config/k3s-local.yaml:/root/.kube/config:ro
+        - /etc/k3s-local.yaml:/root/.kube/config:ro
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -37,13 +37,8 @@ jobs:
 
       - name: Debug kubeconfig existence
         run: |
-          if [ -f /root/.kube/config ]; then
-            echo "✅ /root/.kube/config exists"
-            grep server /root/.kube/config
-          else
-            echo "❌ /root/.kube/config NOT FOUND"
-            ls -la /root/.kube/
-          fi
+          ls -la /root/.kube/
+          grep server /root/.kube/config
           
       - name: Deploy to K3s
         run: |
