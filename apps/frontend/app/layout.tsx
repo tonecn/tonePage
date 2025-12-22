@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "控制台 - 特恩的日志",
-  description: "登录或注册以解锁更多妙妙小工具",
+  title: "特恩的日志",
+  description: "一名在各个领域反复横跳的程序员",
 };
 
 export default async function RootLayout({
