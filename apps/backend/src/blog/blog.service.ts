@@ -35,9 +35,10 @@ export class BlogService {
           return i;
         }
 
-        const { createdAt, deletedAt, id, title, viewCount, description } = i;
+        const { createdAt, updatedAt, deletedAt, id, title, viewCount, description } = i;
         return {
           createdAt,
+          updatedAt,
           deletedAt,
           id,
           title,
