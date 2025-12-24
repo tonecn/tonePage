@@ -7,5 +7,7 @@ export interface Blog {
     viewCount: number;
     contentUrl: string;
     createdAt: string;
+    updatedAt: string;
+    deletedAt: string;
     permissions: BlogPermission[];
 }
