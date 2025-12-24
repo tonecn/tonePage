@@ -57,7 +57,6 @@ export default async function Blog() {
                             <a
                                 className="hover:underline focus:outline-none focus:ring-2 focus:ring-zinc-400 rounded"
                                 href={getBlogDetailUrl(blog.id)}
-                                target="_blank"
                                 rel="noopener noreferrer"
                             >
                                 {blog.title}
