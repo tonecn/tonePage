@@ -11,7 +11,7 @@ interface PageRouteProps {
     } | undefined>
 }
 
-export async function parseBlogParams({ params: paramsPromise, searchParams: searchParamsPromise }: PageRouteProps) {
+async function parseBlogParams({ params: paramsPromise, searchParams: searchParamsPromise }: PageRouteProps) {
     const params = await paramsPromise ?? {};
     const searchParams = await searchParamsPromise ?? {};
 
@@ -42,7 +42,7 @@ export async function parseBlogParams({ params: paramsPromise, searchParams: sea
     }
 }
 
-export async function getBlog(paramsResult: ReturnType<typeof parseBlogParams>) {
+async function getBlog(paramsResult: ReturnType<typeof parseBlogParams>) {
     const { errorMsg, id, p } = await paramsResult;
     if (errorMsg) {
         return {
@@ -78,7 +78,9 @@ export async function generateMetadata({ params, searchParams }: PageRouteProps)
 }
 
 export default async function Page({ params, searchParams }: PageRouteProps) {
-    let { errorMsg, id, p } = await parseBlogParams({ params, searchParams });
+    const res = await parseBlogParams({ params, searchParams });
+    const { id, p } = res;
+    let { errorMsg } = res;
 
     const data = errorMsg ? null
         : await BlogAPI.getBlog(`${id}`, p).catch(e => handleAPIError(e, ({ message }) => { errorMsg = message; return null }));
