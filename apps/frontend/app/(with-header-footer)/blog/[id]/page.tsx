@@ -1,24 +1,31 @@
-'use client';
-
 import { base62 } from "@/lib/utils";
-import { useParams, useSearchParams } from "next/navigation";
-import useSWR from "swr";
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import rehypeHighlight from 'rehype-highlight'
-import 'highlight.js/styles/github.css'
-import { PhotoProvider, PhotoView } from 'react-photo-view';
-import 'react-photo-view/dist/react-photo-view.css';
-import rehypeRaw from 'rehype-raw'
-import { Skeleton } from "@/components/ui/skeleton";
+import { BlogContent } from "./BlogContent";
+import { BlogAPI } from "@/lib/api/server";
+import { handleAPIError } from "@/lib/api/common";
 import { BlogComments } from "./components/BlogComments";
-import Image from "next/image";
-import { BlogAPI } from "@/lib/api/client";
-import { useEffect } from "react";
 
-export default function Blog() {
-    const params = useParams();
-    const searchParams = useSearchParams();
+interface PageRouteProps {
+    params: Promise<{ id: string }>
+    searchParams: Promise<{
+        [key: string]: string | string[] | undefined;
+    } | undefined>
+}
+
+export async function parseBlogParams({ params: paramsPromise, searchParams: searchParamsPromise }: PageRouteProps) {
+    const params = await paramsPromise ?? {};
+    const searchParams = await searchParamsPromise ?? {};
+
+    if (Array.isArray(searchParams.p)) {
+        return {
+            errorMsg: '密码错误或文章不存在'
+        }
+    }
+
+    if (typeof params.id !== 'string' || params.id.trim() === '') {
+        return {
+            errorMsg: '文章不存在或无权限访问'
+        }
+    }
 
     const hex = Array.from(base62.decode(params.id as string)).map(b => b.toString(16).padStart(2, '0')).join('');
     const id = [
@@ -29,68 +36,64 @@ export default function Blog() {
         hex.slice(20, 32)
     ].join('-');
 
-    const password = searchParams.get('p');
-    const { data, error, isLoading } = useSWR(
-        `/api/blog/${id}`,
-        () => BlogAPI.getBlog(id, password || undefined),
-    )
+    return {
+        id,
+        p: searchParams.p,
+    }
+}
 
-    useEffect(() => {
-        if (data) {
-            document.title = `${data.title} - 特恩的日志`;
-            const metaDescription = document.querySelector('meta[name="description"]');
-            if (metaDescription) {
-                metaDescription.setAttribute("content", data.description);
+export async function getBlog(paramsResult: ReturnType<typeof parseBlogParams>) {
+    const { errorMsg, id, p } = await paramsResult;
+    if (errorMsg) {
+        return {
+            errorMsg,
+        }
+    } else {
+        try {
+            const data = await BlogAPI.getBlog(`${id}`, p);
+            return {
+                data,
+            }
+        } catch (error) {
+            return {
+                errorMsg: handleAPIError(error, ({ message }) => message)
             }
         }
-    }, [data]);
+    }
+}
+
+export async function generateMetadata({ params, searchParams }: PageRouteProps) {
+    const { errorMsg, data } = await getBlog(parseBlogParams({ params, searchParams }));
+    if (data) {
+        return {
+            title: `${data.title} - 特恩的日志`,
+            description: `${data.description}`
+        }
+    } else {
+        return {
+            title: `${errorMsg || '错误'} - 特恩的日志`,
+            description: `出错啦`
+        }
+    }
+}
+
+export default async function Page({ params, searchParams }: PageRouteProps) {
+    let { errorMsg, id, p } = await parseBlogParams({ params, searchParams });
+
+    const data = errorMsg ? null
+        : await BlogAPI.getBlog(`${id}`, p).catch(e => handleAPIError(e, ({ message }) => { errorMsg = message; return null }));
 
     return (
         <div className="w-full overflow-x-hidden">
             <div className="max-w-200 mx-auto px-5 overflow-x-hidden mb-10">
-                {error && <div className="my-20 text-center text-zinc-600">{error.message}</div>}
-                {isLoading && (
-                    <div className="flex flex-col gap-2 mt-10">
-                        <Skeleton className="w-full h-10" />
-                        <Skeleton className="w-full h-20" />
-                        <Skeleton className="w-full h-10" />
-                        <Skeleton className="w-full h-20" />
-                        <Skeleton className="w-full h-30" />
-                    </div>
-                )}
+                {errorMsg && <div className="my-20 text-center text-zinc-600">{errorMsg}</div>}
                 {data && (
                     <article className="w-full">
                         <header className="flex flex-col items-center">
                             <h1 className="text-center text-2xl sm:text-3xl font-bold mt-10 transition-all duration-500">{data.title}</h1>
                             <time className="text-sm text-zinc-500 text-center my-2 sm:my-5 mb-5 transition-all duration-500">发布于：{new Date(data.createdAt).toLocaleString()}</time>
                         </header>
-                        <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            rehypePlugins={[rehypeRaw, rehypeHighlight]}
-                            components={{
-                                h1: ({ ...props }) => <h2 className="text-3xl font-bold py-2" {...props} />,
-                                h2: ({ ...props }) => <h3 className="text-2xl font-bold py-1" {...props} />,
-                                h3: ({ ...props }) => <h4 className="text-xl font-bold py-0.5" {...props} />,
-                                h4: ({ ...props }) => <h5 className="text-lg font-bold" {...props} />,
-                                h5: ({ ...props }) => <h6 className="text-md font-bold" {...props} />,
-                                p: ({ ...props }) => <p className="py-1 text-zinc-700" {...props} />,
-                                img: ({ src }) => (
-                                    <PhotoProvider className="w-full">
-                                        <PhotoView src={src as string}>
-                                            <div style={{ width: '100%' }}>
-                                                <Image src={src as string} width={0} height={0} style={{ width: '100%', height: 'auto' }} unoptimized alt="加载失败" />
-                                            </div>
-                                        </PhotoView>
-                                    </PhotoProvider>
-                                ),
-                                th: ({ ...props }) => <th className="text-ellipsis text-nowrap border border-zinc-300 p-2" {...props} />,
-                                td: ({ ...props }) => <td className="border border-zinc-300 p-1" {...props} />,
-                                table: ({ ...props }) => <div className="overflow-x-auto"><table {...props} /></div>,
-                                pre: ({ ...props }) => <pre className="rounded-sm overflow-hidden shadow" {...props} />,
-                                blockquote: ({ ...props }) => <blockquote className="pl-3 border-l-5" {...props} />,
-                                a: ({ ...props }) => <a className="hover:underline" {...props} />,
-                            }}
-                        >{data.content}</ReactMarkdown>
+                        <BlogContent content={data.content} />
                     </article>
                 )}
 
