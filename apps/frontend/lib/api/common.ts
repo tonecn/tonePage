@@ -52,7 +52,7 @@ export function normalizeAPIError(error: unknown): never {
     throw new APIError((error instanceof Error ? `${error.message}` : '') || '未知错误', 400);
 }
 
-export function handleAPIError(error: unknown, handler: (e: APIError) => void): void {
+export function handleAPIError<T extends unknown>(error: unknown, handler: (e: APIError) => T): T {
     if (error instanceof APIError) {
         return handler(error);
     }
