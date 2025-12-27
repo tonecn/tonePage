@@ -9,6 +9,9 @@ export class UpdateBlogDto {
   description: string;
 
   @IsString()
+  slug: string;
+
+  @IsString()
   contentUrl: string;
 
   @IsEnum(BlogPermission, { each: true, message: '请求类型错误' })

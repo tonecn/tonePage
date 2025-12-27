@@ -110,7 +110,7 @@ export async function createBlog(data: CreateBlogParams) {
         throw new APIError('Slug不得为空')
     }
     if (data.contentUrl.length === 0) {
-        throw new APIError('文章链接不得为空')
+        throw new APIError('文章URL不得为空')
     }
 
     return clientFetch<Blog>('/api/admin/web/blog', {
@@ -138,13 +138,28 @@ export async function removeBlog(id: string) {
 interface UpdateBlogParams {
     title: string;
     description: string;
+    slug: string;
     contentUrl: string;
     permissions: BlogPermission[],
 }
 export async function updateBlog(id: string, data: UpdateBlogParams) {
     data.title = data.title.trim();
     data.description = data.description.trim();
+    data.slug = data.slug.trim();
     data.contentUrl = data.contentUrl.trim();
+
+    if (data.title.length === 0) {
+        throw new APIError('标题不得为空')
+    }
+    if (data.description.length === 0) {
+        throw new APIError('描述不得为空')
+    }
+    if (data.slug.length === 0) {
+        throw new APIError('Slug不得为空')
+    }
+    if (data.contentUrl.length === 0) {
+        throw new APIError('文章URL不得为空')
+    }
 
     return clientFetch<Blog>(`/api/admin/web/blog/${id}`, {
         method: 'PUT',

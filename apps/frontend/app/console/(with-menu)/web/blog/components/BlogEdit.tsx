@@ -20,6 +20,7 @@ import { BlogPermissionCheckBoxs } from "./BlogPermissionCheckBoxs"
 import { BlogPermission } from "@/lib/types/Blog.Permission.enum"
 import { SetPasswordDialog } from "./SetPasswordDialog"
 import { AdminAPI } from "@/lib/api/client"
+import { copyShareURL } from "./utils"
 
 interface BlogEditProps {
     id: string;
@@ -46,6 +47,7 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
             await AdminAPI.updateBlog(id, {
                 title: blog.title,
                 description: blog.description,
+                slug: blog.slug,
                 contentUrl: blog.contentUrl,
                 permissions: blog.permissions,
             });
@@ -107,6 +109,17 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
                                     />
                                 </div>
                                 <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor="slug" className="text-right">
+                                        Slug
+                                    </Label>
+                                    <Input
+                                        id="slug"
+                                        className="col-span-3"
+                                        value={blog.slug}
+                                        onChange={(e) => mutate({ ...blog, slug: e.target.value }, false)}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-4 items-center gap-4">
                                     <Label htmlFor="contentUrl" className="text-right">
                                         文章URL
                                     </Label>
@@ -151,6 +164,11 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
                                 <div className="w-full flex justify-between">
                                     <div>
                                         <Button variant='destructive' onClick={handleDelete}>删除</Button>
+                                        <Button variant='outline' className="ml-2" onClick={() => copyShareURL({
+                                            slug: blog.slug,
+                                            permissions: blog.permissions,
+                                            password: ''
+                                        })}>复制链接</Button>
                                     </div>
                                     <div>
                                         <Button type="button" variant='secondary' onClick={() => setOpen(false)}>取消</Button>
