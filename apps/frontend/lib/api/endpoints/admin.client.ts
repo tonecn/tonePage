@@ -106,6 +106,9 @@ export async function createBlog(data: CreateBlogParams) {
     if (data.description.length === 0) {
         throw new APIError('描述不得为空')
     }
+    if (data.slug.length === 0) {
+        throw new APIError('Slug不得为空')
+    }
     if (data.contentUrl.length === 0) {
         throw new APIError('文章链接不得为空')
     }
