@@ -28,10 +28,11 @@ export default function BlogTable({ blogs, error, onRefresh }: BlogTableProps) {
             }
             <TableHeader>
                 <TableRow>
-                    <TableHead className="w-25">Id</TableHead>
+                    <TableHead className="w-15">Id</TableHead>
                     <TableHead>标题</TableHead>
                     <TableHead>描述</TableHead>
-                    <TableHead>文章URL</TableHead>
+                    <TableHead>Slug</TableHead>
+                    <TableHead className="w-25">文章URL</TableHead>
                     <TableHead className="text-right">操作</TableHead>
                 </TableRow>
             </TableHeader>
@@ -42,7 +43,7 @@ export default function BlogTable({ blogs, error, onRefresh }: BlogTableProps) {
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <div className="max-w-[100px] overflow-hidden text-ellipsis">{blog.id}</div>
+                                        <div className="max-w-15 overflow-hidden text-ellipsis">{blog.id}</div>
                                     </TooltipTrigger>
                                     <TooltipContent>
                                         <p>{blog.id}</p>
@@ -52,7 +53,19 @@ export default function BlogTable({ blogs, error, onRefresh }: BlogTableProps) {
                         </TableCell>
                         <TableCell className="whitespace-normal break-all">{blog.title}</TableCell>
                         <TableCell className="whitespace-normal break-all">{blog.description}</TableCell>
-                        <TableCell className="whitespace-normal break-all">{blog.contentUrl}</TableCell>
+                        <TableCell className="whitespace-normal break-all">{blog.slug}</TableCell>
+                        <TableCell>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <div className="max-w-20 overflow-hidden text-ellipsis">{blog.contentUrl}</div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{blog.contentUrl}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </TableCell>
                         <TableCell className="text-right">
                             <BlogEdit id={blog.id} onRefresh={() => onRefresh()}>
                                 <Button variant={'outline'} size={'sm'}>编辑</Button>
