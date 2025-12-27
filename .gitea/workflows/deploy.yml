@@ -54,52 +54,108 @@ jobs:
             -t localhost:5000/frontend:${IMAGE_TAG} .
           docker push localhost:5000/frontend:${IMAGE_TAG}
 
-      - name: Run database migrations with temporary container
+      - name: Run database migrations with Kubernetes Job
         run: |
+          cd /workspace/tone/tonePage/apps/deploy
           echo "Running database migrations using backend image: localhost:5000/backend:${IMAGE_TAG}"
 
-          echo "Waiting for PostgreSQL service to be ready..."
-          kubectl wait --for=condition=ready pod -l app=postgres --timeout=30s
+          JOB_NAME="backend-migrate-$(echo ${IMAGE_TAG} | cut -c1-8)-$(date +%s)"
 
-          # 获取密码等敏感信息
-          DB_PASSWORD=$(kubectl get secret backend-secret -o jsonpath='{.data.DATABASE_PASSWORD}' | base64 -d)
-          ALIYUN_ACCESS_KEY_ID=$(kubectl get secret backend-secret -o jsonpath='{.data.ALIYUN_ACCESS_KEY_ID}' | base64 -d)
-          ALIYUN_ACCESS_KEY_SECRET=$(kubectl get secret backend-secret -o jsonpath='{.data.ALIYUN_ACCESS_KEY_SECRET}' | base64 -d)
-          ALIYUN_OSS_STS_ROLE_ARN=$(kubectl get secret backend-secret -o jsonpath='{.data.ALIYUN_OSS_STS_ROLE_ARN}' | base64 -d)
-          JWT_SECRET=$(kubectl get secret backend-secret -o jsonpath='{.data.JWT_SECRET}' | base64 -d)
-          WEBAUTHN_RP_ID=$(kubectl get secret backend-secret -o jsonpath='{.data.WEBAUTHN_RP_ID}' | base64 -d)
-          WEBAUTHN_ORIGIN=$(kubectl get secret backend-secret -o jsonpath='{.data.WEBAUTHN_ORIGIN}' | base64 -d)
-          WEBAUTHN_RP_NAME=$(kubectl get secret backend-secret -o jsonpath='{.data.WEBAUTHN_RP_NAME}' | base64 -d)
+          cat << EOF > /tmp/migration-job-${IMAGE_TAG}.yaml
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: $JOB_NAME
+            namespace: default
+          spec:
+            template:
+              spec:
+                restartPolicy: Never
+                containers:
+                - name: migrator
+                  image: localhost:5000/backend:${IMAGE_TAG}
+                  command: ["pnpm", "run", "migration:run"]
+                  env:
+                  - name: NODE_ENV
+                    value: "production"
+                  - name: DATABASE_HOST
+                    value: "postgres-service"
+                  - name: DATABASE_PORT
+                    value: "5432"
+                  - name: DATABASE_NAME
+                    value: "tone_page"
+                  - name: DATABASE_USERNAME
+                    value: "tone_page"
+                  - name: DATABASE_PASSWORD
+                    valueFrom:
+                      secretKeyRef:
+                        name: backend-secret
+                        key: DATABASE_PASSWORD
+                  - name: JWT_SECRET
+                    valueFrom:
+                      secretKeyRef:
+                        name: backend-secret
+                        key: JWT_SECRET
+                  - name: JWT_EXPIRES_IN
+                    value: "1d"
+                  - name: ALIYUN_ACCESS_KEY_ID
+                    valueFrom:
+                      secretKeyRef:
+                        name: backend-secret
+                        key: ALIYUN_ACCESS_KEY_ID
+                  - name: ALIYUN_ACCESS_KEY_SECRET
+                    valueFrom:
+                      secretKeyRef:
+                        name: backend-secret
+                        key: ALIYUN_ACCESS_KEY_SECRET
+                  - name: ALIYUN_OSS_STS_ROLE_ARN
+                    valueFrom:
+                      secretKeyRef:
+                        name: backend-secret
+                        key: ALIYUN_OSS_STS_ROLE_ARN
+                  - name: WEBAUTHN_RP_ID
+                    valueFrom:
+                      secretKeyRef:
+                        name: backend-secret
+                        key: WEBAUTHN_RP_ID
+                  - name: WEBAUTHN_ORIGIN
+                    valueFrom:
+                      secretKeyRef:
+                        name: backend-secret
+                        key: WEBAUTHN_ORIGIN
+                  - name: WEBAUTHN_RP_NAME
+                    valueFrom:
+                      secretKeyRef:
+                        name: backend-secret
+                        key: WEBAUTHN_RP_NAME
+            backoffLimit: 3
+          EOF
 
-          # 检查是否成功获取了密码
-          if [ -z "$DB_PASSWORD" ]; then
-            echo "Error: Could not retrieve DATABASE_PASSWORD from backend-secret."
+          kubectl apply -f /tmp/migration-job-${IMAGE_TAG}.yaml
+
+          echo "Waiting for job $JOB_NAME to complete..."
+          kubectl wait --for=condition=complete job/$JOB_NAME --timeout=30s
+
+          FAILED_COUNT=$(kubectl get job $JOB_NAME -o jsonpath='{.status.failed}' 2>/dev/null || echo "null")
+          if [ "$FAILED_COUNT" = "null" ] || [ "$FAILED_COUNT" -eq 0 ]; then
+            echo "Migration job $JOB_NAME completed successfully."
+          else
+            echo "Migration job $JOB_NAME failed. Failed pod count: $FAILED_COUNT"
+            # 打印 Job 的详细状态和日志以便调试
+            kubectl describe job $JOB_NAME
+            echo "Logs from the failed pod:"
+            # 获取失败的 Pod 名称并打印其日志
+            FAILED_POD_NAME=$(kubectl get pods --selector=job-name=$JOB_NAME --field-selector=status.phase=Failed -o jsonpath='{.items[0].metadata.name}')
+            if [ ! -z "$FAILED_POD_NAME" ]; then
+              kubectl logs $FAILED_POD_NAME
+            else
+              echo "Could not find the failed pod name."
+            fi
             exit 1
           fi
 
-          docker run --rm \
-            -e NODE_ENV=production \
-            -e DATABASE_HOST=postgres-service \
-            -e DATABASE_PORT=5432 \
-            -e DATABASE_NAME=tone_page \
-            -e DATABASE_USERNAME=tone_page \
-            -e DATABASE_PASSWORD="$DB_PASSWORD" \
-            -e JWT_SECRET="$JWT_SECRET" \
-            -e JWT_EXPIRES_IN=1d \
-            -e ALIYUN_ACCESS_KEY_ID="$ALIYUN_ACCESS_KEY_ID" \
-            -e ALIYUN_ACCESS_KEY_SECRET="$ALIYUN_ACCESS_KEY_SECRET" \
-            -e ALIYUN_OSS_STS_ROLE_ARN="$ALIYUN_OSS_STS_ROLE_ARN" \
-            -e WEBAUTHN_RP_ID="$WEBAUTHN_RP_ID" \
-            -e WEBAUTHN_ORIGIN="$WEBAUTHN_ORIGIN" \
-            -e WEBAUTHN_RP_NAME="$WEBAUTHN_RP_NAME" \
-            localhost:5000/backend:${IMAGE_TAG} \
-            pnpm run migration:run
-
-          # 检查上一步命令是否成功
-          if [ $? -ne 0 ]; then
-            echo "Database migration failed!"
-            exit 1
-          fi
+          kubectl delete job $JOB_NAME
+          rm /tmp/migration-job-${IMAGE_TAG}.yaml
 
           echo "Database migrations completed successfully."
 
