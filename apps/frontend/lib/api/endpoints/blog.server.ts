@@ -3,7 +3,7 @@ import { serverFetch } from "../server";
 
 export async function list() {
     return serverFetch<Pick<Blog,
-        'id' | 'title' | 'slug' | 'description' | 'viewCount' | 'createdAt' | 'updatedAt' | 'deletedAt'
+        'id' | 'title' | 'slug' | 'description' | 'viewCount' | 'createdAt' | 'updatedAt'
     >[]>('/api/blog')
 }
 
