@@ -17,6 +17,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { BlogPermissionCheckBoxs } from "./BlogPermissionCheckBoxs";
 import { AdminAPI } from "@/lib/api/client";
+import { handleCopyShareURL } from "./utils";
 
 interface AddBlogProps {
     children: React.ReactNode;
@@ -33,30 +34,6 @@ export default function AddBlog({ children, onRefresh }: AddBlogProps) {
         permissions: [] as BlogPermission[],
         password: "",
     });
-
-    const handleCopyShareURL = () => {
-        const slug = blog.slug.trim();
-        if (slug.length === 0) {
-            return toast.warning('请先填写Slug')
-        }
-
-        let url = `${window.location.origin}/blog/${slug}`;
-
-        const password = blog.password.trim();
-        if (blog.permissions.includes(BlogPermission.ByPassword)) {
-            if (password.length === 0) {
-                return toast.warning('开启了密码保护，但没有填写有效的密码，无法生成有效URL')
-            } else {
-                url += `?p=${blog.password.trim()}`;
-            }
-        }
-
-        navigator.clipboard.writeText(url).then(() => {
-            toast.success('复制成功');
-        }, () => {
-            toast.error('复制失败，请手动复制');
-        });
-    };
 
     const handleSubmit = async () => {
         try {
@@ -175,7 +152,11 @@ export default function AddBlog({ children, onRefresh }: AddBlogProps) {
                 </div>
                 <DialogFooter >
                     <div className="flex justify-between w-full">
-                        <Button type="button" variant='outline' onClick={handleCopyShareURL}>复制分享链接</Button>
+                        <Button type="button" variant='outline' onClick={() => handleCopyShareURL({
+                            slug: blog.slug,
+                            password: blog.password,
+                            permissions: blog.permissions,
+                        })}>复制分享链接</Button>
                         <div>
                             <Button type="button" variant='secondary' onClick={() => setOpen(false)}>取消</Button>
                             <Button type="button" onClick={handleSubmit}>保存</Button>
