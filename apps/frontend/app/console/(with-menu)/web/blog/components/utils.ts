@@ -1,7 +1,7 @@
 import { BlogPermission } from "@/lib/types/Blog.Permission.enum";
 import { toast } from "sonner";
 
-export function handleCopyShareURL(data: {
+export function copyShareURL(data: {
     slug: string;
     password: string;
     permissions: BlogPermission[];

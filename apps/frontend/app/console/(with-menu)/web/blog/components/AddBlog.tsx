@@ -17,7 +17,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { BlogPermissionCheckBoxs } from "./BlogPermissionCheckBoxs";
 import { AdminAPI } from "@/lib/api/client";
-import { handleCopyShareURL } from "./utils";
+import { copyShareURL } from "./utils";
 
 interface AddBlogProps {
     children: React.ReactNode;
@@ -152,7 +152,7 @@ export default function AddBlog({ children, onRefresh }: AddBlogProps) {
                 </div>
                 <DialogFooter >
                     <div className="flex justify-between w-full">
-                        <Button type="button" variant='outline' onClick={() => handleCopyShareURL({
+                        <Button type="button" variant='outline' onClick={() => copyShareURL({
                             slug: blog.slug,
                             password: blog.password,
                             permissions: blog.permissions,
