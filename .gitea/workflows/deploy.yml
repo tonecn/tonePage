@@ -54,6 +54,55 @@ jobs:
             -t localhost:5000/frontend:${IMAGE_TAG} .
           docker push localhost:5000/frontend:${IMAGE_TAG}
 
+      - name: Run database migrations with temporary container
+        run: |
+          echo "Running database migrations using backend image: localhost:5000/backend:${IMAGE_TAG}"
+
+          echo "Waiting for PostgreSQL service to be ready..."
+          kubectl wait --for=condition=ready pod -l app=postgres --timeout=30s
+
+          # 获取密码等敏感信息
+          DB_PASSWORD=$(kubectl get secret backend-secret -o jsonpath='{.data.DATABASE_PASSWORD}' | base64 -d)
+          ALIYUN_ACCESS_KEY_ID=$(kubectl get secret backend-secret -o jsonpath='{.data.ALIYUN_ACCESS_KEY_ID}' | base64 -d)
+          ALIYUN_ACCESS_KEY_SECRET=$(kubectl get secret backend-secret -o jsonpath='{.data.ALIYUN_ACCESS_KEY_SECRET}' | base64 -d)
+          ALIYUN_OSS_STS_ROLE_ARN=$(kubectl get secret backend-secret -o jsonpath='{.data.ALIYUN_OSS_STS_ROLE_ARN}' | base64 -d)
+          JWT_SECRET=$(kubectl get secret backend-secret -o jsonpath='{.data.JWT_SECRET}' | base64 -d)
+          WEBAUTHN_RP_ID=$(kubectl get secret backend-secret -o jsonpath='{.data.WEBAUTHN_RP_ID}' | base64 -d)
+          WEBAUTHN_ORIGIN=$(kubectl get secret backend-secret -o jsonpath='{.data.WEBAUTHN_ORIGIN}' | base64 -d)
+          WEBAUTHN_RP_NAME=$(kubectl get secret backend-secret -o jsonpath='{.data.WEBAUTHN_RP_NAME}' | base64 -d)
+
+          # 检查是否成功获取了密码
+          if [ -z "$DB_PASSWORD" ]; then
+            echo "Error: Could not retrieve DATABASE_PASSWORD from backend-secret."
+            exit 1
+          fi
+
+          docker run --rm \
+            -e NODE_ENV=production \
+            -e DATABASE_HOST=postgres-service \
+            -e DATABASE_PORT=5432 \
+            -e DATABASE_NAME=tone_page \
+            -e DATABASE_USERNAME=tone_page \
+            -e DATABASE_PASSWORD="$DB_PASSWORD" \
+            -e JWT_SECRET="$JWT_SECRET" \
+            -e JWT_EXPIRES_IN=1d \
+            -e ALIYUN_ACCESS_KEY_ID="$ALIYUN_ACCESS_KEY_ID" \
+            -e ALIYUN_ACCESS_KEY_SECRET="$ALIYUN_ACCESS_KEY_SECRET" \
+            -e ALIYUN_OSS_STS_ROLE_ARN="$ALIYUN_OSS_STS_ROLE_ARN" \
+            -e WEBAUTHN_RP_ID="$WEBAUTHN_RP_ID" \
+            -e WEBAUTHN_ORIGIN="$WEBAUTHN_ORIGIN" \
+            -e WEBAUTHN_RP_NAME="$WEBAUTHN_RP_NAME" \
+            localhost:5000/backend:${IMAGE_TAG} \
+            pnpm run migration:run
+
+          # 检查上一步命令是否成功
+          if [ $? -ne 0 ]; then
+            echo "Database migration failed!"
+            exit 1
+          fi
+
+          echo "Database migrations completed successfully."
+
       - name: Deploy to K3s
         run: |
           cd /workspace/tone/tonePage/apps/deploy
