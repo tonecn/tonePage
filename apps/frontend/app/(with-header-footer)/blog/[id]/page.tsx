@@ -27,17 +27,8 @@ async function parseBlogParams({ params: paramsPromise, searchParams: searchPara
         }
     }
 
-    const hex = Array.from(base62.decode(params.id as string)).map(b => b.toString(16).padStart(2, '0')).join('');
-    const id = [
-        hex.slice(0, 8),
-        hex.slice(8, 12),
-        hex.slice(12, 16),
-        hex.slice(16, 20),
-        hex.slice(20, 32)
-    ].join('-');
-
     return {
-        id,
+        id: params.id,
         p: searchParams.p,
     }
 }
@@ -50,7 +41,7 @@ async function getBlog(paramsResult: ReturnType<typeof parseBlogParams>) {
         }
     } else {
         try {
-            const data = await BlogAPI.getBlog(`${id}`, p);
+            const data = await BlogAPI.getBlogBySlug(`${id}`, p);
             return {
                 data,
             }
@@ -83,7 +74,7 @@ export default async function Page({ params, searchParams }: PageRouteProps) {
     let { errorMsg } = res;
 
     const data = errorMsg ? null
-        : await BlogAPI.getBlog(`${id}`, p).catch(e => handleAPIError(e, ({ message }) => { errorMsg = message; return null }));
+        : await BlogAPI.getBlogBySlug(`${id}`, p).catch(e => handleAPIError(e, ({ message }) => { errorMsg = message; return null }));
 
     return (
         <div className="w-full overflow-x-hidden">

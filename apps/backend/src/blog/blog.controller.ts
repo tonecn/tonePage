@@ -31,12 +31,16 @@ export class BlogController {
     return this.blogService.list();
   }
 
-  @Get(':id')
-  async getBlog(
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  @Get(':id/slug')
+  async getBlogBySlug(
+    @Param('id') slug: string,
     @Query('p') password?: string,
   ) {
-    const blog = await this.blogService.findById(id);
+    if (slug.trim().length === 0) {
+      throw new BadRequestException('文章不存在');
+    }
+    
+    const blog = await this.blogService.findBySlug(slug);
     if (!blog) throw new BadRequestException('文章不存在或无权限访问');
 
     if (!blog.permissions.includes(BlogPermission.Public)) {
@@ -46,7 +50,7 @@ export class BlogController {
       } else {
         // 判断密码是否正确
         if (
-          !password ||
+          typeof password !== 'string' ||
           this.blogService.hashPassword(password) !== blog.password_hash
         ) {
           throw new BadRequestException('文章不存在或无权限访问');
@@ -57,7 +61,7 @@ export class BlogController {
     const blogDataRes = await fetch(`${blog.contentUrl}`);
     const blogContent = await blogDataRes.text();
 
-    await this.blogService.incrementViewCount(id);
+    this.blogService.incrementViewCount(blog.id).catch(() => null);
     return {
       id: blog.id,
       title: blog.title,

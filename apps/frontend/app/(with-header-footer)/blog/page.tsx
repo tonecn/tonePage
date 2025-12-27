@@ -4,7 +4,6 @@ import {
     AlertTitle,
 } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { base62 } from "@/lib/utils";
 import { BlogAPI } from "@/lib/api/server";
 import { handleAPIError } from "@/lib/api/common";
 
@@ -18,12 +17,9 @@ const formatNumber = (num: number): string => {
     return num.toString();
 };
 
-const getBlogDetailUrl = (id: string): string => {
-    const cleanId = id.replace(/-/g, '');
-    const encoded = base62.encode(Buffer.from(cleanId, 'hex'));
-    return `/blog/${encoded}`;
+const getBlogDetailUrl = (slug: string): string => {
+    return `/blog/${slug}`;
 };
-
 
 export const metadata = {
   title: '日志 - 特恩的日志',
@@ -56,7 +52,7 @@ export default async function Blog() {
                         <h2 className="text-2xl font-medium">
                             <a
                                 className="hover:underline focus:outline-none focus:ring-2 focus:ring-zinc-400 rounded"
-                                href={getBlogDetailUrl(blog.id)}
+                                href={getBlogDetailUrl(blog.slug)}
                                 rel="noopener noreferrer"
                             >
                                 {blog.title}

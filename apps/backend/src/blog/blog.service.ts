@@ -35,13 +35,14 @@ export class BlogService {
           return i;
         }
 
-        const { createdAt, updatedAt, deletedAt, id, title, viewCount, description } = i;
+        const { createdAt, updatedAt, deletedAt, id, title, viewCount, description, slug } = i;
         return {
           createdAt,
           updatedAt,
           deletedAt,
           id,
           title,
+          slug,
           viewCount,
           description,
         };
@@ -94,6 +95,12 @@ export class BlogService {
 
   async findById(id: string) {
     return await this.blogRepository.findOneBy({ id });
+  }
+
+  async findBySlug(slug: string) {
+    return this.blogRepository.findOne({
+      where: { slug }
+    })
   }
 
   async incrementViewCount(id: string) {
