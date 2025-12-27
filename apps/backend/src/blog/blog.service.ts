@@ -57,6 +57,9 @@ export class BlogService {
           .digest('hex');
       }
     }
+    if (typeof blog.slug === 'string' && blog.slug.trim().length === 0) {
+      blog.slug = null;
+    }
 
     const newBlog = this.blogRepository.create(blog);
     return this.blogRepository.save(newBlog);

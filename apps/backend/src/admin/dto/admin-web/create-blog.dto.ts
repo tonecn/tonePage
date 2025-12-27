@@ -6,6 +6,9 @@ export class CreateBlogDto {
   title: string;
 
   @IsString()
+  slug: string;// 允许空串，但如果为空则需要手动设置为null，防止数据库唯一键冲突
+
+  @IsString()
   description: string;
 
   @IsString()

@@ -27,11 +27,36 @@ export default function AddBlog({ children, onRefresh }: AddBlogProps) {
     const [open, setOpen] = useState(false);
     const [blog, setBlog] = useState({
         title: "",
+        slug: "",
         description: "",
         contentUrl: "",
         permissions: [] as BlogPermission[],
         password: "",
     });
+
+    const handleCopyShareURL = () => {
+        const slug = blog.slug.trim();
+        if (slug.length === 0) {
+            return toast.warning('请先填写Slug')
+        }
+
+        let url = `${window.location.origin}/blog/${slug}`;
+
+        const password = blog.password.trim();
+        if (blog.permissions.includes(BlogPermission.ByPassword)) {
+            if (password.length === 0) {
+                return toast.warning('开启了密码保护，但没有填写有效的密码，无法生成有效URL')
+            } else {
+                url += `?p=${blog.password.trim()}`;
+            }
+        }
+
+        navigator.clipboard.writeText(url).then(() => {
+            toast.success('复制成功');
+        }, () => {
+            toast.error('复制失败，请手动复制');
+        });
+    };
 
     const handleSubmit = async () => {
         try {
@@ -44,6 +69,7 @@ export default function AddBlog({ children, onRefresh }: AddBlogProps) {
                 toast.success("添加成功");
                 setBlog({
                     title: '',
+                    slug: '',
                     description: '',
                     contentUrl: '',
                     permissions: [],
@@ -93,6 +119,17 @@ export default function AddBlog({ children, onRefresh }: AddBlogProps) {
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="slug" className="text-right">
+                            Slug
+                        </Label>
+                        <Input
+                            id="slug"
+                            className="col-span-3"
+                            value={blog.slug}
+                            onChange={(e) => setBlog({ ...blog, slug: e.target.value })}
+                        />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="contentUrl" className="text-right">
                             文章URL
                         </Label>
@@ -136,9 +173,14 @@ export default function AddBlog({ children, onRefresh }: AddBlogProps) {
                         </div>
                     }
                 </div>
-                <DialogFooter>
-                    <Button type="button" variant='secondary' onClick={() => setOpen(false)}>取消</Button>
-                    <Button type="button" onClick={handleSubmit}>保存</Button>
+                <DialogFooter >
+                    <div className="flex justify-between w-full">
+                        <Button type="button" variant='outline' onClick={handleCopyShareURL}>复制分享链接</Button>
+                        <div>
+                            <Button type="button" variant='secondary' onClick={() => setOpen(false)}>取消</Button>
+                            <Button type="button" onClick={handleSubmit}>保存</Button>
+                        </div>
+                    </div>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

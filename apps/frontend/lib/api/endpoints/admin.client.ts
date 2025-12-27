@@ -3,6 +3,7 @@ import { clientFetch } from "../client";
 import { Blog } from "@/lib/types/blog";
 import { BlogPermission } from "@/lib/types/Blog.Permission.enum";
 import { Role } from "@/lib/types/role";
+import { APIError } from "../common";
 
 export interface UserEntity {
     userId: string;
@@ -87,9 +88,28 @@ export async function updateResource(id: string, data: UpdateResourceParams) {
 interface CreateBlogParams {
     title: string;
     description: string;
+    slug: string;
     contentUrl: string;
+    permissions: BlogPermission[];
+    password: string;
 }
 export async function createBlog(data: CreateBlogParams) {
+    data.title = data.title.trim()
+    data.description = data.description.trim()
+    data.slug = data.slug.trim()
+    data.contentUrl = data.contentUrl.trim()
+    data.password = data.password.trim()
+
+    if (data.title.length === 0) {
+        throw new APIError('标题不得为空')
+    }
+    if (data.description.length === 0) {
+        throw new APIError('描述不得为空')
+    }
+    if (data.contentUrl.length === 0) {
+        throw new APIError('文章链接不得为空')
+    }
+
     return clientFetch<Blog>('/api/admin/web/blog', {
         method: 'POST',
         body: JSON.stringify(data)
