@@ -1,5 +1,4 @@
 import { BlogAPI } from '@/lib/api/server'
-import { base62 } from '@/lib/utils'
 import { MetadataRoute } from 'next'
 
 export const revalidate = 3600;
@@ -9,10 +8,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const blogs = await BlogAPI.list().catch(() => [])
 
     const blogUrls = blogs.map(blog => {
-        const cleanId = blog.id.replace(/-/g, '')
-        const encoded = base62.encode(Buffer.from(cleanId, 'hex'))
         return {
-            url: `https://www.tonesc.cn/blog/${encoded}`,
+            url: `https://www.tonesc.cn/blog/${blog.slug}`,
             lastModified: new Date(blog.updatedAt),
             changeFrequency: 'weekly' as const,
             priority: 0.8,
