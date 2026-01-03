@@ -18,7 +18,7 @@ export function ResourceCard({ r, ...props }: ResourceCardProps) {
                         </div>
                         <div className="flex-1 overflow-x-hidden">
                             <div className="font-bold text-2xl">{r.title}</div>
-                            <div className="font-medium text-sm text-zinc-400 mt-1">{r.description}</div>
+                            <div className="font-medium text-sm text-zinc-400 dark:text-zinc-300 mt-1">{r.description}</div>
                             <div className="flex gap-2 flex-wrap mt-4">
                                 {
                                     r.tags.map((tag) => (
