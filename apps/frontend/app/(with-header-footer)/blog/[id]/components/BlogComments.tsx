@@ -37,7 +37,7 @@ export function BlogComments({ blogId }: { blogId: string }) {
                 handleClearReplayTarget={() => setReplayTarget(null)}
             />
 
-            <div className="text-sm text-zinc-600">
+            <div className="text-sm text-zinc-600 dark:text-zinc-400">
                 {
                     user ? (<span>当前账户：{user.nickname}</span>) : (<span>当前未登录，留言名称为匿名，登录可前往控制台</span>)
                 }
@@ -47,21 +47,21 @@ export function BlogComments({ blogId }: { blogId: string }) {
                 {
                     data.filter(d => !d.parentId)
                         .map((d) => (
-                            <div key={d.id} className="border-b border-zinc-300 py-2 last:border-none">
-                                <h1 className="text-zinc-500">{d.user ? d.user.nickname : '匿名'}</h1>
+                            <div key={d.id} className="border-b border-zinc-300 dark:border-zinc-500 py-2 last:border-none">
+                                <h1 className="text-zinc-500 dark:text-zinc-200">{d.user ? d.user.nickname : '匿名'}</h1>
                                 <div className="whitespace-pre-wrap break-all">{d.content}</div>
                                 <div className="text-xs text-zinc-500 flex gap-2">
                                     <p>{new Date(d.createdAt).toLocaleString()}</p>
                                     <p>{d.address}</p>
-                                    <p className="text-zinc-900 cursor-pointer" onClick={() => setReplayTarget(d)}>回复</p>
+                                    <p className="text-zinc-900 dark:text-zinc-200 cursor-pointer" onClick={() => setReplayTarget(d)}>回复</p>
                                 </div>
                                 {
                                     data.filter(c => c.parentId === d.id).length > 0 && (
                                         <div className="flex flex-col ml-5 my-1">
                                             {
                                                 data.filter(c => c.parentId === d.id).map(c => (
-                                                    <div key={c.id} className="border-b border-zinc-300 py-1 last:border-none">
-                                                        <h1 className="text-zinc-500">{c.user ? c.user.nickname : '匿名'}</h1>
+                                                    <div key={c.id} className="border-b border-zinc-300 dark:border-zinc-500 py-1 last:border-none">
+                                                        <h1 className="text-zinc-500 dark:text-zinc-200">{c.user ? c.user.nickname : '匿名'}</h1>
                                                         <div className="whitespace-pre-wrap break-all">{c.content}</div>
                                                         <div className="text-xs text-zinc-500 flex gap-2">
                                                             <p>{new Date().toLocaleString()}</p>

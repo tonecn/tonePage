@@ -54,11 +54,11 @@ export default async function Blog() {
                                 className="hover:underline focus:outline-none focus:ring-2 focus:ring-zinc-400 rounded"
                                 href={getBlogDetailUrl(blog.slug)}
                                 rel="noopener noreferrer"
-                            >
+                            >   
                                 {blog.title}
                             </a>
                         </h2>
-                        <p className="text-sm font-medium text-zinc-600">{blog.description}</p>
+                        <p className="text-sm font-medium text-zinc-600 dark:text-zinc-300">{blog.description}</p>
                         <footer className="mt-3 text-sm text-zinc-500 flex items-center gap-2">
                             <time dateTime={blog.createdAt}>
                                 {new Date(blog.createdAt).toLocaleString('zh-CN')}

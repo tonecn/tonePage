@@ -19,7 +19,7 @@ export function BlogContent({ content }: { content?: string }) {
                 h3: ({ ...props }) => <h4 className="text-xl font-bold py-0.5" {...props} />,
                 h4: ({ ...props }) => <h5 className="text-lg font-bold" {...props} />,
                 h5: ({ ...props }) => <h6 className="text-md font-bold" {...props} />,
-                p: ({ ...props }) => <p className="py-1 text-zinc-700" {...props} />,
+                p: ({ ...props }) => <p className="py-1 text-zinc-700 dark:text-zinc-300" {...props} />,
                 img: ({ src }) => (
                     <PhotoProvider className="w-full">
                         <PhotoView src={src as string}>
@@ -29,8 +29,8 @@ export function BlogContent({ content }: { content?: string }) {
                         </PhotoView>
                     </PhotoProvider>
                 ),
-                th: ({ ...props }) => <th className="text-ellipsis text-nowrap border border-zinc-300 p-2" {...props} />,
-                td: ({ ...props }) => <td className="border border-zinc-300 p-1" {...props} />,
+                th: ({ ...props }) => <th className="text-ellipsis text-nowrap border border-zinc-300 dark:border-zinc-500 p-2" {...props} />,
+                td: ({ ...props }) => <td className="border border-zinc-300 dark:border-zinc-500 p-1" {...props} />,
                 table: ({ ...props }) => <div className="overflow-x-auto"><table {...props} /></div>,
                 pre: ({ ...props }) => <pre className="rounded-sm overflow-hidden shadow" {...props} />,
                 blockquote: ({ ...props }) => <blockquote className="pl-3 border-l-5" {...props} />,

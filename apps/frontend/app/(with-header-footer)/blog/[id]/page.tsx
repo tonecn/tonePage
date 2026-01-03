@@ -78,12 +78,12 @@ export default async function Page({ params, searchParams }: PageRouteProps) {
     return (
         <div className="w-full overflow-x-hidden">
             <div className="max-w-200 mx-auto px-5 overflow-x-hidden mb-10">
-                {errorMsg && <div className="my-20 text-center text-zinc-600">{errorMsg}</div>}
+                {errorMsg && <div className="my-20 text-center text-zinc-600 dark:text-zinc-400">{errorMsg}</div>}
                 {data && (
                     <article className="w-full">
                         <header className="flex flex-col items-center">
                             <h1 className="text-center text-2xl sm:text-3xl font-bold mt-10 transition-all duration-500">{data.title}</h1>
-                            <time className="text-sm text-zinc-500 text-center my-2 sm:my-5 mb-5 transition-all duration-500">发布于：{new Date(data.createdAt).toLocaleString()}</time>
+                            <time className="text-sm text-zinc-500 dark:text-zinc-300 text-center my-2 sm:my-5 mb-5 transition-all duration-500">发布于：{new Date(data.createdAt).toLocaleString()}</time>
                         </header>
                         <BlogContent content={data.content} />
                     </article>
