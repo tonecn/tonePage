@@ -11,7 +11,6 @@ export default function Home() {
           height={180}
           className="rounded-full duration-400 size-35 md:size-45 select-none"
           priority
-          quality={100}
         />
       </figure>
       <h1 className='text-4xl md:text-5xl font-bold mt-5 md:mt-8 gradient-title duration-400 select-none'>特恩(TONE)</h1>
