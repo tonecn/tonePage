@@ -10,7 +10,7 @@ const EMAIL = "tonesc.cn@gmail.com";
 
 export default function Footer() {
     return (
-        <footer className="border-t border-zinc-300">
+        <footer className="border-t border-zinc-300 dark:border-zinc-500">
             <div className="bg-zinc-50 dark:bg-zinc-950 px-4 py-3 md:py-5 sm:px-10 md:px-20 flex flex-col sm:flex-row justify-between items-center gap-4 transition-all">
                 {/* 版权与备案信息 */}
                 <div className="text-center sm:text-left">
