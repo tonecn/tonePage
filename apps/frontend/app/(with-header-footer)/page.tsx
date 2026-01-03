@@ -15,7 +15,7 @@ export default function Home() {
         />
       </figure>
       <h1 className='text-4xl md:text-5xl font-bold mt-5 md:mt-8 gradient-title duration-400 select-none'>特恩(TONE)</h1>
-      <p className='text-lg sm:text-xl md:text-2xl mt-3 font-medium text-zinc-400 duration-400 select-none'>一名在各个领域反复横跳的程序员</p>
+      <p className='text-lg sm:text-xl md:text-2xl mt-3 font-medium text-zinc-400 dark:text-zinc-200 duration-400 select-none'>一名在各个领域反复横跳的程序员</p>
       <nav className='flex sm:flex-row flex-col gap-2 sm:gap-10 mt-5 md:mt-8 duration-400' aria-label="社交媒体链接">
         <a href='https://space.bilibili.com/474156211'
           target='_black'

@@ -48,13 +48,13 @@ export default function Header() {
 
     return (
         <>
-            <header className="sticky top-0 z-50 backdrop-blur-sm bg-white/40 shadow" role="banner" aria-label="网站顶部导航栏">
+            <header className="sticky top-0 z-50 backdrop-blur-sm bg-white/40 dark:bg-black/40 shadow dark:shadow-zinc-500" role="banner" aria-label="网站顶部导航栏">
                 <div className="flex items-center justify-between px-10 md:h-18 md:px-20 h-14 duration-300" aria-label="主菜单">
                     <Link
                         href="/"
                         className={cn(
-                            "cursor-pointer font-medium text-zinc-500 hover:text-zinc-800 border-b-4 border-transparent duration-200",
-                            pathname === "/" && "text-zinc-800"
+                            "cursor-pointer font-medium text-zinc-500 dark:text-zinc-300 hover:text-zinc-800 dark:hover:text-zinc-100 border-b-4 border-transparent duration-200",
+                            pathname === "/" && "text-zinc-800 dark:text-zinc-100"
                         )}
                         aria-current={pathname === "/" ? "page" : undefined}
                     >
@@ -72,8 +72,8 @@ export default function Header() {
                                 key={item.name}
                                 href={item.path}
                                 className={cn(
-                                    "cursor-pointer md:text-lg font-medium text-zinc-500 hover:text-zinc-800 border-b-4 border-transparent duration-200",
-                                    pathname.startsWith(item.path) && "text-zinc-800 border-b-pink-500"
+                                    "cursor-pointer md:text-lg font-medium text-zinc-500 dark:text-zinc-300 hover:text-zinc-800 dark:hover:text-zinc-100 border-b-4 border-transparent duration-200",
+                                    pathname.startsWith(item.path) && "text-zinc-800 dark:text-zinc-100 border-b-pink-500"
                                 )}
                                 onClick={e => handleClick(e, item.path)}
                                 aria-current={pathname === item.path ? "page" : undefined}

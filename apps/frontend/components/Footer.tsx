@@ -11,18 +11,18 @@ const EMAIL = "tonesc.cn@gmail.com";
 export default function Footer() {
     return (
         <footer className="border-t border-zinc-300">
-            <div className="bg-zinc-50 px-4 py-3 md:py-5 sm:px-10 md:px-20 flex flex-col sm:flex-row justify-between items-center gap-4 transition-all">
+            <div className="bg-zinc-50 dark:bg-zinc-950 px-4 py-3 md:py-5 sm:px-10 md:px-20 flex flex-col sm:flex-row justify-between items-center gap-4 transition-all">
                 {/* 版权与备案信息 */}
                 <div className="text-center sm:text-left">
                     <a
                         href="https://beian.miit.gov.cn/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block text-sm text-zinc-500 hover:text-zinc-700 hover:underline focus:outline-none focus:underline"
+                        className="block text-sm text-zinc-500 dark:text-zinc-300 hover:text-zinc-700 dark:hover:text-zinc-100 hover:underline focus:outline-none focus:underline"
                     >
                         备案号：渝ICP备2023009516号-1
                     </a>
-                    <p className="mt-1 text-sm text-zinc-500">
+                    <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-300">
                         © {new Date().getFullYear()} TONE Page. All rights reserved.
                     </p>
                 </div>
@@ -32,13 +32,13 @@ export default function Footer() {
                     <Popover>
                         <PopoverTrigger asChild>
                             <Button variant='outline' size='sm' >
-                                <Mail className="text-zinc-600" />
+                                <Mail className="text-zinc-600 dark:text-zinc-300" />
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-fit">
                             <a
                                 href={`mailto:${EMAIL}`}
-                                className="text-sm text-zinc-800 hover:underline focus:outline-none focus:underline"
+                                className="text-sm text-zinc-800 dark:text-zinc-200 hover:underline focus:outline-none focus:underline"
                             >
                                 {EMAIL}
                             </a>

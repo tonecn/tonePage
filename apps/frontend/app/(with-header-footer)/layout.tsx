@@ -9,7 +9,7 @@ export default function LayoutWithHeaderFooter({
     return (
         <>
             <Header />
-            <main className="flex-1 flex flex-col bg-zinc-50">
+            <main className="flex-1 flex flex-col bg-zinc-50 dark:bg-zinc-950">
                 {children}
             </main>
             <Footer />
