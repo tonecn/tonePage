@@ -97,7 +97,7 @@ export default function Login() {
                                         alt="Image"
                                         width={500}
                                         height={500}
-                                        className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+                                        className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.6] dark:grayscale"
                                         priority
                                         quality={100}
                                     />
