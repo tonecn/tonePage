@@ -16,9 +16,9 @@ export default function ResourceCardImage({ imageUrl }: ResourceCardImage) {
                 alt="资源图片"
                 width={90}
                 height={90}
-                className="rounded-md shadow"
+                className="rounded-md shadow w-22.5 h-22.5"
                 priority
-                quality={80}
+                quality={75}
                 onError={() => setImageError(true)}
             />}
         </>
