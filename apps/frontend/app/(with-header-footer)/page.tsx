@@ -10,6 +10,7 @@ export default function Home() {
           width={180}
           height={180}
           className="rounded-full duration-400 size-35 md:size-45 select-none"
+          unoptimized
           priority
         />
       </figure>
