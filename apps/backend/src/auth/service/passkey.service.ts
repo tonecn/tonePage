@@ -229,9 +229,9 @@ export class PasskeyService implements OnModuleDestroy {
         return passkey.user;
     }
 
-    async listUserPasskeys(userId: string): Promise<PasskeyCredential[]> {
+    async listUserPasskeys(userId: string, verified?: boolean): Promise<PasskeyCredential[]> {
         return this.passkeyRepo.find({
-            where: { user: { userId }, verified: true },
+            where: { user: { userId }, verified },
             select: ['id', 'name', 'createdAt'],
         });
     }

@@ -154,6 +154,19 @@ export class UserService {
 
     queryBuilder.withDeleted();
 
+    queryBuilder.select([
+      'user.userId',
+      'user.username',
+      'user.nickname',
+      'user.phone',
+      'user.email',
+      'user.avatar',
+      'user.roles',
+      'user.createdAt',
+      'user.updatedAt',
+      'user.deletedAt',
+    ]);
+
     queryBuilder.orderBy('user.createdAt', 'DESC');
 
     queryBuilder.skip((page - 1) * pageSize);

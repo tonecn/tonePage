@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Post,
   Req,
   Res,
@@ -165,6 +166,13 @@ export class AuthController {
       name: passkey.name,
       createdAt: passkey.createdAt,
     };
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('passkey')
+  async listPasskeys(@CurrentUser() user: AuthUser) {
+    const { userId } = user;
+    return this.passkeyService.listUserPasskeys(userId);
   }
 
   @UseGuards(AuthGuard)

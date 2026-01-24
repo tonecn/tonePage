@@ -27,6 +27,10 @@ async function bootstrap() {
   );
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalFilters(new GlobalExceptionsFilter());
-  await app.listen(process.env.PORT ?? 3001);
+  let port = Number(process.env.PORT)
+  if (isNaN(port) || port < 0 || port > 65535) {
+    port = 3001;
+  }
+  await app.listen(port);
 }
 bootstrap();
