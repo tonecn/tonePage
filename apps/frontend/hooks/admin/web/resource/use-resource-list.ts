@@ -1,6 +1,7 @@
 "use client"
 
-import { AdminAPI } from "@/lib/api/client";
+import { adminGetResources } from "@/lib/api/actions";
+import { handleAPIError } from "@/lib/api/common";
 import { useCallback } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
@@ -8,11 +9,9 @@ import useSWR from "swr";
 export function useResourceList() {
     const { data, error, isLoading, mutate } = useSWR(
         ['/admin/web/resource'],
-        () => AdminAPI.listResources(),
+        () => adminGetResources(),
         {
-            onError: (e) => {
-                toast.error(`${e.message || e}`)
-            }
+            onError: handleAPIError(({ message }) => toast.error(message))
         }
     )
 

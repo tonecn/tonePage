@@ -13,7 +13,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { ApiError } from "next/dist/server/api-utils";
-import { AdminAPI } from "@/lib/api/client";
+import { adminCreateUser } from "@/lib/api/actions/admin.action";
 
 interface CreateUserEditorProps {
     children: React.ReactNode;
@@ -26,7 +26,7 @@ export function CreateUserEditor({ children, onRefresh }: CreateUserEditorProps)
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         try {
-            await AdminAPI.createUser({
+            await adminCreateUser({
                 username: formData.get("username")?.toString() || null,
                 nickname: formData.get("nickname")?.toString() || null,
                 email: formData.get("email")?.toString() || null,

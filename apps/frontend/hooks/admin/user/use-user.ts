@@ -1,19 +1,17 @@
-import { AdminAPI } from "@/lib/api/client";
-import { UserEntity } from "@/lib/api/endpoints/admin.client";
+import { adminGetUser } from "@/lib/api/actions/admin.action";
+import { handleAPIError } from "@/lib/api/common";
 import { toast } from "sonner";
 import useSWR from "swr";
 
 export function useUser(userId: string) {
-    const { data, error, isLoading, mutate } = useSWR<UserEntity>(
+    const { data, error, isLoading, mutate } = useSWR(
         ['/api/admin/user', userId],
-        () => AdminAPI.getUser(userId),
+        () => adminGetUser(userId),
         {
             revalidateOnReconnect: false,
             revalidateIfStale: false,
             dedupingInterval: 0,
-            onError: (e) => {
-                toast.error(`${e.message || e}`)
-            }
+            onError: handleAPIError(({ message }) => toast.error(message))
         }
     )
 

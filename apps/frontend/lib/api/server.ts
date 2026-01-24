@@ -56,5 +56,4 @@ export async function serverFetch<T = unknown>(
 
 
 export * as BlogAPI from './endpoints/blog.server';
-export * as ResourceAPI from './endpoints/resource.server';
 export * as UserAPI from './endpoints/user.server';

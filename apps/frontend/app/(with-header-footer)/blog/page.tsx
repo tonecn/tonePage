@@ -4,8 +4,8 @@ import {
     AlertTitle,
 } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { BlogAPI } from "@/lib/api/server";
-import { handleAPIError } from "@/lib/api/common";
+import { safeCall } from "@/lib/api/common";
+import { getAllBlogs } from "@/lib/api/actions";
 
 const formatNumber = (num: number): string => {
     if (num >= 1_000_000) {
@@ -22,26 +22,22 @@ const getBlogDetailUrl = (slug: string): string => {
 };
 
 export const metadata = {
-  title: '日志 - 特恩的日志',
-  description: '我随便发点，你也随便看看～',
+    title: '日志 - 特恩的日志',
+    description: '我随便发点，你也随便看看～',
 };
 
 export default async function Blog() {
-    let errorMsg = '';
-    const blogs = await BlogAPI.list().catch(e => {
-        handleAPIError(e, ({ message }) => { errorMsg = message });
-        return null;
-    });
+    const { data: blogs, error } = await safeCall(() => getAllBlogs());
 
     return (
         <section className="max-w-120 w-auto mx-auto my-10 flex flex-col gap-8">
             {
-                errorMsg && (
+                error && (
                     <Alert variant="destructive" className="w-full">
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>出错啦</AlertTitle>
                         <AlertDescription>
-                            {errorMsg}
+                            {error.message}
                         </AlertDescription>
                     </Alert>
                 )
@@ -54,7 +50,7 @@ export default async function Blog() {
                                 className="hover:underline focus:outline-none focus:ring-2 focus:ring-zinc-400 rounded"
                                 href={getBlogDetailUrl(blog.slug)}
                                 rel="noopener noreferrer"
-                            >   
+                            >
                                 {blog.title}
                             </a>
                         </h2>

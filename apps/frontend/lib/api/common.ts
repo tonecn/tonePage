@@ -1,5 +1,3 @@
-import { toast } from "sonner";
-
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
 export interface APIResponse<T = unknown> {
@@ -17,6 +15,7 @@ export class APIError extends Error {
         public data: unknown = null
     ) {
         super(message);
+        this.name = 'APIError';
     }
 }
 
@@ -52,22 +51,38 @@ export function normalizeAPIError(error: unknown): never {
     throw new APIError((error instanceof Error ? `${error.message}` : '') || '未知错误', 400);
 }
 
-export function handleAPIError<T>(error: unknown, handler: (e: APIError) => T): T {
-    if (error instanceof APIError) {
-        return handler(error);
-    }
-
-    try {
-        normalizeAPIError(error)
-    } catch (error) {
+export function handleAPIError<T>(handler: (e: APIError) => T): (error: unknown) => T {
+    return (error: unknown): T => {
         if (error instanceof APIError) {
             return handler(error);
         }
 
-        throw error;
+        try {
+            normalizeAPIError(error)
+        } catch (err) {
+            if (err instanceof APIError) {
+                return handler(err);
+            }
+
+            throw err;
+        }
     }
 }
 
-export function GeneralErrorHandler(e: APIError) {
-    toast.error(`${e.message}`)
+export async function safeCall<T>(
+    fn: () => Promise<T>
+): Promise<{ data: T | null; error: APIError | null }> {
+    try {
+        const data = await fn()
+        return { data, error: null }
+    } catch (err) {
+        try {
+            normalizeAPIError(err)
+        } catch (apiError) {
+            if (apiError instanceof APIError) {
+                return { data: null, error: apiError }
+            }
+            throw apiError
+        }
+    }
 }

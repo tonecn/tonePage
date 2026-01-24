@@ -7,15 +7,15 @@ import { toast } from "sonner";
 import LoginHeader from "./LoginHeader";
 import { Label } from "@/components/ui/label"
 import { HumanVerification } from "@/components/human-verification";
-import { AuthAPI, SmsAPI } from "@/lib/api/client";
 import { handleAPIError } from "@/lib/api/common";
+import { loginBySms, sendLoginSms } from "@/lib/api/actions";
 
 export default function SmsLoginMode() {
     const [phone, setPhone] = useState("");
     const handleSendCode = useCallback(async () => {
-        await SmsAPI.sendLoginSms(phone)
-            .then(() => toast.success('验证码已发送！'))
-            .catch(e => handleAPIError(e, ({ message }) => toast.error(`${message}`)))
+        await sendLoginSms(phone)
+            .then(() => toast.success('验证码已发送！'),
+                handleAPIError(({ message }) => toast.error(message)))
     }, [phone]);
 
     return (
@@ -38,7 +38,7 @@ export default function SmsLoginMode() {
                 </div>
                 <div className="flex gap-1 overflow-hidden items-center flex-row-reverse">
                     <HumanVerification onSuccess={handleSendCode} >
-                        <Button type="button" variant="secondary" disabled>
+                        <Button type="button" variant="secondary" >
                             获取验证码
                         </Button>
                     </HumanVerification>
@@ -63,7 +63,7 @@ export default function SmsLoginMode() {
                     </div>
                 </div>
             </div>
-            <Button type="submit" className="w-full" disabled>
+            <Button type="submit" className="w-full" >
                 控制台还在施工，暂不开放注册功能噢～
             </Button>
             <div className="hidden" aria-hidden>
@@ -78,5 +78,5 @@ export async function handleSubmit(formData: FormData) {
     const phone = formData.get('phone')?.toString() || '';
     const code = formData.get('code')?.toString() || '';
 
-    return AuthAPI.loginBySms(phone, code)
+    return loginBySms(phone, code)
 }

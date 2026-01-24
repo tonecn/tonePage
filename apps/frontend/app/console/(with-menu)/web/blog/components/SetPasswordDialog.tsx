@@ -13,17 +13,17 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { AdminAPI } from "@/lib/api/client";
-import { base62 } from "@/lib/utils";
+import { adminSetBlogPassword } from "@/lib/api/actions";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface SetPasswordDialogProps {
     id: string;
+    slug: string;
     children: React.ReactNode;
 }
 
-export function SetPasswordDialog({ id, children }: SetPasswordDialogProps) {
+export function SetPasswordDialog({ id, slug, children }: SetPasswordDialogProps) {
     const [open, setOpen] = useState(false);
     const [password, setPassword] = useState('');
 
@@ -32,7 +32,7 @@ export function SetPasswordDialog({ id, children }: SetPasswordDialogProps) {
             return toast.error('请输入密码');
         }
 
-        await AdminAPI.setBlogPassword(id, password).then(() => {
+        await adminSetBlogPassword(id, password).then(() => {
             toast.success('修改成功');
             setOpen(false);
         }).catch(e => {
@@ -50,7 +50,7 @@ export function SetPasswordDialog({ id, children }: SetPasswordDialogProps) {
         if (!password) {
             return toast.warning('请先填写新密码');
         }
-        const url = `${window.location.origin}/blog/${base62.encode(Buffer.from(id.replace(/-/g, ''), 'hex'))}?p=${password}`;
+        const url = `${window.location.origin}/blog/${slug}?p=${password}`;
         navigator.clipboard.writeText(url);
         toast.success('分享链接复制成功，请点击保存按钮以提交新密码');
     }
@@ -61,7 +61,7 @@ export function SetPasswordDialog({ id, children }: SetPasswordDialogProps) {
                 <DialogTrigger asChild>
                     {children}
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="sm:max-w-100">
                     <DialogHeader>
                         <DialogTitle>修改密码</DialogTitle>
                         <DialogDescription>
@@ -82,7 +82,7 @@ export function SetPasswordDialog({ id, children }: SetPasswordDialogProps) {
                     <DialogFooter>
                         <div className="w-full flex justify-between">
                             <div>
-                                <Button variant='secondary' onClick={handleCopyShareURL}>复制URl</Button>
+                                <Button variant='secondary' onClick={handleCopyShareURL}>复制URL</Button>
                             </div>
                             <div className="flex gap-5">
                                 <DialogClose asChild>

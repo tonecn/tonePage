@@ -6,6 +6,7 @@ import { useUserStore } from "@/store/useUserStore";
 import {
     Table,
     TableBody,
+    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
@@ -24,10 +25,12 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { AuthAPI } from "@/lib/api/client";
-import { GeneralErrorHandler, handleAPIError } from "@/lib/api/common";
+import { handleAPIError } from "@/lib/api/common";
 import { startRegistration } from '@simplewebauthn/browser';
 import { toast } from "sonner";
+import { getPasskeyRegisterOptions } from "@/lib/api/actions";
+import useSWR from "swr";
+import { getPasskeys, passkeyRegister } from "@/lib/api/actions/auth.action";
 
 export default function Page() {
     const userStore = useUserStore();
@@ -78,7 +81,7 @@ export default function Page() {
                                         <Input
                                             id={`console-profile-${name}`}
                                             name={name}
-                                            defaultValue={defaultValue}
+                                            defaultValue={defaultValue ?? ''}
                                             placeholder={localName}
                                             required={required}
                                             disabled
@@ -110,23 +113,37 @@ export default function Page() {
                     <FieldDescription>
                         通行证（PassKey），一种先进的无密码身份验证技术。
                     </FieldDescription>
-                    <PasskeyList />
-                    <div>
-                        <AddPasskeyDialog>
-                            <Button>添加通行证</Button>
-                        </AddPasskeyDialog>
-                    </div>
+                    <PasskeyContent></PasskeyContent>
                 </FieldSet>
             </FieldGroup>
         </div>
     )
 }
 
+function PasskeyContent() {
+    const { data, isLoading, error, mutate } = useSWR(
+        'get-passkeys',
+        () => getPasskeys(),
+    )
+
+    return (
+        <>
+            <PasskeyList data={data} isLoading={isLoading} error={error} />
+            <div>
+                <AddPasskeyDialog onSuccess={() => mutate()}>
+                    <Button>添加通行证</Button>
+                </AddPasskeyDialog>
+            </div>
+        </>
+    )
+}
+
 
 interface AddPasskeyDialogProps {
     children: ReactElement;
+    onSuccess?: () => unknown | Promise<unknown>;
 }
-function AddPasskeyDialog({ children }: AddPasskeyDialogProps) {
+function AddPasskeyDialog({ children, onSuccess }: AddPasskeyDialogProps) {
     const [open, setOpen] = useState(false);
 
     const handleSubmit = async (name: string) => {
@@ -136,22 +153,21 @@ function AddPasskeyDialog({ children }: AddPasskeyDialogProps) {
                 throw new Error('通行证名称不能为空')
             }
 
-            const options = await AuthAPI.getPasskeyRegisterOptions();
-
+            const options = await getPasskeyRegisterOptions();
             const credential = await startRegistration({ optionsJSON: options }).catch(() => null);
-
             if (credential === null) {
-                throw new Error('认证超时');
+                throw new Error('认证失败');
             }
 
-            const registerRes = await AuthAPI.passkeyRegister(name, credential);
+            const registerRes = await passkeyRegister(name, credential);
             if (registerRes.id) {
                 toast.success('添加成功');
                 setOpen(false);
+                await onSuccess?.();
             }
         } catch (error) {
             console.log(error)
-            handleAPIError(error, GeneralErrorHandler);
+            handleAPIError(({ message }) => toast.error(message));
         }
     }
 
@@ -190,10 +206,18 @@ function AddPasskeyDialog({ children }: AddPasskeyDialogProps) {
     )
 }
 
-function PasskeyList() {
+interface PasskeyListProps {
+    data: { id: string; name: string; createdAt: string }[] | undefined;
+    isLoading: boolean;
+    error: any
+}
+
+function PasskeyList({ data, isLoading, error }: PasskeyListProps) {
     return (
         <Table>
-            {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
+            {data && data.length === 0 && <TableCaption>暂无Passkey</TableCaption>}
+            {isLoading && <TableCaption>加载中...</TableCaption>}
+            {error && <TableCaption>{error.message}</TableCaption>}
             <TableHeader>
                 <TableRow>
                     <TableHead>名称</TableHead>
@@ -203,12 +227,18 @@ function PasskeyList() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                <TableRow>
-                    <TableCell className="font-medium">INV001</TableCell>
-                    <TableCell>Paid</TableCell>
-                    <TableCell>Credit Card</TableCell>
-                    <TableCell className="text-right">$250.00</TableCell>
-                </TableRow>
+                {
+                    data && data.map(p => (
+                        <TableRow key={p.id}>
+                            <TableCell className="font-medium">{p.id}</TableCell>
+                            <TableCell>{p.name}</TableCell>
+                            <TableCell>{new Date(p.createdAt).toLocaleString()}</TableCell>
+                            <TableCell className="text-right">
+                                <Button>删除</Button>
+                            </TableCell>
+                        </TableRow>
+                    ))
+                }
             </TableBody>
         </Table>
     )

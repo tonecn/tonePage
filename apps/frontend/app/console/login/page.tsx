@@ -57,10 +57,8 @@ export default function Login() {
                                     handler(formData).then((data) => {
                                         useUserStore.getState().setUser(data.user);
                                         // to main page
-                                        router.replace('/console');
-                                    }, (e) => {
-                                        handleAPIError(e, ({ message }) => toast.error(message))
-                                    })
+                                        // router.replace('/console');
+                                    }, handleAPIError(({ message }) => toast.error(message)))
                                 }}>
                                     <div className="flex flex-col gap-6">
 
@@ -99,7 +97,7 @@ export default function Login() {
                                         height={500}
                                         className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.6] dark:grayscale"
                                         priority
-                                        quality={100}
+                                        unoptimized
                                     />
                                 </div>
                             </CardContent>

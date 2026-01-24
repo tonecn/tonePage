@@ -10,6 +10,17 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -19,8 +30,8 @@ import { ApiError } from "next/dist/server/api-utils"
 import { BlogPermissionCheckBoxs } from "./BlogPermissionCheckBoxs"
 import { BlogPermission } from "@/lib/types/Blog.Permission.enum"
 import { SetPasswordDialog } from "./SetPasswordDialog"
-import { AdminAPI } from "@/lib/api/client"
 import { copyShareURL } from "./utils"
+import { adminDeleteBlog, adminGetBlog, adminUpdateBlog } from "@/lib/api/actions"
 
 interface BlogEditProps {
     id: string;
@@ -32,7 +43,7 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
     const [open, setOpen] = useState(false)
     const { data: blog, mutate } = useSWR(
         open ? `/api/admin/web/blog/${id}` : null,
-        () => AdminAPI.getBlog(id),
+        () => adminGetBlog(id),
         {
             revalidateOnFocus: false,
             revalidateOnReconnect: false,
@@ -44,7 +55,7 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
     const handleSubmit = async () => {
         if (!blog) return;
         try {
-            await AdminAPI.updateBlog(id, {
+            await adminUpdateBlog(id, {
                 title: blog.title,
                 description: blog.description,
                 slug: blog.slug,
@@ -61,7 +72,7 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
 
     const handleDelete = async () => {
         try {
-            await AdminAPI.removeBlog(id);
+            await adminDeleteBlog(id);
             toast.success("删除成功")
             setOpen(false);
             onRefresh();
@@ -75,7 +86,7 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
             <DialogTrigger asChild>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-100">
+            <DialogContent className="sm:max-w-120">
                 <DialogHeader>
                     <DialogTitle>编辑博客</DialogTitle>
                     <DialogDescription>
@@ -154,7 +165,7 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
                                         <Label htmlFor="permissions" className="text-right">
                                             文章保护密码
                                         </Label>
-                                        <SetPasswordDialog id={id}>
+                                        <SetPasswordDialog id={id} slug={blog.slug}>
                                             <Button variant='outline'>修改</Button>
                                         </SetPasswordDialog>
                                     </div>
@@ -163,7 +174,23 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
                             <DialogFooter>
                                 <div className="w-full flex justify-between">
                                     <div>
-                                        <Button variant='destructive' onClick={handleDelete}>删除</Button>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant='destructive'>删除</Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>是否要删除该博客?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        该操作不可逆，删除后将无法恢复该博客
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>取消</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={handleDelete}>删除</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
                                         <Button variant='outline' className="ml-2" onClick={() => copyShareURL({
                                             slug: blog.slug,
                                             permissions: blog.permissions,

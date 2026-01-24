@@ -16,8 +16,8 @@ import { BlogPermission } from "@/lib/types/Blog.Permission.enum";
 import { useState } from "react";
 import { toast } from "sonner";
 import { BlogPermissionCheckBoxs } from "./BlogPermissionCheckBoxs";
-import { AdminAPI } from "@/lib/api/client";
 import { copyShareURL } from "./utils";
+import { adminCreateBlog } from "@/lib/api/actions";
 
 interface AddBlogProps {
     children: React.ReactNode;
@@ -37,7 +37,7 @@ export default function AddBlog({ children, onRefresh }: AddBlogProps) {
 
     const handleSubmit = async () => {
         try {
-            const res = await AdminAPI.createBlog({
+            const res = await adminCreateBlog({
                 ...blog,
             });
             if (res) {

@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useUser } from "@/hooks/admin/user/use-user";
-import { User } from "@/lib/types/user";
+import { AdminUser } from "@/lib/types/user";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import {
@@ -26,8 +26,7 @@ import {
 import { AlertCircle } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { AdminAPI } from "@/lib/api/client";
-import { UserEntity } from "@/lib/api/endpoints/admin.client";
+import { adminRemoveUser, adminSetUserPassword, adminUpdateUser } from "@/lib/api/actions/admin.action";
 
 export function UserInfoEditor({
     onClose,
@@ -36,7 +35,7 @@ export function UserInfoEditor({
     userId,
 }: {
     onClose: () => void,
-    onUserUpdate: (user: UserEntity) => void,
+    onUserUpdate: (user: AdminUser) => void,
     onUserSoftDelete: (userId: string) => void,
     userId: string
 }) {
@@ -51,7 +50,7 @@ export function UserInfoEditor({
     }) => {
         try {
             // setSaveLoading(true);
-            const res = await AdminAPI.updateUser(userId, user);
+            const res = await adminUpdateUser(userId, user);
             if (res) {
                 toast.success("保存成功");
                 onUserUpdate(res);
@@ -70,7 +69,7 @@ export function UserInfoEditor({
     const handleRemove = async (userId: string) => {
         try {
             // setRemoveLoading(true);
-            await AdminAPI.removeUser(userId, true);
+            await adminRemoveUser(userId, true);
             toast.success("注销成功");
             onUserSoftDelete(userId);
             onClose();
@@ -86,7 +85,7 @@ export function UserInfoEditor({
     const handleSetPassword = async (userId: string, password: string) => {
         try {
             // setSetPasswordLoading(true);
-            await AdminAPI.setUserPassword(userId, password);
+            await adminSetUserPassword(userId, password);
             toast.success("密码修改成功");
             setPasswordDialogOpen(false);
         } catch (error) {
@@ -149,7 +148,7 @@ export function UserInfoEditor({
 
 function ProfileForm({ className, user, onSetPassword, onRemove, passwordDialogOpen, setPasswordDialogOpen, ...props }:
     React.ComponentProps<"form"> & {
-        user: User;
+        user: AdminUser;
         onSetPassword: (userId: string, password: string) => Promise<void>;
         onRemove: (userId: string) => Promise<void>;
         passwordDialogOpen: boolean;
@@ -173,18 +172,18 @@ function ProfileForm({ className, user, onSetPassword, onRemove, passwordDialogO
             </div>
             <div className="grid gap-2">
                 <Label htmlFor="email">电子邮箱</Label>
-                <Input id="email" name="email" defaultValue={user.email} />
+                <Input id="email" name="email" defaultValue={user.email ?? ''} />
             </div>
             <div className="grid gap-2">
                 <Label htmlFor="phone">手机号</Label>
-                <Input id="phone" name="phone" defaultValue={user.phone} />
+                <Input id="phone" name="phone" defaultValue={user.phone ?? ''} />
             </div>
             <div className="w-full flex gap-5">
                 <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
                     <DialogTrigger asChild>
                         <Button type="button" variant="secondary" className="flex-1" onClick={() => setNewPassword('')}>修改密码</Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]" >
+                    <DialogContent className="sm:max-w-106" >
                         <DialogHeader>
                             <DialogTitle>修改密码</DialogTitle>
                             <DialogDescription>

@@ -10,15 +10,15 @@ import { CreateUserEditor } from "./components/create-user-editor";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { ApiError } from "next/dist/server/api-utils";
-import { AdminAPI } from "@/lib/api/client";
-import { UserEntity } from "@/lib/api/endpoints/admin.client";
+import { AdminUser } from "@/lib/types/user";
+import { adminRemoveUser } from "@/lib/api/actions/admin.action";
 
 
 export default function Page() {
     const { users, isLoading, error, mutate, refresh } = useUserList();
     const [editorUserId, setEditorUserId] = useState("");
 
-    const handleUserUpdateLocal = async (newUser: UserEntity) => {
+    const handleUserUpdateLocal = async (newUser: AdminUser) => {
         await mutate(
             (data) => {
                 if (!data) return data;
@@ -56,7 +56,7 @@ export default function Page() {
     const [deletedUserId, setDeletedUserId] = useState('');
     const handleUserDelete = async (userId: string) => {
         try {
-            await AdminAPI.removeUser(userId, false);
+            await adminRemoveUser(userId, false);
             toast.success('删除成功');
             handleUserDeleteLocal(userId, false);
             setDeletedUserId('');
@@ -76,7 +76,7 @@ export default function Page() {
                 {error && <TableCaption>{error.message}</TableCaption>}
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[100px]">userId</TableHead>
+                        <TableHead className="w-25">用户Id</TableHead>
                         <TableHead>账户</TableHead>
                         <TableHead>昵称</TableHead>
                         <TableHead>邮箱</TableHead>
@@ -92,7 +92,7 @@ export default function Page() {
                                     <TooltipProvider>
                                         <Tooltip>
                                             <TooltipTrigger asChild>
-                                                <div className="max-w-[100px] overflow-hidden text-ellipsis">{user.userId}</div>
+                                                <div className="max-w-25 overflow-hidden text-ellipsis">{user.userId}</div>
                                             </TooltipTrigger>
                                             <TooltipContent>
                                                 <p>{user.userId}</p>

@@ -1,7 +1,7 @@
 import { BlogContent } from "./BlogContent";
-import { BlogAPI } from "@/lib/api/server";
-import { handleAPIError } from "@/lib/api/common";
+import { APIError, safeCall } from "@/lib/api/common";
 import { BlogComments } from "./components/BlogComments";
+import { getBlogBySlug } from "@/lib/api/actions";
 
 interface PageRouteProps {
     params: Promise<{ id: string }>
@@ -32,53 +32,55 @@ async function parseBlogParams({ params: paramsPromise, searchParams: searchPara
     }
 }
 
-async function getBlog(paramsResult: ReturnType<typeof parseBlogParams>) {
-    const { errorMsg, id, p } = await paramsResult;
-    if (errorMsg) {
-        return {
-            errorMsg,
-        }
-    } else {
-        try {
-            const data = await BlogAPI.getBlogBySlug(`${id}`, p);
-            return {
-                data,
-            }
-        } catch (error) {
-            return {
-                errorMsg: handleAPIError(error, ({ message }) => message)
-            }
-        }
-    }
-}
+// async function getBlog(paramsResult: ReturnType<typeof parseBlogParams>) {
+//     const { errorMsg, id, p } = await paramsResult;
+//     if (errorMsg) {
+//         return {
+//             errorMsg,
+//         }
+//     } else {
+//         try {
+//             const data = await getBlogBySlug(`${id}`, p);
+//             return {
+//                 data,
+//             }
+//         } catch (error) {
+//             return {
+//                 errorMsg: handleAPIError(error, ({ message }) => message)
+//             }
+//         }
+//     }
+// }
 
-export async function generateMetadata({ params, searchParams }: PageRouteProps) {
-    const { errorMsg, data } = await getBlog(parseBlogParams({ params, searchParams }));
-    if (data) {
-        return {
-            title: `${data.title} - 特恩的日志`,
-            description: `${data.description}`
-        }
-    } else {
-        return {
-            title: `${errorMsg || '错误'} - 特恩的日志`,
-            description: `出错啦`
-        }
-    }
-}
+// export async function generateMetadata({ params, searchParams }: PageRouteProps) {
+//     const { errorMsg, data } = await getBlog(parseBlogParams({ params, searchParams }));
+//     if (data) {
+//         return {
+//             title: `${data.title} - 特恩的日志`,
+//             description: `${data.description}`
+//         }
+//     } else {
+//         return {
+//             title: `${errorMsg || '错误'} - 特恩的日志`,
+//             description: `出错啦`
+//         }
+//     }
+// }
 
 export default async function Page({ params, searchParams }: PageRouteProps) {
     const res = await parseBlogParams({ params, searchParams });
     const { id, p } = res;
     let { errorMsg } = res;
 
-    const data = errorMsg ? null
-        : await BlogAPI.getBlogBySlug(`${id}`, p).catch(e => handleAPIError(e, ({ message }) => { errorMsg = message; return null }));
+    const { data, error } = errorMsg ? {
+        data: null,
+        error: new APIError(errorMsg)
+    } : await safeCall(() => getBlogBySlug(`${id}`, p));
 
     return (
         <div className="w-full overflow-x-hidden">
             <div className="max-w-200 mx-auto px-5 overflow-x-hidden mb-10">
-                {errorMsg && <div className="my-20 text-center text-zinc-600 dark:text-zinc-400">{errorMsg}</div>}
+                {error && <div className="my-20 text-center text-zinc-600 dark:text-zinc-400">{error.message}</div>}
                 {data && (
                     <article className="w-full">
                         <header className="flex flex-col items-center">

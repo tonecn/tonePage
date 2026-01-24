@@ -153,7 +153,7 @@ export default function Page() {
                                     </DropdownMenu>
                                 </TableCell>
                                 <TableCell>{formatSizeNumber(d.size)}</TableCell>
-                                <TableCell className='whitespace-normal break-words'>{d.lastModified.toLocaleString()}</TableCell>
+                                <TableCell className='whitespace-normal wrap-break-words'>{d.lastModified.toLocaleString()}</TableCell>
                             </TableRow>
                         ))
                     }

@@ -4,7 +4,8 @@ import {
     AlertDescription,
     AlertTitle,
 } from "@/components/ui/alert"
-import { ResourceAPI } from "@/lib/api/server";
+import { getResources } from "@/lib/api/actions";
+import { safeCall } from "@/lib/api/common";
 import { AlertCircle } from "lucide-react";
 
 export const metadata = {
@@ -13,8 +14,7 @@ export const metadata = {
 };
 
 export default async function Resources() {
-    let errorMsg = '';
-    const data = await ResourceAPI.list().catch(e => { errorMsg = `${e}`; return null; });
+    const { data, error } = await safeCall(() => getResources());
 
     return (
         <div className="flex-1 flex flex-col items-center">
@@ -23,13 +23,13 @@ export default async function Resources() {
                 <a className="text-zinc-600 dark:text-zinc-400">《使用条款和隐私政策》</a>
                 ，继续使用或浏览表示您接受协议条款。</p>
             {
-                errorMsg && (
+                error && (
                     <div className="mt-10 mx-5">
                         <Alert variant="destructive">
                             <AlertCircle className="h-4 w-4" />
                             <AlertTitle>出错了</AlertTitle>
                             <AlertDescription>
-                                {errorMsg}
+                                {error.message}
                             </AlertDescription>
                         </Alert>
                     </div>

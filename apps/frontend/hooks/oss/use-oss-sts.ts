@@ -1,11 +1,11 @@
-import { OSSAPI } from "@/lib/api/client";
+import { getStsToken } from "@/lib/api/actions";
 import { toast } from "sonner";
 import useSWR from "swr";
 
 export function useOssSts() {
     const { data: stsTokenData, isLoading, error, mutate } = useSWR(
         '/api/oss/sts',
-        () => OSSAPI.getStsToken(),
+        () => getStsToken(),
         {
             shouldRetryOnError: false,
             // refreshInterval: 59 * 60 * 1000,
