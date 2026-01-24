@@ -24,7 +24,7 @@ export default function SetPassword({ onOpenChange, ...props }: React.ComponentP
             toast.success('新密码设置成功');
             onOpenChange?.(false);
         } catch (error) {
-            handleAPIError(error, ({ message }) => toast.error(message || '新密码设置失败'))
+            handleAPIError(({ message }) => toast.error(message || '新密码设置失败'))(error)
         }
     }
 
