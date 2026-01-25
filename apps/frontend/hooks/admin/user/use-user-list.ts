@@ -8,12 +8,14 @@ import useSWR from 'swr'
 export function useUserList(params?: {
     page?: number
     pageSize?: number
+    query?: string
 }) {
     const { data, error, isLoading, mutate } = useSWR(
         ['/api/admin/user', params],
         () => api.admin.user.getAll(params),
         {
-            onError: handleAPIError(({ message }) => toast.error(message))
+            onError: handleAPIError(({ message }) => toast.error(message)),
+            keepPreviousData: true,
         }
     )
 
