@@ -51,22 +51,33 @@ export function normalizeAPIError(error: unknown): never {
     throw new APIError((error instanceof Error ? `${error.message}` : '') || '未知错误', 400);
 }
 
-export function handleAPIError<T>(handler: (e: APIError) => T): (error: unknown) => T {
-    return (error: unknown): T => {
-        if (error instanceof APIError) {
-            return handler(error);
-        }
-
-        try {
-            normalizeAPIError(error)
-        } catch (err) {
-            if (err instanceof APIError) {
-                return handler(err);
-            }
-
-            throw err;
-        }
+function processError<T>(error: unknown, handler: (e: APIError) => T): T {
+    if (error instanceof APIError) {
+        return handler(error);
     }
+
+    try {
+        normalizeAPIError(error);
+    } catch (err) {
+        if (err instanceof APIError) {
+            return handler(err);
+        }
+        throw err;
+    }
+}
+
+export function handleAPIError<T>(error: unknown, handler: (e: APIError) => T): T;
+export function handleAPIError<T>(handler: (e: APIError) => T): (error: unknown) => T;
+export function handleAPIError<T>(
+    errorOrHandler: unknown | ((e: APIError) => T),
+    handler?: (e: APIError) => T
+): T | ((error: unknown) => T) {
+    if (handler !== undefined) {
+        return processError(errorOrHandler, handler);
+    }
+
+    const handlerFn = errorOrHandler as (e: APIError) => T;
+    return (error: unknown): T => processError(error, handlerFn);
 }
 
 export async function safeCall<T>(
