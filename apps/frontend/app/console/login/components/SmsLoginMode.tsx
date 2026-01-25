@@ -38,7 +38,7 @@ export default function SmsLoginMode() {
                 </div>
                 <div className="flex gap-1 overflow-hidden items-center flex-row-reverse">
                     <HumanVerification onSuccess={handleSendCode} >
-                        <Button type="button" variant="secondary" >
+                        <Button type="button" variant="secondary" disabled>
                             获取验证码
                         </Button>
                     </HumanVerification>
@@ -63,7 +63,7 @@ export default function SmsLoginMode() {
                     </div>
                 </div>
             </div>
-            <Button type="submit" className="w-full" >
+            <Button type="submit" className="w-full" disabled>
                 控制台还在施工，暂不开放注册功能噢～
             </Button>
             <div className="hidden" aria-hidden>
