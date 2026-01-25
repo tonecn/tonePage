@@ -29,7 +29,7 @@ export class AdminUserController {
 
   @Get()
   async list(@Query() listDto: ListDto) {
-    return this.userService.list(listDto.page, listDto.pageSize);
+    return this.userService.list(listDto.page, listDto.pageSize, listDto.query);
   }
 
   @Get(':userId')
