@@ -32,40 +32,39 @@ async function parseBlogParams({ params: paramsPromise, searchParams: searchPara
     }
 }
 
-// async function getBlog(paramsResult: ReturnType<typeof parseBlogParams>) {
-//     const { errorMsg, id, p } = await paramsResult;
-//     if (errorMsg) {
-//         return {
-//             errorMsg,
-//         }
-//     } else {
-//         try {
-//             const data = await getBlogBySlug(`${id}`, p);
-//             return {
-//                 data,
-//             }
-//         } catch (error) {
-//             return {
-//                 errorMsg: handleAPIError(error, ({ message }) => message)
-//             }
-//         }
-//     }
-// }
+export async function generateMetadata({ params, searchParams }: PageRouteProps) {
+    const res = await parseBlogParams({ params, searchParams });
+    const { id, p, errorMsg } = res;
 
-// export async function generateMetadata({ params, searchParams }: PageRouteProps) {
-//     const { errorMsg, data } = await getBlog(parseBlogParams({ params, searchParams }));
-//     if (data) {
-//         return {
-//             title: `${data.title} - 特恩的日志`,
-//             description: `${data.description}`
-//         }
-//     } else {
-//         return {
-//             title: `${errorMsg || '错误'} - 特恩的日志`,
-//             description: `出错啦`
-//         }
-//     }
-// }
+    if (errorMsg) {
+        return {
+            title: `${errorMsg} - 特恩的日志`,
+            description: '出错啦'
+        }
+    }
+
+    const { data, error } = await safeCall(() => getBlogBySlug(`${id}`, p));
+    
+    if (data) {
+        return {
+            title: `${data.title} - 特恩的日志`,
+            description: data.description,
+            openGraph: {
+                title: data.title,
+                description: data.description,
+                type: 'article',
+                publishedTime: data.createdAt,
+                modifiedTime: data.updatedAt,
+                authors: ['tonesc'],
+            },
+        }
+    } else {
+        return {
+            title: `${error?.message || '错误'} - 特恩的日志`,
+            description: '出错啦'
+        }
+    }
+}
 
 export default async function Page({ params, searchParams }: PageRouteProps) {
     const res = await parseBlogParams({ params, searchParams });
