@@ -114,7 +114,6 @@ export class PasskeyService implements OnModuleDestroy {
                 residentKey: 'required', // 必须是可发现凭证（Passkey）
                 userVerification: 'preferred',
             },
-            supportedAlgorithmIDs: [-7], // ES256
             timeout: 60000,
         };
 
