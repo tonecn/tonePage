@@ -35,6 +35,7 @@ import type {
   PublicKeyCredentialRequestOptionsJSON,
   RegistrationResponseJSON,
 } from '@simplewebauthn/browser';
+import { AdminValidators } from './validators';
 
 // ==================== 类型定义 ====================
 
@@ -56,12 +57,18 @@ export interface AdminUsersResponse {
 }
 
 export interface UpdateUserData {
-  username?: string;
-  nickname?: string;
-  email?: string | null;
-  phone?: string | null;
-  avatar?: string;
-  roles?: string[];
+  username: string;
+  nickname: string;
+  email: string;
+  phone: string;
+}
+
+export interface CreateUserData {
+  username: string;
+  nickname: string;
+  email: string;
+  phone: string;
+  password: string;
 }
 
 export interface BlogDetail {
@@ -365,22 +372,16 @@ export const adminApi = {
     get: (id: string) =>
       request<AdminUser>(`/api/admin/user/${id}`),
 
-    create: (data: {
-      username: string | null;
-      nickname: string | null;
-      email: string | null;
-      phone: string | null;
-      password: string | null;
-    }) =>
-      request<{ id: string; email: string }>('/api/admin/user', {
+    create: (data: CreateUserData) =>
+      request<null>('/api/admin/user', {
         method: 'POST',
-        body: data,
+        body: AdminValidators.createUser(data),
       }),
 
     update: (id: string, data: UpdateUserData) =>
       request<AdminUser>(`/api/admin/user/${id}`, {
         method: 'PUT',
-        body: data,
+        body: AdminValidators.updateUser(data),
       }),
 
     delete: (id: string, soft: boolean = true) => {
@@ -391,7 +392,7 @@ export const adminApi = {
     setPassword: (id: string, password: string) =>
       request<void>(`/api/admin/user/${id}/password`, {
         method: 'PUT',
-        body: { password },
+        body: AdminValidators.setUserPassword(password),
       }),
   },
 };

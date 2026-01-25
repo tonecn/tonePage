@@ -73,7 +73,7 @@ export class AdminUserController {
     return this.userService.delete(userId, dto.soft);
   }
 
-  @Post(':userId/password')
+  @Put(':userId/password')
   async setPassword(
     @Param('userId', new ParseUUIDPipe({ version: '4' })) userId: string,
     @Body() updatePasswordDto: UpdatePasswordDto,

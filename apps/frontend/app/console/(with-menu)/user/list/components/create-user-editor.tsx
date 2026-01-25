@@ -1,19 +1,16 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
-    Drawer,
-    DrawerClose,
-    DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-} from "@/components/ui/drawer"
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+} from "@/components/ui/sheet";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ApiError } from "next/dist/server/api-utils";
 import { api } from "@/lib/api";
+import { UserForm } from "./user-form";
+import { CreateUserValues } from "./user-schema";
 
 interface CreateUserEditorProps {
     children: React.ReactNode;
@@ -22,16 +19,14 @@ interface CreateUserEditorProps {
 
 export function CreateUserEditor({ children, onRefresh }: CreateUserEditorProps) {
     const [open, setOpen] = useState(false);
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
+    const handleSubmit = async (values: CreateUserValues) => {
         try {
             await api.admin.user.create({
-                username: formData.get("username")?.toString() || null,
-                nickname: formData.get("nickname")?.toString() || null,
-                email: formData.get("email")?.toString() || null,
-                phone: formData.get("phone")?.toString() || null,
-                password: formData.get("password")?.toString() || null,
+                username: values.username,
+                nickname: values.nickname,
+                email: values.email,
+                phone: values.phone,
+                password: values.password,
             });
             setOpen(false);
             toast.success('创建成功')
@@ -46,44 +41,20 @@ export function CreateUserEditor({ children, onRefresh }: CreateUserEditorProps)
             <div onClick={() => setOpen(true)} className="cursor-pointer">
                 {children}
             </div>
-            <Drawer open={open} onClose={() => setOpen(false)}>
-                <DrawerContent>
-                    <DrawerHeader className="text-left">
-                        <DrawerTitle>新增用户</DrawerTitle>
-                        <DrawerDescription>确保你在保存之前检查所有更改</DrawerDescription>
-                    </DrawerHeader>
+            <Sheet open={open} onOpenChange={setOpen}>
+                <SheetContent className="sm:max-w-md flex flex-col h-full">
+                    <SheetHeader>
+                        <SheetTitle>新增用户</SheetTitle>
+                        <SheetDescription>
+                            创建一个新的用户账户。
+                        </SheetDescription>
+                    </SheetHeader>
 
-                    <form className="grid items-start gap-4 px-4" onSubmit={handleSubmit}>
-                        <div className="grid gap-2">
-                            <Label htmlFor="username">账户</Label>
-                            <Input id="username" name="username" />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="nickname">昵称</Label>
-                            <Input id="nickname" name="nickname" />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">电子邮箱</Label>
-                            <Input id="email" name="email" />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="phone">手机号</Label>
-                            <Input id="phone" name="phone" />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">密码</Label>
-                            <Input id="password" name="password" />
-                        </div>
-                        <Button type="submit">创建</Button>
-                    </form>
-
-                    <DrawerFooter className="pt-2">
-                        <DrawerClose asChild>
-                            <Button variant="outline">关闭</Button>
-                        </DrawerClose>
-                    </DrawerFooter>
-                </DrawerContent>
-            </Drawer>
+                    <div className="flex-1 overflow-y-auto px-5">
+                        <UserForm onSubmit={handleSubmit} />
+                    </div>
+                </SheetContent>
+            </Sheet>
         </>
     )
 }

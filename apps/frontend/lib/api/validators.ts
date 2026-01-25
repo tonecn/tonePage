@@ -535,47 +535,52 @@ export const AdminValidators = {
      * 创建用户验证
      */
     createUser: (data: {
-        username: string | null
-        nickname: string | null
-        email: string | null
-        phone: string | null
-        password: string | null
+        username: string
+        nickname: string
+        email: string
+        phone: string
+        password: string
     }) => {
         const schema = z.object({
             username: z.string()
                 .transform(v => v.trim())
+                .transform(v => v.length === 0 ? null : v)
                 .refine(
-                    v => v.length >= VALIDATION_RULES.username.min && v.length <= VALIDATION_RULES.username.max,
+                    v => v === null || (v.length >= VALIDATION_RULES.username.min && v.length <= VALIDATION_RULES.username.max),
                     VALIDATION_RULES.username.message
                 )
                 .refine(
-                    v => VALIDATION_RULES.username.pattern.test(v),
+                    v => v === null || VALIDATION_RULES.username.pattern.test(v),
                     VALIDATION_RULES.username.message
                 )
                 .nullable(),
             nickname: z.string()
                 .transform(v => v.trim())
+                .transform(v => v.length === 0 ? null : v)
                 .refine(
-                    v => v.length >= VALIDATION_RULES.nickname.min && v.length <= VALIDATION_RULES.nickname.max,
+                    v => v === null || (v.length >= VALIDATION_RULES.nickname.min && v.length <= VALIDATION_RULES.nickname.max),
                     `昵称长度为${VALIDATION_RULES.nickname.min}-${VALIDATION_RULES.nickname.max}位`
                 )
                 .nullable(),
             email: z.string()
                 .transform(v => v.trim())
-                .refine((v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), '请输入有效的邮箱地址')
+                .transform(v => v.length === 0 ? null : v)
+                .refine((v) => v === null || VALIDATION_RULES.email.pattern.test(v), '请输入有效的邮箱地址')
                 .refine(
-                    (v: string) => v.length >= VALIDATION_RULES.email.min && v.length <= VALIDATION_RULES.email.max,
+                    (v) => v === null || (v.length >= VALIDATION_RULES.email.min && v.length <= VALIDATION_RULES.email.max),
                     `邮箱长度为${VALIDATION_RULES.email.min}-${VALIDATION_RULES.email.max}位`
                 )
                 .nullable(),
             phone: z.string()
                 .transform(v => v.trim())
-                .refine(v => VALIDATION_RULES.phone.pattern.test(v), VALIDATION_RULES.phone.message)
+                .transform(v => v.length === 0 ? null : v)
+                .refine(v => v === null || VALIDATION_RULES.phone.pattern.test(v), VALIDATION_RULES.phone.message)
                 .nullable(),
             password: z.string()
                 .transform(v => v.trim())
+                .transform(v => v.length === 0 ? null : v)
                 .refine(
-                    v => VALIDATION_RULES.password.pattern.test(v),
+                    v => v === null || VALIDATION_RULES.password.pattern.test(v),
                     VALIDATION_RULES.password.message
                 )
                 .nullable(),
@@ -595,57 +600,46 @@ export const AdminValidators = {
      * 更新用户验证
      */
     updateUser: (data: {
-        username?: string
-        nickname?: string
-        email?: string | null
-        phone?: string | null
-        avatar?: string
-        roles?: string[]
+        username: string
+        nickname: string
+        email: string
+        phone: string
     }) => {
         const schema = z.object({
             username: z.string()
                 .transform(v => v.trim())
-                .refine(v => v.length > 0, '用户名不能为空')
+                .transform(v => v.length === 0 ? null : v)
                 .refine(
-                    v => v.length >= VALIDATION_RULES.username.min && v.length <= VALIDATION_RULES.username.max,
+                    v => v === null || (v.length >= VALIDATION_RULES.username.min && v.length <= VALIDATION_RULES.username.max),
                     VALIDATION_RULES.username.message
                 )
                 .refine(
-                    v => VALIDATION_RULES.username.pattern.test(v),
+                    v => v === null || VALIDATION_RULES.username.pattern.test(v),
                     VALIDATION_RULES.username.message
                 )
-                .optional(),
+                .nullable(),
             nickname: z.string()
                 .transform(v => v.trim())
-                .refine(v => v.length > 0, '昵称不能为空')
+                .transform(v => v.length === 0 ? null : v)
                 .refine(
-                    v => v.length >= VALIDATION_RULES.nickname.min && v.length <= VALIDATION_RULES.nickname.max,
+                    v => v === null || (v.length >= VALIDATION_RULES.nickname.min && v.length <= VALIDATION_RULES.nickname.max),
                     `昵称长度为${VALIDATION_RULES.nickname.min}-${VALIDATION_RULES.nickname.max}位`
                 )
-                .optional(),
+                .nullable(),
             email: z.string()
                 .transform(v => v.trim())
                 .transform(v => v.length === 0 ? null : v)
+                .refine((v) => v === null || VALIDATION_RULES.email.pattern.test(v), '请输入有效的邮箱地址')
                 .refine(
-                    v => v === null || (v.includes('@') && v.length >= VALIDATION_RULES.email.min && v.length <= VALIDATION_RULES.email.max),
+                    (v) => v === null || (v.length >= VALIDATION_RULES.email.min && v.length <= VALIDATION_RULES.email.max),
                     `邮箱长度为${VALIDATION_RULES.email.min}-${VALIDATION_RULES.email.max}位`
                 )
-                .nullable()
-                .optional(),
+                .nullable(),
             phone: z.string()
                 .transform(v => v.trim())
                 .transform(v => v.length === 0 ? null : v)
-                .refine(
-                    v => v === null || VALIDATION_RULES.phone.pattern.test(v),
-                    VALIDATION_RULES.phone.message
-                )
-                .nullable()
-                .optional(),
-            avatar: z.string()
-                .transform(v => v.trim())
-                .refine((v: string) => /^https?:\/\/.+/.test(v), '头像必须是有效的URL地址')
-                .optional(),
-            roles: z.array(z.string()).optional(),
+                .refine(v => v === null || VALIDATION_RULES.phone.pattern.test(v), VALIDATION_RULES.phone.message)
+                .nullable(),
         })
 
         try {
