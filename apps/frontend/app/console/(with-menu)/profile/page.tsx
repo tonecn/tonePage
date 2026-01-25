@@ -166,8 +166,7 @@ function AddPasskeyDialog({ children, onSuccess }: AddPasskeyDialogProps) {
                 await onSuccess?.();
             }
         } catch (error) {
-            console.log(error)
-            handleAPIError(({ message }) => toast.error(message));
+            handleAPIError(({ message }) => toast.error(message))(error);
         }
     }
 
@@ -222,7 +221,6 @@ function PasskeyList({ data, isLoading, error, onDeleted }: PasskeyListProps) {
             <TableHeader>
                 <TableRow>
                     <TableHead>名称</TableHead>
-                    <TableHead>状态</TableHead>
                     <TableHead>创建时间</TableHead>
                     <TableHead className="text-right">操作</TableHead>
                 </TableRow>
@@ -231,7 +229,6 @@ function PasskeyList({ data, isLoading, error, onDeleted }: PasskeyListProps) {
                 {
                     data && data.map(p => (
                         <TableRow key={p.id}>
-                            <TableCell className="font-medium">{p.id}</TableCell>
                             <TableCell>{p.name}</TableCell>
                             <TableCell>{new Date(p.createdAt).toLocaleString()}</TableCell>
                             <TableCell className="text-right">
