@@ -64,9 +64,12 @@ export class BlogController {
     this.blogService.incrementViewCount(blog.id).catch(() => null);
     return {
       id: blog.id,
+      slug: blog.slug,
       title: blog.title,
       description: blog.description,
+      viewCount: blog.viewCount,
       createdAt: blog.createdAt,
+      updatedAt: blog.updatedAt,
       content: blogContent,
     };
   }

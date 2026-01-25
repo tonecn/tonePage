@@ -22,9 +22,12 @@ export async function getBlogBySlug(
   password?: string
 ): Promise<{
   id: string;
+  slug: string;
   title: string;
   description: string;
+  viewCount: number;
   createdAt: string;
+  updatedAt: string;
   content: string;
 }> {
   const url = `/api/blog/${slug}/slug${password ? `?p=${encodeURIComponent(password)}` : ''}`;
