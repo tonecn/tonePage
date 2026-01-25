@@ -353,10 +353,11 @@ export const adminApi = {
 
   // ===== 用户管理 =====
   user: {
-    getAll: (params?: { page?: number; pageSize?: number }) => {
+    getAll: (params?: { page?: number; pageSize?: number; query?: string }) => {
       const query = new URLSearchParams();
       if (params?.page) query.set('page', String(params.page));
       if (params?.pageSize) query.set('pageSize', String(params.pageSize));
+      if (params?.query) query.set('query', params.query);
       const queryString = query.toString();
       return request<AdminUsersResponse>(`/api/admin/user${queryString ? `?${queryString}` : ''}`);
     },
@@ -382,9 +383,9 @@ export const adminApi = {
         body: data,
       }),
 
-    delete: (id: string, soft: boolean = false) => {
-      const query = soft ? '?soft=true' : '';
-      return request<void>(`/api/admin/user/${id}${query}`, { method: 'DELETE' });
+    delete: (id: string, soft: boolean = true) => {
+      const query = `soft=${soft}`;
+      return request<void>(`/api/admin/user/${id}?${query}`, { method: 'DELETE' });
     },
 
     setPassword: (id: string, password: string) =>
