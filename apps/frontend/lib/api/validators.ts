@@ -41,6 +41,7 @@ const VALIDATION_RULES = {
     nickname: {
         min: 1,
         max: 30,
+        message: '昵称长度为1-30位',
     },
     // 密码：6-32位，允许字母、数字、特殊字符
     password: {
@@ -53,6 +54,8 @@ const VALIDATION_RULES = {
     email: {
         min: 6,
         max: 254,
+        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        message: '请输入有效的邮箱地址',
     },
     // 手机号：中国大陆手机号（11位，1开头，第二位为3-9）
     phone: {
@@ -67,12 +70,13 @@ const VALIDATION_RULES = {
     // UUID v4 格式
     uuid: {
         pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
-        message: 'UUID格式错误',
+        message: '不合法的ID',
     },
     // 登录标识符：支持用户名(4-32)、邮箱(6-254)、手机号(11)，取最小值4和最大值254
     identifier: {
         min: 4,
         max: 254,
+        message: '账户长度应为4~254位',
     },
 } as const
 
