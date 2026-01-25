@@ -12,7 +12,76 @@ import { z } from 'zod'
 import { APIError } from './common'
 
 /**
- * 辅助函数：将 Zod 验证错误转换为 APIError
+ * ==================== 枚举定义 ====================
+ */
+
+/**
+ * 博客权限枚举（从后端复制）
+ */
+export enum BlogPermission {
+    Public = 'Public',
+    ByPassword = 'ByPassword',
+    List = 'List',
+    AllowComments = 'AllowComments',
+}
+
+/**
+ * ==================== 验证规则常量 ====================
+ */
+
+const VALIDATION_RULES = {
+    // 用户名：4-32位，仅允许字母、数字、下划线
+    username: {
+        min: 4,
+        max: 32,
+        pattern: /^[a-zA-Z0-9_]+$/,
+        message: '用户名长度为4-32位，仅支持字母、数字、下划线',
+    },
+    // 昵称：1-30位
+    nickname: {
+        min: 1,
+        max: 30,
+    },
+    // 密码：6-32位，允许字母、数字、特殊字符
+    password: {
+        min: 6,
+        max: 32,
+        pattern: /^[a-zA-Z\d!@#$%^&*()_+\-=\[\]{};:'",.<>/?]{6,32}$/,
+        message: '密码长度为6-32位，支持字母、数字及常见特殊字符',
+    },
+    // 邮箱：6-254位（RFC 5321）
+    email: {
+        min: 6,
+        max: 254,
+    },
+    // 手机号：中国大陆手机号（11位，1开头，第二位为3-9）
+    phone: {
+        pattern: /^1[3456789]\d{9}$/,
+        message: '请输入有效的中国大陆手机号',
+    },
+    // 短信验证码：6位数字
+    smsCode: {
+        pattern: /^\d{6}$/,
+        message: '验证码必须是6位数字',
+    },
+    // UUID v4 格式
+    uuid: {
+        pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+        message: 'UUID格式错误',
+    },
+    // 登录标识符：支持用户名(4-32)、邮箱(6-254)、手机号(11)，取最小值4和最大值254
+    identifier: {
+        min: 4,
+        max: 254,
+    },
+} as const
+
+/**
+ * ==================== 辅助函数 ====================
+ */
+
+/**
+ * 将 Zod 验证错误转换为 APIError
  */
 function handleZodError(error: z.ZodError): never {
     const firstError = error.issues[0]
@@ -27,17 +96,24 @@ function handleZodError(error: z.ZodError): never {
 export const AuthValidators = {
     /**
      * 账密登录验证
+     * identifier 支持用户名、邮箱、手机号
      */
     loginByPassword: (identifier: string, password: string) => {
         const schema = z.object({
             identifier: z.string()
                 .transform(v => v.trim())
                 .refine(v => v.length > 0, '请输入账户和密码')
-                .refine(v => v.length >= 1 && v.length <= 254, '账户长度只能为1~254位'),
+                .refine(
+                    v => v.length >= VALIDATION_RULES.identifier.min && v.length <= VALIDATION_RULES.identifier.max,
+                    `账户长度为${VALIDATION_RULES.identifier.min}-${VALIDATION_RULES.identifier.max}位`
+                ),
             password: z.string()
                 .transform(v => v.trim())
                 .refine(v => v.length > 0, '请输入账户和密码')
-                .refine(v => v.length >= 6 && v.length <= 32, '密码长度只能为6~32位'),
+                .refine(
+                    v => v.length >= VALIDATION_RULES.password.min && v.length <= VALIDATION_RULES.password.max,
+                    VALIDATION_RULES.password.message
+                ),
         })
 
         try {
@@ -58,11 +134,11 @@ export const AuthValidators = {
             phone: z.string()
                 .transform(v => v.trim())
                 .refine(v => v.length > 0, '请输入手机号及短信验证码')
-                .refine(v => /^1[3-9]\d{9}$/.test(v), '请输入合法的中国大陆手机号'),
+                .refine(v => VALIDATION_RULES.phone.pattern.test(v), VALIDATION_RULES.phone.message),
             code: z.string()
                 .transform(v => v.trim())
                 .refine(v => v.length > 0, '请输入手机号及短信验证码')
-                .refine(v => /^\d{6}$/.test(v), '验证码格式错误'),
+                .refine(v => VALIDATION_RULES.smsCode.pattern.test(v), VALIDATION_RULES.smsCode.message),
         })
 
         try {
@@ -102,7 +178,7 @@ export const AuthValidators = {
         const schema = z.object({
             phone: z.string()
                 .transform(v => v.trim())
-                .refine(v => /^1[3-9]\d{9}$/.test(v), '请输入合法的中国大陆手机号'),
+                .refine(v => VALIDATION_RULES.phone.pattern.test(v), VALIDATION_RULES.phone.message),
         })
 
         try {
@@ -122,7 +198,7 @@ export const AuthValidators = {
         const schema = z.object({
             phone: z.string()
                 .transform(v => v.trim())
-                .refine(v => /^1[3-9]\d{9}$/.test(v), '请输入合法的中国大陆手机号'),
+                .refine(v => VALIDATION_RULES.phone.pattern.test(v), VALIDATION_RULES.phone.message),
             type: z.enum(['bind', 'unbind', 'change']),
         })
 
@@ -149,8 +225,8 @@ export const UserValidators = {
         const schema = z.object({
             password: z.string()
                 .refine(
-                    v => /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+\-=\[\]{};:'",.<>/?]{6,32}$/.test(v),
-                    '新密码不符合规范，请重新输入'
+                    v => VALIDATION_RULES.password.pattern.test(v),
+                    VALIDATION_RULES.password.message
                 ),
         })
 
@@ -163,6 +239,7 @@ export const UserValidators = {
             throw error
         }
     },
+
     /**
      * 更新用户信息验证
      */
@@ -175,13 +252,23 @@ export const UserValidators = {
             nickname: z.string()
                 .transform(v => v.trim())
                 .refine(v => v.length > 0, '昵称不能为空')
+                .refine(
+                    v => v.length >= VALIDATION_RULES.nickname.min && v.length <= VALIDATION_RULES.nickname.max,
+                    `昵称长度为${VALIDATION_RULES.nickname.min}-${VALIDATION_RULES.nickname.max}位`
+                )
                 .optional(),
             email: z.string()
                 .transform(v => v.trim())
                 .refine(v => v.length > 0, '邮箱不能为空')
+                .refine((v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), '请输入有效的邮箱地址')
+                .refine(
+                    (v: string) => v.length >= VALIDATION_RULES.email.min && v.length <= VALIDATION_RULES.email.max,
+                    `邮箱长度为${VALIDATION_RULES.email.min}-${VALIDATION_RULES.email.max}位`
+                )
                 .optional(),
             avatar: z.string()
                 .transform(v => v.trim())
+                .refine((v: string) => /^https?:\/\/.+/.test(v), '头像必须是有效的URL地址')
                 .optional(),
         })
             .refine(
@@ -228,8 +315,12 @@ export const BlogValidators = {
                 .refine(v => v.length > 0, 'Slug不得为空'),
             contentUrl: z.string()
                 .transform(v => v.trim())
-                .refine(v => v.length > 0, '文章URL不得为空'),
-            permissions: z.array(z.string()),
+                .refine(v => v.length > 0, '文章URL不得为空')
+                .refine((v: string) => /^https?:\/\/.+/.test(v), '文章URL必须是有效的URL地址'),
+            permissions: z.array(z.enum(BlogPermission)).refine(
+                arr => arr.every(p => Object.values(BlogPermission).includes(p)),
+                '权限配置错误，请检查'
+            ),
             password: z.string()
                 .transform(v => v.trim()),
         })
@@ -270,8 +361,14 @@ export const BlogValidators = {
             contentUrl: z.string()
                 .transform(v => v.trim())
                 .refine(v => v.length > 0, '文章URL不得为空')
+                .refine((v: string) => /^https?:\/\/.+/.test(v), '文章URL必须是有效的URL地址')
                 .optional(),
-            permissions: z.array(z.string()).optional(),
+            permissions: z.array(z.nativeEnum(BlogPermission))
+                .refine(
+                    arr => arr.every(p => Object.values(BlogPermission).includes(p)),
+                    '权限配置错误，请检查'
+                )
+                .optional(),
         })
 
         try {
@@ -311,7 +408,9 @@ export const BlogValidators = {
             content: z.string()
                 .transform(v => v.trim())
                 .refine(v => v.length > 0, '评论内容不能为空'),
-            parentId: z.string().optional(),
+            parentId: z.string()
+                .refine(v => VALIDATION_RULES.uuid.pattern.test(v), VALIDATION_RULES.uuid.message)
+                .optional(),
         })
 
         try {
@@ -347,13 +446,19 @@ export const ResourceValidators = {
             description: z.string()
                 .transform(v => v.trim()),
             imageUrl: z.string()
-                .transform(v => v.trim()),
+                .transform(v => v.trim())
+                .refine((v: string) => /^https?:\/\/.+/.test(v), '图片URL必须是有效的URL地址'),
             link: z.string()
-                .transform(v => v.trim()),
+                .transform(v => v.trim())
+                .refine((v: string) => /^https?:\/\/.+/.test(v), '链接必须是有效的URL地址'),
             tags: z.array(
                 z.object({
-                    name: z.string().transform(v => v.trim()),
-                    type: z.string().transform(v => v.trim()),
+                    name: z.string()
+                        .transform(v => v.trim())
+                        .refine(v => v.length > 0, '标签名称不能为空'),
+                    type: z.string()
+                        .transform(v => v.trim())
+                        .refine(v => v.length > 0, '标签类型不能为空'),
                 })
             ),
         })
@@ -388,14 +493,20 @@ export const ResourceValidators = {
                 .optional(),
             imageUrl: z.string()
                 .transform(v => v.trim())
+                .refine((v: string) => /^https?:\/\/.+/.test(v), '图片URL必须是有效的URL地址')
                 .optional(),
             link: z.string()
                 .transform(v => v.trim())
+                .refine((v: string) => /^https?:\/\/.+/.test(v), '链接必须是有效的URL地址')
                 .optional(),
             tags: z.array(
                 z.object({
-                    name: z.string().transform(v => v.trim()),
-                    type: z.string().transform(v => v.trim()),
+                    name: z.string()
+                        .transform(v => v.trim())
+                        .refine(v => v.length > 0, '标签名称不能为空'),
+                    type: z.string()
+                        .transform(v => v.trim())
+                        .refine(v => v.length > 0, '标签类型不能为空'),
                 })
             ).optional(),
         })
@@ -427,11 +538,43 @@ export const AdminValidators = {
         password: string | null
     }) => {
         const schema = z.object({
-            username: z.string().transform(v => v.trim()).nullable(),
-            nickname: z.string().transform(v => v.trim()).nullable(),
-            email: z.string().transform(v => v.trim()).nullable(),
-            phone: z.string().transform(v => v.trim()).nullable(),
-            password: z.string().transform(v => v.trim()).nullable(),
+            username: z.string()
+                .transform(v => v.trim())
+                .refine(
+                    v => v.length >= VALIDATION_RULES.username.min && v.length <= VALIDATION_RULES.username.max,
+                    VALIDATION_RULES.username.message
+                )
+                .refine(
+                    v => VALIDATION_RULES.username.pattern.test(v),
+                    VALIDATION_RULES.username.message
+                )
+                .nullable(),
+            nickname: z.string()
+                .transform(v => v.trim())
+                .refine(
+                    v => v.length >= VALIDATION_RULES.nickname.min && v.length <= VALIDATION_RULES.nickname.max,
+                    `昵称长度为${VALIDATION_RULES.nickname.min}-${VALIDATION_RULES.nickname.max}位`
+                )
+                .nullable(),
+            email: z.string()
+                .transform(v => v.trim())
+                .refine((v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), '请输入有效的邮箱地址')
+                .refine(
+                    (v: string) => v.length >= VALIDATION_RULES.email.min && v.length <= VALIDATION_RULES.email.max,
+                    `邮箱长度为${VALIDATION_RULES.email.min}-${VALIDATION_RULES.email.max}位`
+                )
+                .nullable(),
+            phone: z.string()
+                .transform(v => v.trim())
+                .refine(v => VALIDATION_RULES.phone.pattern.test(v), VALIDATION_RULES.phone.message)
+                .nullable(),
+            password: z.string()
+                .transform(v => v.trim())
+                .refine(
+                    v => VALIDATION_RULES.password.pattern.test(v),
+                    VALIDATION_RULES.password.message
+                )
+                .nullable(),
         })
 
         try {
@@ -459,23 +602,44 @@ export const AdminValidators = {
             username: z.string()
                 .transform(v => v.trim())
                 .refine(v => v.length > 0, '用户名不能为空')
+                .refine(
+                    v => v.length >= VALIDATION_RULES.username.min && v.length <= VALIDATION_RULES.username.max,
+                    VALIDATION_RULES.username.message
+                )
+                .refine(
+                    v => VALIDATION_RULES.username.pattern.test(v),
+                    VALIDATION_RULES.username.message
+                )
                 .optional(),
             nickname: z.string()
                 .transform(v => v.trim())
                 .refine(v => v.length > 0, '昵称不能为空')
+                .refine(
+                    v => v.length >= VALIDATION_RULES.nickname.min && v.length <= VALIDATION_RULES.nickname.max,
+                    `昵称长度为${VALIDATION_RULES.nickname.min}-${VALIDATION_RULES.nickname.max}位`
+                )
                 .optional(),
             email: z.string()
                 .transform(v => v.trim())
                 .transform(v => v.length === 0 ? null : v)
+                .refine(
+                    v => v === null || (v.includes('@') && v.length >= VALIDATION_RULES.email.min && v.length <= VALIDATION_RULES.email.max),
+                    `邮箱长度为${VALIDATION_RULES.email.min}-${VALIDATION_RULES.email.max}位`
+                )
                 .nullable()
                 .optional(),
             phone: z.string()
                 .transform(v => v.trim())
                 .transform(v => v.length === 0 ? null : v)
+                .refine(
+                    v => v === null || VALIDATION_RULES.phone.pattern.test(v),
+                    VALIDATION_RULES.phone.message
+                )
                 .nullable()
                 .optional(),
             avatar: z.string()
                 .transform(v => v.trim())
+                .refine((v: string) => /^https?:\/\/.+/.test(v), '头像必须是有效的URL地址')
                 .optional(),
             roles: z.array(z.string()).optional(),
         })
@@ -498,8 +662,8 @@ export const AdminValidators = {
             password: z.string()
                 .transform(v => v.trim())
                 .refine(
-                    v => /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+\-=\[\]{};:'",.< >/?]{6,32}$/.test(v),
-                    '密码不符合规范，请重新输入'
+                    v => VALIDATION_RULES.password.pattern.test(v),
+                    VALIDATION_RULES.password.message
                 ),
         })
 
