@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
 export interface APIResponse<T = unknown> {
@@ -78,6 +80,22 @@ export function handleAPIError<T>(
 
     const handlerFn = errorOrHandler as (e: APIError) => T;
     return (error: unknown): T => processError(error, handlerFn);
+}
+
+export function generalErrorHandler(error: unknown) {
+    if (error instanceof APIError) {
+        return toast.error(`${error.message}`);
+    }
+
+    try {
+        normalizeAPIError(error)
+    } catch (error) {
+        if (error instanceof APIError) {
+            return toast.error(`${error.message}`);
+        }
+
+        return toast.error(`未知错误`);
+    }
 }
 
 export async function safeCall<T>(
