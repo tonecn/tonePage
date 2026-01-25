@@ -65,10 +65,11 @@ export class UserService {
     });
   }
 
-  async register(user: Partial<User>): Promise<User> {
+  async register(user: Partial<User>): Promise<null> {
     try {
       const newUser = this.userRepository.create(user);
-      return await this.userRepository.save(newUser);
+      await this.userRepository.save(newUser);
+      return null;
     } catch (error) {
       if (error instanceof QueryFailedError) {
         throw new ConflictException(this.getDuplicateErrorMessage(error));
@@ -149,10 +150,17 @@ export class UserService {
     return '该登陆方式异常，请更换其他登陆方式或联系管理员';
   }
 
-  async list(page = 1, pageSize = 20) {
+  async list(page = 1, pageSize = 20, query?: string) {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
 
     queryBuilder.withDeleted();
+
+    if (query) {
+      queryBuilder.andWhere(
+        '(user.username LIKE :query OR user.nickname LIKE :query OR user.email LIKE :query OR user.phone LIKE :query)',
+        { query: `%${query}%` },
+      );
+    }
 
     queryBuilder.select([
       'user.userId',
