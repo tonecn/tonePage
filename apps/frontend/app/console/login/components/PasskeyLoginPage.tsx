@@ -1,7 +1,7 @@
 import LoginHeader from "./LoginHeader";
 import { Button } from "@/components/ui/button";
 import { startAuthentication } from "@simplewebauthn/browser";
-import { getLoginByPasskeyOptions, loginByPasskey } from "@/lib/api/client";
+import { api } from "@/lib/api";
 
 export default function PasskeyLoginPage() {
     return (
@@ -18,7 +18,7 @@ export default function PasskeyLoginPage() {
 }
 
 export async function handleSubmit() {
-    const optionsJSON = await getLoginByPasskeyOptions();
+    const optionsJSON = await api.auth.getLoginByPasskeyOptions();
     const credentialResponse = await startAuthentication({ optionsJSON });
-    return loginByPasskey(credentialResponse);
+    return api.auth.loginByPasskey(credentialResponse);
 }

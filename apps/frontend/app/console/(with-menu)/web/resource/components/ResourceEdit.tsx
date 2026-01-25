@@ -32,7 +32,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { adminDeleteResource, adminGetResource, adminUpdateResource } from "@/lib/api/client"
+import { api } from "@/lib/api"
 
 interface ResourceEditProps {
     children: React.ReactNode
@@ -45,7 +45,7 @@ export default function ResourceEdit({ children, id, onRefresh }: ResourceEditPr
 
     const { data: resource, isLoading, mutate } = useSWR<Resource>(
         open ? [`/api/admin/web/resource/${id}`] : null,
-        () => adminGetResource(id),
+        () => api.admin.resource.get(id),
         {
             revalidateOnFocus: false,
             revalidateOnReconnect: false,
@@ -57,7 +57,7 @@ export default function ResourceEdit({ children, id, onRefresh }: ResourceEditPr
     const handleSubmit = async () => {
         if (!resource) return;
         try {
-            await adminUpdateResource(id, {
+            await api.admin.resource.update(id, {
                 title: resource.title,
                 description: resource.description,
                 imageUrl: resource.imageUrl,
@@ -74,7 +74,7 @@ export default function ResourceEdit({ children, id, onRefresh }: ResourceEditPr
 
     const handleRemove = async (id: string) => {
         try {
-            await adminDeleteResource(id);
+            await api.admin.resource.delete(id);
             toast.success("资源删除成功");
             onRefresh();
             setOpen(false);

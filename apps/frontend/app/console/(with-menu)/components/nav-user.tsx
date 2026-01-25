@@ -33,7 +33,7 @@ import { useState } from "react"
 import { User } from "@/lib/types/user"
 import { useUserStore } from "@/store/useUserStore"
 import SetPassword from "./nav-user/SetPassword"
-import { logout } from "@/lib/api/client"
+import { api } from "@/lib/api"
 
 export function NavUser({ user }: { user: User | null }) {
   const { isMobile } = useSidebar();
@@ -42,7 +42,7 @@ export function NavUser({ user }: { user: User | null }) {
 
   async function handleLogout() {
     try {
-      await logout();
+      await api.auth.logout();
       userStore.clearUser();
       toast.success('登出成功');
       router.replace('/console/login');

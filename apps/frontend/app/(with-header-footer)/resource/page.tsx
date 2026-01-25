@@ -4,8 +4,7 @@ import {
     AlertDescription,
     AlertTitle,
 } from "@/components/ui/alert"
-import { getResources } from "@/lib/api/server";
-import { safeCall } from "@/lib/api/common";
+import { api, safeCall } from "@/lib/api";
 import { AlertCircle } from "lucide-react";
 
 export const metadata = {
@@ -14,7 +13,7 @@ export const metadata = {
 };
 
 export default async function Resources() {
-    const { data, error } = await safeCall(() => getResources());
+    const { data, error } = await safeCall(() => api.resource.getAll());
 
     return (
         <div className="flex-1 flex flex-col items-center">

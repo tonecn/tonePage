@@ -12,7 +12,7 @@ import PhoneLoginMode from "./components/SmsLoginMode";
 import { useEffect, useState } from "react";
 import LoginBG from './components/login-bg.jpg';
 import Image from "next/image";
-import { handleAPIError } from "@/lib/api/common";
+import { handleAPIError } from "@/lib/api";
 import { useUserStore } from "@/store/useUserStore";
 import PasskeyLoginPage from "./components/PasskeyLoginPage";
 

@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { toast } from "sonner";
 import { ApiError } from "next/dist/server/api-utils";
 import { AdminUser } from "@/lib/types/user";
-import { adminRemoveUser } from "@/lib/api/client";
+import { api } from "@/lib/api";
 
 
 export default function Page() {
@@ -56,7 +56,7 @@ export default function Page() {
     const [deletedUserId, setDeletedUserId] = useState('');
     const handleUserDelete = async (userId: string) => {
         try {
-            await adminRemoveUser(userId, false);
+            await api.admin.user.delete(userId, false);
             toast.success('删除成功');
             handleUserDeleteLocal(userId, false);
             setDeletedUserId('');

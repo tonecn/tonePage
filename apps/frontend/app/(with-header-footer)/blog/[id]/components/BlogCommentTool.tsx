@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { createBlogComment } from "@/lib/api/client";
+import { api } from "@/lib/api";
 import { BlogComment } from "@/lib/types/blogComment";
 import { Send, Undo2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -34,7 +34,7 @@ export function BlogCommentTool({ blogId, onInsertComment, replayTarget, handleC
         if (comment.trim().length === 0) return;
 
         try {
-            const res = await createBlogComment(blogId, comment, replayTarget ? replayTarget.id : undefined);
+            const res = await api.blog.createComment(blogId, comment, replayTarget ? replayTarget.id : undefined);
             if (res) {
                 toast.success('发布成功');
                 setComment('');

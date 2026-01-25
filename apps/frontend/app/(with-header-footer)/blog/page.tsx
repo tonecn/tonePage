@@ -4,8 +4,7 @@ import {
     AlertTitle,
 } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { safeCall } from "@/lib/api/common";
-import { getAllBlogs } from "@/lib/api/server";
+import { api, safeCall } from "@/lib/api";
 
 const formatNumber = (num: number): string => {
     if (num >= 1_000_000) {
@@ -27,7 +26,7 @@ export const metadata = {
 };
 
 export default async function Blog() {
-    const { data: blogs, error } = await safeCall(() => getAllBlogs());
+    const { data: blogs, error } = await safeCall(() => api.blog.getAll());
 
     return (
         <section className="max-w-120 w-auto mx-auto my-10 flex flex-col gap-8">

@@ -1,12 +1,11 @@
-import { adminGetUser } from "@/lib/api/client";
-import { handleAPIError } from "@/lib/api/common";
+import { api, handleAPIError } from "@/lib/api";
 import { toast } from "sonner";
 import useSWR from "swr";
 
 export function useUser(userId: string) {
     const { data, error, isLoading, mutate } = useSWR(
         ['/api/admin/user', userId],
-        () => adminGetUser(userId),
+        () => api.admin.user.get(userId),
         {
             revalidateOnReconnect: false,
             revalidateIfStale: false,

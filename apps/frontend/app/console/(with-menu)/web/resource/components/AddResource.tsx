@@ -19,7 +19,7 @@ import { ResourceBadge } from "@/components/resource"
 import AddResourceTag from "./AddResourceTag"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus } from "lucide-react"
-import { adminCreateResource } from "@/lib/api/client"
+import { api } from "@/lib/api"
 
 
 interface AddResourceProps {
@@ -42,7 +42,7 @@ export default function AddResource({ children, refresh }: AddResourceProps) {
     const handleSubmit = async () => {
         try {
             setLoading(true);
-            await adminCreateResource({
+            await api.admin.resource.create({
                 ...formData,
             });
             toast.success("添加成功");

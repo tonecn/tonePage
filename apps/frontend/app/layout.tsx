@@ -4,7 +4,7 @@ import { ThemeProvider } from "../components/theme-provider";
 import { Toaster } from "sonner";
 import { ClientProvider } from "./ClientProvider";
 import { Metadata } from "next";
-import { getMe } from "@/lib/api/server";
+import { api } from "@/lib/api";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,7 +26,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getMe().catch(() => null);
+  const user = await api.user.getMe().catch(() => null);
 
   return (
     <html lang="zh-CN" suppressHydrationWarning>

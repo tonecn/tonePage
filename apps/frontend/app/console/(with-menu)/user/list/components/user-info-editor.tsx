@@ -26,7 +26,7 @@ import {
 import { AlertCircle } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { adminRemoveUser, adminSetUserPassword, adminUpdateUser } from "@/lib/api/client";
+import { api } from "@/lib/api";
 
 export function UserInfoEditor({
     onClose,
@@ -50,7 +50,7 @@ export function UserInfoEditor({
     }) => {
         try {
             // setSaveLoading(true);
-            const res = await adminUpdateUser(userId, user);
+            const res = await api.admin.user.update(userId, user);
             if (res) {
                 toast.success("保存成功");
                 onUserUpdate(res);
@@ -69,7 +69,7 @@ export function UserInfoEditor({
     const handleRemove = async (userId: string) => {
         try {
             // setRemoveLoading(true);
-            await adminRemoveUser(userId, true);
+            await api.admin.user.delete(userId, true);
             toast.success("注销成功");
             onUserSoftDelete(userId);
             onClose();
@@ -85,7 +85,7 @@ export function UserInfoEditor({
     const handleSetPassword = async (userId: string, password: string) => {
         try {
             // setSetPasswordLoading(true);
-            await adminSetUserPassword(userId, password);
+            await api.admin.user.setPassword(userId, password);
             toast.success("密码修改成功");
             setPasswordDialogOpen(false);
         } catch (error) {

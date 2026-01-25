@@ -7,13 +7,12 @@ import { toast } from "sonner";
 import LoginHeader from "./LoginHeader";
 import { Label } from "@/components/ui/label"
 import { HumanVerification } from "@/components/human-verification";
-import { handleAPIError } from "@/lib/api/common";
-import { loginBySms, sendLoginSms } from "@/lib/api/client";
+import { api, handleAPIError } from "@/lib/api";
 
 export default function SmsLoginMode() {
     const [phone, setPhone] = useState("");
     const handleSendCode = useCallback(async () => {
-        await sendLoginSms(phone)
+        await api.sms.sendLoginCode(phone)
             .then(() => toast.success('验证码已发送！'),
                 handleAPIError(({ message }) => toast.error(message)))
     }, [phone]);
@@ -78,5 +77,5 @@ export async function handleSubmit(formData: FormData) {
     const phone = formData.get('phone')?.toString() || '';
     const code = formData.get('code')?.toString() || '';
 
-    return loginBySms(phone, code)
+    return api.auth.loginBySms(phone, code)
 }

@@ -1,7 +1,6 @@
 import { BlogContent } from "./BlogContent";
-import { APIError, safeCall } from "@/lib/api/common";
+import { api, APIError, safeCall } from "@/lib/api";
 import { BlogComments } from "./components/BlogComments";
-import { getBlogBySlug } from "@/lib/api/server";
 
 interface PageRouteProps {
     params: Promise<{ id: string }>
@@ -43,7 +42,7 @@ export async function generateMetadata({ params, searchParams }: PageRouteProps)
         }
     }
 
-    const { data, error } = await safeCall(() => getBlogBySlug(`${id}`, p));
+    const { data, error } = await safeCall(() => api.blog.getBySlug(`${id}`, p));
     
     if (data) {
         return {
@@ -74,7 +73,7 @@ export default async function Page({ params, searchParams }: PageRouteProps) {
     const { data, error } = errorMsg ? {
         data: null,
         error: new APIError(errorMsg)
-    } : await safeCall(() => getBlogBySlug(`${id}`, p));
+    } : await safeCall(() => api.blog.getBySlug(`${id}`, p));
 
     return (
         <div className="w-full overflow-x-hidden">

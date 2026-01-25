@@ -4,12 +4,12 @@ import { BlogCommentTool } from "./BlogCommentTool";
 import { BlogComment } from "@/lib/types/blogComment";
 import { useState } from "react";
 import { useUserStore } from "@/store/useUserStore";
-import { getBlogComments } from "@/lib/api/client";
+import { api } from "@/lib/api";
 
 export function BlogComments({ blogId }: { blogId: string }) {
     const { data, mutate } = useSWR(
         `/api/blog/${blogId}/comments`,
-        () => getBlogComments(blogId),
+        () => api.blog.getComments(blogId),
     )
 
     const { user } = useUserStore();

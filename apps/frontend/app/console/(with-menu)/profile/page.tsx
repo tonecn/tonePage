@@ -25,10 +25,9 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { handleAPIError } from "@/lib/api/common";
+import { api, handleAPIError } from "@/lib/api";
 import { startRegistration } from '@simplewebauthn/browser';
 import { toast } from "sonner";
-import { getPasskeyRegisterOptions, getPasskeys, passkeyRegister, passkeyDelete } from "@/lib/api/client";
 import useSWR from "swr";
 
 export default function Page() {
@@ -122,7 +121,7 @@ export default function Page() {
 function PasskeyContent() {
     const { data, isLoading, error, mutate } = useSWR(
         'get-passkeys',
-        () => getPasskeys(),
+        () => api.auth.getPasskeys(),
     )
 
     return (
@@ -152,13 +151,13 @@ function AddPasskeyDialog({ children, onSuccess }: AddPasskeyDialogProps) {
                 throw new Error('通行证名称不能为空')
             }
 
-            const options = await getPasskeyRegisterOptions();
+            const options = await api.auth.getPasskeyRegisterOptions();
             const credential = await startRegistration({ optionsJSON: options }).catch(() => null);
             if (credential === null) {
                 throw new Error('认证失败');
             }
 
-            const registerRes = await passkeyRegister(name, credential);
+            const registerRes = await api.auth.passkeyRegister(name, credential);
             if (registerRes.id) {
                 toast.success('添加成功');
                 setOpen(false);
@@ -255,7 +254,7 @@ function DeletePasskeyDialog({ id, name, children, onSuccess }: DeletePasskeyDia
 
     const handleDelete = async () => {
         try {
-            await passkeyDelete(id);
+            await api.auth.passkeyDelete(id);
             toast.success('删除成功');
             setOpen(false);
             await onSuccess?.();

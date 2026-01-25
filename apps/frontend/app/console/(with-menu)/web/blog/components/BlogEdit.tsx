@@ -31,7 +31,7 @@ import { BlogPermissionCheckBoxs } from "./BlogPermissionCheckBoxs"
 import { BlogPermission } from "@/lib/types/Blog.Permission.enum"
 import { SetPasswordDialog } from "./SetPasswordDialog"
 import { copyShareURL } from "./utils"
-import { adminDeleteBlog, adminGetBlog, adminUpdateBlog } from "@/lib/api/client"
+import { api } from "@/lib/api"
 
 interface BlogEditProps {
     id: string;
@@ -43,7 +43,7 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
     const [open, setOpen] = useState(false)
     const { data: blog, mutate } = useSWR(
         open ? `/api/admin/web/blog/${id}` : null,
-        () => adminGetBlog(id),
+        () => api.admin.blog.get(id),
         {
             revalidateOnFocus: false,
             revalidateOnReconnect: false,
@@ -55,7 +55,7 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
     const handleSubmit = async () => {
         if (!blog) return;
         try {
-            await adminUpdateBlog(id, {
+            await api.admin.blog.update(id, {
                 title: blog.title,
                 description: blog.description,
                 slug: blog.slug,
@@ -72,7 +72,7 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
 
     const handleDelete = async () => {
         try {
-            await adminDeleteBlog(id);
+            await api.admin.blog.delete(id);
             toast.success("删除成功")
             setOpen(false);
             onRefresh();

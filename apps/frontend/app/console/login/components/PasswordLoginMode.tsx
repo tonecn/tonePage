@@ -4,7 +4,7 @@ import LoginHeader from "./LoginHeader";
 import { Label } from "@/components/ui/label"
 import { useCallback } from "react";
 import { toast } from "sonner";
-import { loginByPassword } from "@/lib/api/client";
+import { api } from "@/lib/api";
 
 export default function PasswordLoginMode() {
     const handleForgetPassword = useCallback(() => {
@@ -51,5 +51,5 @@ export async function handleSubmit(formData: FormData) {
     const identifier = formData.get('identifier')?.toString() || '';
     const password = formData.get('password')?.toString() || '';
 
-    return loginByPassword(identifier, password)
+    return api.auth.loginByPassword(identifier, password)
 }
