@@ -8,10 +8,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies, headers } from 'next/headers';
 
-const API_BASE = process.env.API_BASE;
-
-if (!API_BASE) {
-  throw new Error('API_BASE environment variable is not set');
+// 延迟获取 API_BASE，避免在边缘环境初始化时出错
+function getApiBase(): string {
+  const apiBase = process.env.API_BASE;
+  if (!apiBase) {
+    throw new Error('API_BASE environment variable is not set');
+  }
+  return apiBase;
 }
 
 interface RouteContext {
@@ -22,6 +25,22 @@ interface RouteContext {
  * 创建统一的请求处理函数
  */
 async function handleRequest(request: NextRequest, context: RouteContext) {
+  let API_BASE: string;
+  try {
+    API_BASE = getApiBase();
+  } catch (error) {
+    console.error('[API Proxy] API_BASE not configured:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        code: -1,
+        message: 'Server configuration error',
+        data: null,
+      },
+      { status: 500 }
+    );
+  }
+
   const { path } = await context.params;
   const endpoint = '/api/' + path.join('/');
   const searchParams = request.nextUrl.searchParams.toString();
@@ -84,10 +103,25 @@ async function handleRequest(request: NextRequest, context: RouteContext) {
     }
 
     // 返回响应
-    const data = await response.json();
-    return NextResponse.json(data, { status: response.status });
+    const contentType = response.headers.get('content-type');
+    if (contentType?.includes('application/json')) {
+      const data = await response.json();
+      return NextResponse.json(data, { status: response.status });
+    } else {
+      // 非 JSON 响应
+      const text = await response.text();
+      return NextResponse.json(
+        {
+          success: false,
+          code: -1,
+          message: text || `HTTP ${response.status}`,
+          data: null,
+        },
+        { status: response.status }
+      );
+    }
   } catch (error) {
-    console.error('[API Proxy Error]', error);
+    console.error('[API Proxy Error]', url, error);
     return NextResponse.json(
       {
         success: false,

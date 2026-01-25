@@ -7,14 +7,6 @@ const nextConfig: NextConfig = {
   devIndicators: {
     position: 'bottom-right',
   },
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${process.env.API_BASE}/api/:path*`,
-      }
-    ]
-  },
   images: {
     remotePatterns: [new URL('https://tone-personal.oss-cn-chengdu.aliyuncs.com/**')]
   },
