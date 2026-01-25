@@ -57,7 +57,7 @@ export default function Login() {
                                     handler(formData).then((data) => {
                                         useUserStore.getState().setUser(data.user);
                                         // to main page
-                                        // router.replace('/console');
+                                        router.replace('/console');
                                     }, handleAPIError(({ message }) => toast.error(message)))
                                 }}>
                                     <div className="flex flex-col gap-6">
