@@ -1,11 +1,11 @@
-import { BlogAPI } from '@/lib/api/server'
+import { getAllBlogs } from '@/lib/api/actions';
 import { MetadataRoute } from 'next'
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 获取所有博客
-    const blogs = await BlogAPI.list().catch(() => [])
+    const blogs = await getAllBlogs().catch(() => [])
 
     const blogUrls = blogs.map(blog => {
         return {

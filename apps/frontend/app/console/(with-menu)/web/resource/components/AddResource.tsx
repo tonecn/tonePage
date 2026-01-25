@@ -19,7 +19,6 @@ import { ResourceBadge } from "@/components/resource"
 import AddResourceTag from "./AddResourceTag"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus } from "lucide-react"
-import { AdminAPI } from "@/lib/api/client"
 import { adminCreateResource } from "@/lib/api/actions"
 
 

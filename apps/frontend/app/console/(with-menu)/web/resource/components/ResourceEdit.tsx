@@ -32,7 +32,6 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { AdminAPI } from "@/lib/api/client"
 import { adminDeleteResource, adminGetResource, adminUpdateResource } from "@/lib/api/actions"
 
 interface ResourceEditProps {

@@ -31,18 +31,18 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { User } from "@/lib/types/user"
-import { AuthAPI } from "@/lib/api/client"
 import { useUserStore } from "@/store/useUserStore"
 import SetPassword from "./nav-user/SetPassword"
+import { logout } from "@/lib/api/actions"
 
 export function NavUser({ user }: { user: User | null }) {
   const { isMobile } = useSidebar();
   const router = useRouter();
   const userStore = useUserStore();
 
-  async function logout() {
+  async function handleLogout() {
     try {
-      await AuthAPI.logout();
+      await logout();
       userStore.clearUser();
       toast.success('登出成功');
       router.replace('/console/login');
@@ -124,7 +124,7 @@ export function NavUser({ user }: { user: User | null }) {
                 修改密码
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={logout}>
+              <DropdownMenuItem onClick={handleLogout}>
                 <LogOut />
                 登出
               </DropdownMenuItem>
