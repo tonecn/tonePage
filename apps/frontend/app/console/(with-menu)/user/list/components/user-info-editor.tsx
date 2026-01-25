@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/drawer"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useUser } from "@/hooks/admin/user/use-user";
 import { AdminUser } from "@/lib/types/user";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
@@ -39,7 +38,32 @@ export function UserInfoEditor({
     onUserSoftDelete: (userId: string) => void,
     userId: string
 }) {
-    const { user, isLoading, error } = useUser(userId);
+    const [user, setUser] = React.useState<AdminUser | null>(null);
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [error, setError] = React.useState<Error | null>(null);
+    const isOpen = !!userId;
+
+    // 每次 Drawer 打开时重新获取用户数据
+    React.useEffect(() => {
+        if (!isOpen || !userId) {
+            setUser(null);
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+
+        api.admin.user.get(userId)
+            .then(data => {
+                setUser(data);
+                setIsLoading(false);
+            })
+            .catch(err => {
+                setError(err);
+                setIsLoading(false);
+                toast.error(err.message || '获取用户信息失败');
+            });
+    }, [isOpen, userId]);
 
     // const [saveLoading, setSaveLoading] = React.useState(false);
     const handleSave = async (user: {
