@@ -1,7 +1,7 @@
 import { BlogContent } from "./BlogContent";
 import { APIError, safeCall } from "@/lib/api/common";
 import { BlogComments } from "./components/BlogComments";
-import { getBlogBySlug } from "@/lib/api/actions";
+import { getBlogBySlug } from "@/lib/api/server";
 
 interface PageRouteProps {
     params: Promise<{ id: string }>

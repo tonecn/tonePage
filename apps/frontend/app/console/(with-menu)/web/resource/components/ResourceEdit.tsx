@@ -32,7 +32,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { adminDeleteResource, adminGetResource, adminUpdateResource } from "@/lib/api/actions"
+import { adminDeleteResource, adminGetResource, adminUpdateResource } from "@/lib/api/client"
 
 interface ResourceEditProps {
     children: React.ReactNode

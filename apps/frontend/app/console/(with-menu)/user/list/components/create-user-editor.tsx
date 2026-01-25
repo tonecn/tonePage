@@ -13,7 +13,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { ApiError } from "next/dist/server/api-utils";
-import { adminCreateUser } from "@/lib/api/actions/admin.action";
+import { adminCreateUser } from "@/lib/api/client";
 
 interface CreateUserEditorProps {
     children: React.ReactNode;

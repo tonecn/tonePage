@@ -4,7 +4,7 @@ import {
     AlertDescription,
     AlertTitle,
 } from "@/components/ui/alert"
-import { getResources } from "@/lib/api/actions";
+import { getResources } from "@/lib/api/server";
 import { safeCall } from "@/lib/api/common";
 import { AlertCircle } from "lucide-react";
 

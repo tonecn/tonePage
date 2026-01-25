@@ -1,4 +1,4 @@
-import { getAllBlogs } from '@/lib/api/actions';
+import { getAllBlogs } from '@/lib/api/server';
 import { MetadataRoute } from 'next'
 
 export const revalidate = 3600;

@@ -26,7 +26,7 @@ import {
 import { AlertCircle } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { adminRemoveUser, adminSetUserPassword, adminUpdateUser } from "@/lib/api/actions/admin.action";
+import { adminRemoveUser, adminSetUserPassword, adminUpdateUser } from "@/lib/api/client";
 
 export function UserInfoEditor({
     onClose,

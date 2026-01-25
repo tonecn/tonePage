@@ -1,4 +1,4 @@
-import { adminGetUser } from "@/lib/api/actions/admin.action";
+import { adminGetUser } from "@/lib/api/client";
 import { handleAPIError } from "@/lib/api/common";
 import { toast } from "sonner";
 import useSWR from "swr";

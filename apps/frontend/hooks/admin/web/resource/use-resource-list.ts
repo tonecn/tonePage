@@ -1,6 +1,6 @@
 "use client"
 
-import { adminGetResources } from "@/lib/api/actions";
+import { adminGetResources } from "@/lib/api/client";
 import { handleAPIError } from "@/lib/api/common";
 import { useCallback } from "react";
 import { toast } from "sonner";

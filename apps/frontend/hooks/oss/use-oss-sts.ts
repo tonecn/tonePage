@@ -1,4 +1,4 @@
-import { getStsToken } from "@/lib/api/actions";
+import { getStsToken } from "@/lib/api/client";
 import { toast } from "sonner";
 import useSWR from "swr";
 

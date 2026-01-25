@@ -31,7 +31,7 @@ import { BlogPermissionCheckBoxs } from "./BlogPermissionCheckBoxs"
 import { BlogPermission } from "@/lib/types/Blog.Permission.enum"
 import { SetPasswordDialog } from "./SetPasswordDialog"
 import { copyShareURL } from "./utils"
-import { adminDeleteBlog, adminGetBlog, adminUpdateBlog } from "@/lib/api/actions"
+import { adminDeleteBlog, adminGetBlog, adminUpdateBlog } from "@/lib/api/client"
 
 interface BlogEditProps {
     id: string;

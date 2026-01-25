@@ -1,7 +1,7 @@
 import LoginHeader from "./LoginHeader";
 import { Button } from "@/components/ui/button";
 import { startAuthentication } from "@simplewebauthn/browser";
-import { getLoginByPasskeyOptions, loginByPasskey } from "@/lib/api/actions";
+import { getLoginByPasskeyOptions, loginByPasskey } from "@/lib/api/client";
 
 export default function PasskeyLoginPage() {
     return (

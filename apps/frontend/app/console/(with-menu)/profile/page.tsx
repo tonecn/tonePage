@@ -28,9 +28,8 @@ import { Label } from "@/components/ui/label"
 import { handleAPIError } from "@/lib/api/common";
 import { startRegistration } from '@simplewebauthn/browser';
 import { toast } from "sonner";
-import { getPasskeyRegisterOptions } from "@/lib/api/actions";
+import { getPasskeyRegisterOptions, getPasskeys, passkeyRegister, passkeyDelete } from "@/lib/api/client";
 import useSWR from "swr";
-import { getPasskeys, passkeyRegister, passkeyDelete } from "@/lib/api/actions/auth.action";
 
 export default function Page() {
     const userStore = useUserStore();

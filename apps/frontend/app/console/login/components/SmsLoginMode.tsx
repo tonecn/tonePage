@@ -8,7 +8,7 @@ import LoginHeader from "./LoginHeader";
 import { Label } from "@/components/ui/label"
 import { HumanVerification } from "@/components/human-verification";
 import { handleAPIError } from "@/lib/api/common";
-import { loginBySms, sendLoginSms } from "@/lib/api/actions";
+import { loginBySms, sendLoginSms } from "@/lib/api/client";
 
 export default function SmsLoginMode() {
     const [phone, setPhone] = useState("");

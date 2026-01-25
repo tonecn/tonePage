@@ -4,7 +4,7 @@ import { BlogCommentTool } from "./BlogCommentTool";
 import { BlogComment } from "@/lib/types/blogComment";
 import { useState } from "react";
 import { useUserStore } from "@/store/useUserStore";
-import { getBlogComments } from "@/lib/api/actions";
+import { getBlogComments } from "@/lib/api/client";
 
 export function BlogComments({ blogId }: { blogId: string }) {
     const { data, mutate } = useSWR(

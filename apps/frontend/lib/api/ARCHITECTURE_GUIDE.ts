@@ -1,257 +1,202 @@
 /**
- * 新 API 架构快速参考指南
+ * API 架构快速参考指南 v2.0
+ * 
+ * 解决腾讯云 EdgeOne Pages 部署时的 host header 不匹配问题
  * 
  * ═══════════════════════════════════════════════════════════════════
  * 📋 目录结构
  * ═══════════════════════════════════════════════════════════════════
  * 
  * lib/api/
- * ├── internal/                        # 🔒 内部后端通信层（隐藏地址）
+ * ├── server/                         # 🔒 服务端专用（隐藏后端地址）
  * │   ├── backend-client.ts           # 核心：后端 HTTP 通信
- * │   ├── middleware.ts               # 请求/响应中间件
- * │   ├── types.ts                    # 内部类型定义
- * │   └── constants.ts                # API 常量和端点
+ * │   └── index.ts                    # 服务端 API 统一导出
  * │
- * ├── actions/                        # ✨ Server Actions 层（推荐）
- * │   ├── auth.action.ts
- * │   ├── user.action.ts
- * │   ├── blog.action.ts
- * │   ├── admin.action.ts
- * │   ├── sms.action.ts
- * │   ├── oss.action.ts
- * │   ├── resource.action.ts
- * │   └── index.ts                    # 统一导出
+ * ├── client/                         # 🌐 客户端专用（通过 Route Handlers）
+ * │   └── index.ts                    # 客户端 API 统一导出
  * │
- * ├── client/                         # ⚠️ 客户端接口（仅公开接口）
- * │   ├── public-fetch.ts
- * │   └── index.ts
- * │
- * ├── common.ts                       # 错误处理（通用）
- * └── server.ts                       # SSR/SSG 专用（保留）
+ * ├── common.ts                       # 📦 错误处理（通用）
+ * └── validators.ts                   # ✅ 参数验证（通用）
  * 
- * lib/utils/
- * └── validation.ts                   # ✨ 通用验证函数
+ * app/api/
+ * └── [...path]/                      # 🔀 通用代理路由
+ *     └── route.ts                    # 将请求转发到后端
  * 
  * ═══════════════════════════════════════════════════════════════════
- * 🚀 使用方式
+ * 🚀 核心原则
  * ═══════════════════════════════════════════════════════════════════
  * 
- * 【方式 1】客户端组件中使用 Server Actions（推荐）
- * ─────────────────────────────────────────────────
+ * 1. 服务端组件 → 使用 @/lib/api/server
+ * 2. 客户端组件 → 使用 @/lib/api/client
+ * 3. Route Handlers → 使用 @/lib/api/server
  * 
- * 'use client'
- * import { loginByPassword, getMe } from '@/lib/api/actions'
- * import { useTransition } from 'react'
+ * ⚠️ 重要：客户端组件不再使用 Server Actions 进行数据请求！
  * 
- * export default function LoginPage() {
- *   const [isPending, startTransition] = useTransition()
- *
- *   const handleLogin = (identifier: string, password: string) => {
- *     startTransition(async () => {
- *       try {
- *         const result = await loginByPassword(identifier, password)
- *         // 处理登录成功
- *       } catch (error) {
- *         // 处理错误
- *       }
- *     })
- *   }
- *
- *   return <button onClick={() => handleLogin(id, pwd)}>登录</button>
- * }
+ * ═══════════════════════════════════════════════════════════════════
+ * 📖 使用方式
+ * ═══════════════════════════════════════════════════════════════════
  * 
- * 【方式 2】服务端组件中使用 Server Actions
+ * 【方式 1】服务端组件中使用（推荐用于 SSR/SSG）
  * ─────────────────────────────────────────────
  * 
- * import { getAllBlogs } from '@/lib/api/actions'
+ * // app/blog/page.tsx (Server Component)
+ * import { getAllBlogs } from '@/lib/api/server'
  * 
  * export default async function BlogPage() {
  *   const blogs = await getAllBlogs()
  *   return <div>{blogs.map(blog => ...)}</div>
  * }
  * 
- * 【方式 3】命名空间导入
- * ──────────────────────
+ * 【方式 2】客户端组件中使用（推荐用于交互）
+ * ─────────────────────────────────────────────
  * 
- * import * as Actions from '@/lib/api/actions'
+ * 'use client'
+ * import { loginByPassword, getMe } from '@/lib/api/client'
+ * import { useState } from 'react'
  * 
- * const result = await Actions.AuthAction.loginByPassword(id, pwd)
- * const user = await Actions.UserAction.getMe()
- * const resources = await Actions.AdminAction.adminGetResources()
+ * export default function LoginPage() {
+ *   const [loading, setLoading] = useState(false)
+ *
+ *   const handleLogin = async (identifier: string, password: string) => {
+ *     setLoading(true)
+ *     try {
+ *       const result = await loginByPassword(identifier, password)
+ *       // 处理登录成功
+ *     } catch (error) {
+ *       // 处理错误
+ *     } finally {
+ *       setLoading(false)
+ *     }
+ *   }
+ *
+ *   return <button onClick={() => handleLogin(id, pwd)}>登录</button>
+ * }
  * 
- * 【方式 4】使用验证函数
- * ──────────────────────
+ * 【方式 3】Hooks 中使用 SWR + 客户端 API
+ * ──────────────────────────────────────
  * 
- * import { validateEmail, validatePhone, validatePassword } from '@/lib/utils/validation'
+ * 'use client'
+ * import useSWR from 'swr'
+ * import { adminGetBlogs } from '@/lib/api/client'
  * 
- * if (!validateEmail(email)) {
- *   throw new Error('邮箱格式错误')
+ * export function useBlogList() {
+ *   const { data, error, isLoading, mutate } = useSWR(
+ *     '/admin/web/blog',
+ *     () => adminGetBlogs(),
+ *   )
+ *   return { blogs: data, error, isLoading, refresh: mutate }
  * }
  * 
  * ═══════════════════════════════════════════════════════════════════
- * 📦 可用的 Server Actions
+ * 📦 可用的 API 函数
  * ═══════════════════════════════════════════════════════════════════
  * 
- * 【认证】AuthAction
- * ─────────────────
- * - loginByPassword(identifier, password)           # 账密登录
- * - loginBySms(phone, code)                         # 短信登录
- * - logout()                                        # 登出
- * - getPasskeyRegisterOptions()                     # Passkey 注册选项
- * - passkeyRegister(name, credentialResponse)       # Passkey 注册
- * - getLoginByPasskeyOptions()                      # Passkey 登录选项
- * - loginByPasskey(credentialResponse)              # Passkey 登录
+ * 服务端 (@/lib/api/server) 和 客户端 (@/lib/api/client) 导出相同的函数：
  * 
- * 【用户】UserAction
- * ──────────────────
- * - getMe()                                         # 获取当前用户信息
- * - updatePassword(password)                        # 更新密码
- * - updateUserProfile(data)                         # 更新用户信息
+ * 【认证】
+ * - loginByPassword(identifier, password)
+ * - loginBySms(phone, code)
+ * - logout()
+ * - getPasskeyRegisterOptions()
+ * - passkeyRegister(name, credentialResponse)
+ * - getPasskeys()
+ * - passkeyDelete(id)
+ * - getLoginByPasskeyOptions()
+ * - loginByPasskey(credentialResponse)
  * 
- * 【博客】BlogAction
- * ──────────────────
- * - getBlogBySlug(slug, password)                   # 获取博客详情
- * - getAllBlogs()                                   # 获取所有博客
- * - getBlogComments(blogId)                         # 获取博客评论
- * - createBlogComment(blogId, content, parentId)    # 创建评论
- * - adminCreateBlog(data)                           # 创建博客（管理员）
- * - adminUpdateBlog(id, data)                       # 更新博客（管理员）
- * - adminDeleteBlog(id)                             # 删除博客（管理员）
+ * 【用户】
+ * - getMe()
+ * - updatePassword(password)
+ * - updateUserProfile(data)
  * 
- * 【短信】SMSAction
- * ─────────────────
- * - sendLoginSms(phone)                             # 发送登录短信
- * - sendVerificationSms(phone, type)                # 发送验证短信
+ * 【博客】
+ * - getBlogBySlug(slug, password)
+ * - getAllBlogs()
+ * - getBlogComments(blogId)
+ * - createBlogComment(blogId, content, parentId)
  * 
- * 【OSS】OSSAction
- * ────────────────
- * - getStsToken()                                   # 获取 STS Token
+ * 【资源】
+ * - getResources()
  * 
- * 【资源】ResourceAction
- * ──────────────────────
- * - getResources()                                  # 获取所有资源
- * - getResource(id)                                 # 获取单个资源
+ * 【短信】
+ * - sendLoginSms(phone)
+ * - sendVerificationSms(phone, type)
  * 
- * 【管理员】AdminAction
- * ─────────────────────
- * - adminGetResources()                             # 获取所有资源
- * - adminCreateResource(data)                       # 创建资源
- * - adminGetResource(id)                            # 获取单个资源
- * - adminUpdateResource(id, data)                   # 更新资源
- * - adminDeleteResource(id)                         # 删除资源
+ * 【OSS】
+ * - getStsToken()
  * 
- * ═══════════════════════════════════════════════════════════════════
- * ✅ 可用的验证函数
- * ═══════════════════════════════════════════════════════════════════
- * 
- * import { validateEmail, validatePhone, validatePassword, validateUsername, validateUrl, validateSlug } from '@/lib/utils/validation'
- * 
- * - validateEmail(email)                # 验证邮箱
- * - validatePhone(phone)                # 验证手机号（中国大陆）
- * - validatePassword(password)          # 验证密码（6-32位，字母+数字）
- * - validateUsername(username)          # 验证用户名（3-20位，字母数字下划线）
- * - validateUrl(url)                    # 验证 URL
- * - validateSlug(slug)                  # 验证 slug（3-50位，小写字母数字连字符）
+ * 【管理员】
+ * - adminGetResources()
+ * - adminCreateResource(data)
+ * - adminGetResource(id)
+ * - adminUpdateResource(id, data)
+ * - adminDeleteResource(id)
+ * - adminCreateBlog(data)
+ * - adminUpdateBlog(id, data)
+ * - adminDeleteBlog(id)
+ * - adminGetBlog(id)
+ * - adminGetBlogs()
+ * - adminSetBlogPassword(id, password)
+ * - adminCreateUser(data)
+ * - adminGetUsers(params)
+ * - adminGetUser(id)
+ * - adminUpdateUser(id, data)
+ * - adminRemoveUser(id)
+ * - adminSetUserPassword(id, password)
  * 
  * ═══════════════════════════════════════════════════════════════════
  * 🔒 安全特性
  * ═══════════════════════════════════════════════════════════════════
  * 
  * ✓ 后端 API 地址隐藏
- *   - API_BASE 仅在 lib/api/internal/backend-client.ts 中使用
- *   - 浏览器中无法看到真实的后端地址
- *   - 完全防止 API 地址泄露
+ *   - API_BASE 仅在服务端可见
+ *   - 客户端只能看到 /api/* 路由
  * 
- * ✓ 无跨域问题
- *   - Server Actions 在服务端执行
- *   - 所有请求都由 Next.js 服务器发起
- *   - 不需要 CORS 配置
+ * ✓ 边缘环境兼容
+ *   - 避免了 Server Actions 的 host header 问题
+ *   - 通过 Route Handlers 代理请求
  * 
  * ✓ 自动 Cookie 管理
  *   - HttpOnly Cookie 自动转发
  *   - 无需手动处理 Cookie
- *   - 完全安全
  * 
  * ✓ Header 转发
  *   - User-Agent, X-Forwarded-For 等自动转发
- *   - 保留客户端信息
- *   - 用于后端日志和安全检查
- * 
- * ✓ 统一错误处理
- *   - 所有错误通过 APIError 规范化
- *   - 前置验证减少无效请求
- *   - 清晰的错误信息
  * 
  * ═══════════════════════════════════════════════════════════════════
  * 🔄 错误处理
  * ═══════════════════════════════════════════════════════════════════
  * 
+ * import { APIError, handleAPIError, safeCall } from '@/lib/api/common'
+ * 
+ * // 方式 1: try-catch
  * try {
  *   const result = await loginByPassword(identifier, password)
  * } catch (error) {
  *   if (error instanceof APIError) {
- *     console.log(error.message)      # 用户友好的错误信息
- *     console.log(error.status)       # HTTP 状态码
- *     console.log(error.code)         # 业务错误代码
- *     console.log(error.data)         # 额外的错误数据
- *   } else {
- *     console.log('未知错误')
+ *     console.log(error.message)  // 用户友好的错误信息
+ *     console.log(error.status)   // HTTP 状态码
+ *     console.log(error.code)     // 业务错误代码
  *   }
  * }
  * 
- * ═══════════════════════════════════════════════════════════════════
- * 💡 最佳实践
- * ═══════════════════════════════════════════════════════════════════
+ * // 方式 2: handleAPIError (适用于 toast)
+ * catch (handleAPIError(({ message }) => toast.error(message)))
  * 
- * 1. 优先使用 Server Actions（更安全、性能更好）
- * 2. 在 Server Actions 中进行前置验证
- * 3. 使用 useTransition 处理加载状态
- * 4. 捕获 APIError 处理业务错误
- * 5. 使用验证函数进行数据验证
- * 6. 避免在客户端代码中导入 backend-client
- * 7. 在 middleware 中添加日志/监控（可选）
+ * // 方式 3: safeCall (返回 { data, error })
+ * const { data, error } = await safeCall(() => getAllBlogs())
+ * if (error) {
+ *   console.log(error.message)
+ * }
  * 
  * ═══════════════════════════════════════════════════════════════════
- * 🔄 迁移指南
+ * ✅ 验证函数
  * ═══════════════════════════════════════════════════════════════════
  * 
- * 如果你有旧的客户端 API 调用，这样迁移：
+ * import { AuthValidators, UserValidators, BlogValidators } from '@/lib/api/validators'
  * 
- * 【迁移前】
- * import { loginByPassword } from '@/lib/api/endpoints/auth.client'
- * const result = await loginByPassword(identifier, password)
- * 
- * 【迁移后】
- * import { loginByPassword } from '@/lib/api/actions'
- * const result = await loginByPassword(identifier, password)
- * // 完全相同的 API，但现在更安全了！
- * 
- * ═══════════════════════════════════════════════════════════════════
- * 📝 常见问题
- * ═══════════════════════════════════════════════════════════════════
- * 
- * Q: 为什么要使用 Server Actions？
- * A: 后端地址隐藏、无跨域问题、更好性能、更安全
- * 
- * Q: 是否需要修改 next.config.ts？
- * A: 不需要，rewrite 可以保留或删除，Server Actions 不依赖它
- * 
- * Q: 旧的 clientFetch 还能用吗？
- * A: 可以用，但不推荐。建议迁移到 Server Actions
- * 
- * Q: 如何处理文件上传？
- * A: 使用 getStsToken() 获取 STS Token，然后直传 OSS
- * 
- * Q: Cookie 是如何转发的？
- * A: backendFetch 自动从请求中获取 Cookie 并转发
- * 
- * Q: 如何添加自定义 Header？
- * A: 传入 options.headers 参数，在 backendFetch 中自动合并
- * 
- * Q: 如何进行请求日志记录？
- * A: 使用 middleware.ts 中的 addRequestInterceptor/addResponseInterceptor
- * 
- * ═══════════════════════════════════════════════════════════════════
+ * // 验证器会自动 trim 并验证参数，失败时抛出 APIError
+ * const validated = AuthValidators.loginByPassword(identifier, password)
  */
 
-// 这是一个参考文件，无需导出任何内容
+export {};

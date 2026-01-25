@@ -33,7 +33,7 @@ import { useState } from "react"
 import { User } from "@/lib/types/user"
 import { useUserStore } from "@/store/useUserStore"
 import SetPassword from "./nav-user/SetPassword"
-import { logout } from "@/lib/api/actions"
+import { logout } from "@/lib/api/client"
 
 export function NavUser({ user }: { user: User | null }) {
   const { isMobile } = useSidebar();

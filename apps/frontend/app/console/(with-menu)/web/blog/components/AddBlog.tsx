@@ -17,7 +17,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { BlogPermissionCheckBoxs } from "./BlogPermissionCheckBoxs";
 import { copyShareURL } from "./utils";
-import { adminCreateBlog } from "@/lib/api/actions";
+import { adminCreateBlog } from "@/lib/api/client";
 
 interface AddBlogProps {
     children: React.ReactNode;

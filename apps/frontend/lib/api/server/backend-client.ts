@@ -1,14 +1,16 @@
 /**
- * 内部后端通信客户端
+ * 服务端后端通信客户端
  * 
  * 职责：
  * - 隐藏后端地址（API_BASE 仅在此模块可见）
- * - 处理 Server Actions 中的 HTTP 请求
+ * - 处理服务端组件/Route Handlers 中的 HTTP 请求
  * - 转发 Cookie 和 Header
  * - 统一错误处理
  * 
- * 使用位置：仅在 lib/api/actions/ 中使用
- * 不允许在客户端代码中导入
+ * 使用位置：
+ * - 仅在 Server Components 中使用
+ * - 仅在 Route Handlers (app/api/) 中使用
+ * - 不允许在客户端代码中导入
  */
 
 import { headers, cookies } from 'next/headers';
@@ -21,7 +23,7 @@ if (!API_BASE) {
 }
 
 export interface BackendFetchOptions extends RequestInit {
-  skipErrorHandling?: boolean; // 某些场景可跳过统一错误处理
+  skipErrorHandling?: boolean;
 }
 
 /**
@@ -47,7 +49,6 @@ export async function backendFetch<T = unknown>(
     'x-forwarded-for',
     'x-real-ip',
     'x-forwarded-proto',
-    'x-forwarded-host',
     'accept-language',
   ];
 
@@ -77,7 +78,7 @@ export async function backendFetch<T = unknown>(
       ...options,
     });
 
-    // 将后端返回的 Set-Cookie 同步到当前响应，确保浏览器写入
+    // 将后端返回的 Set-Cookie 同步到当前响应
     const setCookieHeaders = getSetCookieHeaders(response.headers);
     if (setCookieHeaders.length) {
       setCookieHeaders.forEach((raw) => {
@@ -139,100 +140,71 @@ export async function backendFetch<T = unknown>(
 /**
  * 便利函数：构建完整的请求体
  */
-export function buildRequestBody<T extends Record<string, any>>(data: T): string {
+export function buildRequestBody<T extends Record<string, unknown>>(data: T): string {
   return JSON.stringify(data);
 }
 
 // 解析并收集后端返回的 Set-Cookie header
 function getSetCookieHeaders(headers: Headers): string[] {
-  if (typeof (headers as any).getSetCookie === 'function') {
-    return (headers as any).getSetCookie() || [];
+  if (typeof (headers as unknown as { getSetCookie?: () => string[] }).getSetCookie === 'function') {
+    return (headers as unknown as { getSetCookie: () => string[] }).getSetCookie() || [];
   }
-
   const raw = headers.get('set-cookie');
-  if (!raw) return [];
-
-  // 尝试拆分多个 cookie，避免被 Expires 中的逗号误切分
-  return raw.split(/,(?=[^;]+?=)/).map((item) => item.trim()).filter(Boolean);
+  return raw ? [raw] : [];
 }
 
-// 粗解析单个 Set-Cookie 字符串，提取必要属性
-function parseSetCookie(setCookie: string): {
+// 解析 Set-Cookie 字符串
+function parseSetCookie(raw: string): {
   name: string;
   value: string;
   path?: string;
   domain?: string;
+  maxAge?: number;
+  expires?: Date;
   httpOnly?: boolean;
   secure?: boolean;
-  sameSite?: 'lax' | 'strict' | 'none';
-  expires?: Date;
-  maxAge?: number;
+  sameSite?: 'strict' | 'lax' | 'none';
 } | null {
-  const parts = setCookie.split(';').map((p) => p.trim());
-  const [nameValue, ...attrParts] = parts;
-  const eqIndex = nameValue.indexOf('=');
-  if (eqIndex <= 0) return null;
+  const parts = raw.split(';').map((p) => p.trim());
+  const [nameValue, ...attrs] = parts;
+  if (!nameValue) return null;
 
-  const name = nameValue.slice(0, eqIndex).trim();
-  const value = nameValue.slice(eqIndex + 1).trim();
-  if (!name) return null;
+  const eqIdx = nameValue.indexOf('=');
+  if (eqIdx === -1) return null;
 
-  const result: {
-    name: string;
-    value: string;
-    path?: string;
-    domain?: string;
-    httpOnly?: boolean;
-    secure?: boolean;
-    sameSite?: 'lax' | 'strict' | 'none';
-    expires?: Date;
-    maxAge?: number;
-  } = { name, value };
+  const name = nameValue.slice(0, eqIdx);
+  const value = nameValue.slice(eqIdx + 1);
 
-  attrParts.forEach((attr) => {
-    if (!attr) return;
-    const [rawKey, ...rawValParts] = attr.split('=');
-    const key = rawKey.trim().toLowerCase();
-    const val = rawValParts.join('=').trim();
+  const options: Record<string, unknown> = {};
 
-    switch (key) {
+  attrs.forEach((attr) => {
+    const [key, val] = attr.split('=').map((s) => s.trim());
+    const lowerKey = key.toLowerCase();
+
+    switch (lowerKey) {
       case 'path':
-        result.path = val || undefined;
+        options.path = val;
         break;
       case 'domain':
-        result.domain = val || undefined;
+        options.domain = val;
+        break;
+      case 'max-age':
+        options.maxAge = parseInt(val, 10);
+        break;
+      case 'expires':
+        options.expires = new Date(val);
         break;
       case 'httponly':
-        result.httpOnly = true;
+        options.httpOnly = true;
         break;
       case 'secure':
-        result.secure = true;
+        options.secure = true;
         break;
-      case 'samesite': {
-        const normalized = val.toLowerCase();
-        if (normalized === 'lax' || normalized === 'strict' || normalized === 'none') {
-          result.sameSite = normalized as 'lax' | 'strict' | 'none';
-        }
-        break;
-      }
-      case 'expires': {
-        const date = new Date(val);
-        if (!isNaN(date.getTime())) {
-          result.expires = date;
-        }
-        break;
-      }
-      case 'max-age': {
-        const parsed = parseInt(val, 10);
-        if (!Number.isNaN(parsed)) {
-          result.maxAge = parsed;
-        }
-        break;
-      }
-      default:
+      case 'samesite':
+        options.sameSite = val?.toLowerCase() as 'strict' | 'lax' | 'none';
         break;
     }
   });
 
-  return result;
+  return { name, value, ...options } as ReturnType<typeof parseSetCookie>;
 }

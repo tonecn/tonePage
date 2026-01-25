@@ -1,6 +1,6 @@
 "use client"
 
-import { adminGetUsers } from '@/lib/api/actions/admin.action'
+import { adminGetUsers } from '@/lib/api/client'
 import { handleAPIError } from '@/lib/api/common'
 import { useCallback } from 'react'
 import { toast } from 'sonner'

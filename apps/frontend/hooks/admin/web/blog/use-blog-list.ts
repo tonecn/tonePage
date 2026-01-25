@@ -1,6 +1,6 @@
 "use client"
 
-import { adminGetBlogs } from "@/lib/api/actions/admin.action";
+import { adminGetBlogs } from "@/lib/api/client";
 import { useCallback } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";

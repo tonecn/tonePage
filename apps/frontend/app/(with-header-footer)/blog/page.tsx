@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { safeCall } from "@/lib/api/common";
-import { getAllBlogs } from "@/lib/api/actions";
+import { getAllBlogs } from "@/lib/api/server";
 
 const formatNumber = (num: number): string => {
     if (num >= 1_000_000) {

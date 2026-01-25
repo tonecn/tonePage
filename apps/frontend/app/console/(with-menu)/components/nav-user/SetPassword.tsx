@@ -15,7 +15,7 @@ import { FC } from "react";
 import { DialogProps } from "@radix-ui/react-dialog";
 import { toast } from "sonner";
 import { handleAPIError } from "@/lib/api/common";
-import { updatePassword } from "@/lib/api/actions";
+import { updatePassword } from "@/lib/api/client";
 
 export default function SetPassword({ onOpenChange, ...props }: React.ComponentProps<FC<DialogProps>>) {
     async function handleSetPassword(password: string) {

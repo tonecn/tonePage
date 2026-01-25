@@ -4,7 +4,7 @@ import { ThemeProvider } from "../components/theme-provider";
 import { Toaster } from "sonner";
 import { ClientProvider } from "./ClientProvider";
 import { Metadata } from "next";
-import { getMe } from "@/lib/api/actions";
+import { getMe } from "@/lib/api/server";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

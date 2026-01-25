@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { createBlogComment } from "@/lib/api/actions";
+import { createBlogComment } from "@/lib/api/client";
 import { BlogComment } from "@/lib/types/blogComment";
 import { Send, Undo2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";

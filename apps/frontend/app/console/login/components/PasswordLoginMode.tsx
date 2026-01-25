@@ -4,7 +4,7 @@ import LoginHeader from "./LoginHeader";
 import { Label } from "@/components/ui/label"
 import { useCallback } from "react";
 import { toast } from "sonner";
-import { loginByPassword } from "@/lib/api/actions";
+import { loginByPassword } from "@/lib/api/client";
 
 export default function PasswordLoginMode() {
     const handleForgetPassword = useCallback(() => {

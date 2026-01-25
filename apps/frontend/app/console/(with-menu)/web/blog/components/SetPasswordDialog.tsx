@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { adminSetBlogPassword } from "@/lib/api/actions";
+import { adminSetBlogPassword } from "@/lib/api/client";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 

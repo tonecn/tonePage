@@ -9,7 +9,7 @@
  */
 
 import { z } from 'zod'
-import { APIError } from '../common'
+import { APIError } from './common'
 
 /**
  * 辅助函数：将 Zod 验证错误转换为 APIError
@@ -94,6 +94,47 @@ export const AuthValidators = {
             throw error
         }
     },
+
+    /**
+     * 发送登录短信验证
+     */
+    sendLoginSms: (phone: string) => {
+        const schema = z.object({
+            phone: z.string()
+                .transform(v => v.trim())
+                .refine(v => /^1[3-9]\d{9}$/.test(v), '请输入合法的中国大陆手机号'),
+        })
+
+        try {
+            return schema.parse({ phone })
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                handleZodError(error)
+            }
+            throw error
+        }
+    },
+
+    /**
+     * 发送验证短信验证
+     */
+    sendVerificationSms: (phone: string, type: 'bind' | 'unbind' | 'change') => {
+        const schema = z.object({
+            phone: z.string()
+                .transform(v => v.trim())
+                .refine(v => /^1[3-9]\d{9}$/.test(v), '请输入合法的中国大陆手机号'),
+            type: z.enum(['bind', 'unbind', 'change']),
+        })
+
+        try {
+            return schema.parse({ phone, type })
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                handleZodError(error)
+            }
+            throw error
+        }
+    },
 }
 
 /**
@@ -150,54 +191,6 @@ export const UserValidators = {
 
         try {
             return schema.parse(data)
-        } catch (error) {
-            if (error instanceof z.ZodError) {
-                handleZodError(error)
-            }
-            throw error
-        }
-    },
-}
-
-/**
- * ==================== 短信验证器 ====================
- */
-
-export const SMSValidators = {
-    /**
-     * 发送登录短信验证
-     */
-    sendLoginSms: (phone: string) => {
-        const schema = z.object({
-            phone: z.string()
-                .transform(v => v.trim())
-                .refine(v => /^1[3-9]\d{9}$/.test(v), '请输入合法的中国大陆手机号'),
-        })
-
-        try {
-            return schema.parse({ phone })
-        } catch (error) {
-            if (error instanceof z.ZodError) {
-                handleZodError(error)
-            }
-            throw error
-        }
-    },
-
-    /**
-     * 发送验证短信验证
-     */
-    sendVerificationSms: (phone: string, type: 'register' | 'reset') => {
-        const schema = z.object({
-            phone: z.string()
-                .transform(v => v.trim())
-                .refine(v => /^1[3-9]\d{9}$/.test(v), '请输入合法的中国大陆手机号'),
-            type: z.enum(['register', 'reset'])
-                .refine(v => v === 'register' || v === 'reset', '验证短信类型无效'),
-        })
-
-        try {
-            return schema.parse({ phone, type })
         } catch (error) {
             if (error instanceof z.ZodError) {
                 handleZodError(error)
@@ -455,26 +448,36 @@ export const AdminValidators = {
      * 更新用户验证
      */
     updateUser: (data: {
-        username: string
-        nickname: string
-        email: string | null
-        phone: string | null
+        username?: string
+        nickname?: string
+        email?: string | null
+        phone?: string | null
+        avatar?: string
+        roles?: string[]
     }) => {
         const schema = z.object({
             username: z.string()
                 .transform(v => v.trim())
-                .refine(v => v.length > 0, '用户名不能为空'),
+                .refine(v => v.length > 0, '用户名不能为空')
+                .optional(),
             nickname: z.string()
                 .transform(v => v.trim())
-                .refine(v => v.length > 0, '昵称不能为空'),
+                .refine(v => v.length > 0, '昵称不能为空')
+                .optional(),
             email: z.string()
                 .transform(v => v.trim())
                 .transform(v => v.length === 0 ? null : v)
-                .nullable(),
+                .nullable()
+                .optional(),
             phone: z.string()
                 .transform(v => v.trim())
                 .transform(v => v.length === 0 ? null : v)
-                .nullable(),
+                .nullable()
+                .optional(),
+            avatar: z.string()
+                .transform(v => v.trim())
+                .optional(),
+            roles: z.array(z.string()).optional(),
         })
 
         try {

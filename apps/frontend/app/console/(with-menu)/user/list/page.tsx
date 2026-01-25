@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { toast } from "sonner";
 import { ApiError } from "next/dist/server/api-utils";
 import { AdminUser } from "@/lib/types/user";
-import { adminRemoveUser } from "@/lib/api/actions/admin.action";
+import { adminRemoveUser } from "@/lib/api/client";
 
 
 export default function Page() {
