@@ -57,6 +57,7 @@ async function handleRequest(request: NextRequest, context: RouteContext) {
     'x-real-ip',
     'x-forwarded-proto',
     'accept-language',
+    'content-type',
   ];
 
   headersToForward.forEach((key) => {
@@ -66,18 +67,25 @@ async function handleRequest(request: NextRequest, context: RouteContext) {
     }
   });
 
+  // Default Content-Type to application/json if not present
+  if (!forwardedHeaders['content-type']) {
+    forwardedHeaders['content-type'] = 'application/json';
+  }
+
   // 构建请求头
   const fetchHeaders: HeadersInit = {
-    'Content-Type': 'application/json',
     Cookie: cookieStore.toString(),
     ...forwardedHeaders,
   };
 
   // 获取请求体
-  let body: string | undefined;
+  let body: BodyInit | undefined;
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     try {
-      body = await request.text();
+      const arrayBuffer = await request.arrayBuffer();
+      if (arrayBuffer.byteLength > 0) {
+        body = arrayBuffer;
+      }
     } catch {
       body = undefined;
     }
@@ -110,6 +118,9 @@ async function handleRequest(request: NextRequest, context: RouteContext) {
     } else {
       // 非 JSON 响应
       const text = await response.text();
+      console.error(`[API Proxy] Non-JSON response from ${url} (${response.status})`);
+      console.error(`[API Proxy] Response preview: ${text.slice(0, 500)}`);
+
       return NextResponse.json(
         {
           success: false,
