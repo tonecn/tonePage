@@ -378,7 +378,7 @@ export const adminApi = {
 
     update: (id: string, data: UpdateUserData) =>
       request<AdminUser>(`/api/admin/user/${id}`, {
-        method: 'PATCH',
+        method: 'PUT',
         body: data,
       }),
 
