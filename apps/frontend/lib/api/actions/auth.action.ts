@@ -98,6 +98,15 @@ export async function getPasskeys() {
 }
 
 /**
+ * 删除 Passkey
+ */
+export async function passkeyDelete(id: string) {
+  return await backendFetch<boolean>(`/api/auth/passkey/${id}` , {
+    method: 'DELETE',
+  });
+}
+
+/**
  * 获取 Passkey 登录选项
  */
 export async function getLoginByPasskeyOptions() {

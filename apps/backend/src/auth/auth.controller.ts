@@ -2,7 +2,9 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   Req,
   Res,
@@ -173,6 +175,17 @@ export class AuthController {
   async listPasskeys(@CurrentUser() user: AuthUser) {
     const { userId } = user;
     return this.passkeyService.listUserPasskeys(userId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('passkey/:id')
+  async deletePasskey(
+    @CurrentUser() user: AuthUser,
+    @Param('id') id: string,
+  ) {
+    const { userId } = user;
+    await this.passkeyService.removePasskey(userId, id);
+    return true;
   }
 
   @UseGuards(AuthGuard)

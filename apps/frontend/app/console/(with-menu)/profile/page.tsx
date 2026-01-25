@@ -30,7 +30,7 @@ import { startRegistration } from '@simplewebauthn/browser';
 import { toast } from "sonner";
 import { getPasskeyRegisterOptions } from "@/lib/api/actions";
 import useSWR from "swr";
-import { getPasskeys, passkeyRegister } from "@/lib/api/actions/auth.action";
+import { getPasskeys, passkeyRegister, passkeyDelete } from "@/lib/api/actions/auth.action";
 
 export default function Page() {
     const userStore = useUserStore();
@@ -128,7 +128,7 @@ function PasskeyContent() {
 
     return (
         <>
-            <PasskeyList data={data} isLoading={isLoading} error={error} />
+            <PasskeyList data={data} isLoading={isLoading} error={error} onDeleted={() => mutate()} />
             <div>
                 <AddPasskeyDialog onSuccess={() => mutate()}>
                     <Button>添加通行证</Button>
@@ -209,10 +209,11 @@ function AddPasskeyDialog({ children, onSuccess }: AddPasskeyDialogProps) {
 interface PasskeyListProps {
     data: { id: string; name: string; createdAt: string }[] | undefined;
     isLoading: boolean;
-    error: any
+    error: any;
+    onDeleted?: () => unknown | Promise<unknown>;
 }
 
-function PasskeyList({ data, isLoading, error }: PasskeyListProps) {
+function PasskeyList({ data, isLoading, error, onDeleted }: PasskeyListProps) {
     return (
         <Table>
             {data && data.length === 0 && <TableCaption>暂无Passkey</TableCaption>}
@@ -234,12 +235,60 @@ function PasskeyList({ data, isLoading, error }: PasskeyListProps) {
                             <TableCell>{p.name}</TableCell>
                             <TableCell>{new Date(p.createdAt).toLocaleString()}</TableCell>
                             <TableCell className="text-right">
-                                <Button>删除</Button>
+                                <DeletePasskeyDialog id={p.id} name={p.name} onSuccess={onDeleted}>
+                                    <Button>删除</Button>
+                                </DeletePasskeyDialog>
                             </TableCell>
                         </TableRow>
                     ))
                 }
             </TableBody>
         </Table>
+    )
+}
+
+interface DeletePasskeyDialogProps {
+    id: string;
+    name: string;
+    children: ReactElement;
+    onSuccess?: () => unknown | Promise<unknown>;
+}
+
+function DeletePasskeyDialog({ id, name, children, onSuccess }: DeletePasskeyDialogProps) {
+    const [open, setOpen] = useState(false);
+
+    const handleDelete = async () => {
+        try {
+            await passkeyDelete(id);
+            toast.success('删除成功');
+            setOpen(false);
+            await onSuccess?.();
+        } catch (error) {
+            console.log(error);
+            handleAPIError(({ message }) => toast.error(message));
+        }
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                {children}
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-100">
+                <DialogHeader>
+                    <DialogTitle>确认删除通行证</DialogTitle>
+                    <DialogDescription>
+                        确认删除后，将无法使用该通行证登录。<br />
+                        通行证名称：{name}
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button variant="outline">取消</Button>
+                    </DialogClose>
+                    <Button variant="destructive" onClick={handleDelete}>删除</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     )
 }
