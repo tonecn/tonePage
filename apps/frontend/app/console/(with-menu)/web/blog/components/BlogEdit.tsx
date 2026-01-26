@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import useSWR from "swr"
@@ -33,7 +32,8 @@ import { BlogPermission } from "@/lib/types/Blog.Permission.enum"
 import { SetPasswordDialog } from "./SetPasswordDialog"
 import { copyShareURL } from "./utils"
 import { api } from "@/lib/api"
-import { Upload, FileText } from "lucide-react"
+import { Edit3 } from "lucide-react"
+import { BlogContentEditor } from "./BlogContentEditor"
 
 interface BlogEditProps {
     id: string;
@@ -43,7 +43,7 @@ interface BlogEditProps {
 
 export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
     const [open, setOpen] = useState(false)
-    const [mode, setMode] = useState<'write' | 'upload'>('write');
+    const [editorOpen, setEditorOpen] = useState(false);
     const { data: blog, mutate } = useSWR(
         open ? `/api/admin/web/blog/${id}` : null,
         () => api.admin.blog.get(id),
@@ -84,27 +84,13 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
         }
     }
 
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!blog) return;
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const text = e.target?.result;
-            if (typeof text === 'string') {
-                mutate({ ...blog, content: text }, false);
-            }
-        };
-        reader.readAsText(file);
-    };
-
     return (
+        <>
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[800px]">
+            <DialogContent className="sm:max-w-[700px]">
                 <DialogHeader>
                     <DialogTitle>编辑博客</DialogTitle>
                     <DialogDescription>
@@ -149,58 +135,23 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-4 items-start gap-4">
-                                    <Label className="text-right mt-2">
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                    <Label className="text-right">
                                         内容
                                     </Label>
-                                    <div className="col-span-3 space-y-4">
-                                        <div className="flex gap-2">
-                                            <Button 
-                                                size="sm" 
-                                                variant={mode === 'write' ? 'default' : 'outline'}
-                                                onClick={() => setMode('write')}
-                                            >
-                                                <FileText className="w-4 h-4 mr-2" />
-                                                直接编辑
-                                            </Button>
-                                            <Button 
-                                                size="sm" 
-                                                variant={mode === 'upload' ? 'default' : 'outline'}
-                                                onClick={() => setMode('upload')}
-                                            >
-                                                <Upload className="w-4 h-4 mr-2" />
-                                                上传/替换 Markdown
-                                            </Button>
+                                    <div className="col-span-3 flex items-center justify-between border rounded-md px-3 py-2 bg-muted/20">
+                                        <div className="text-sm text-muted-foreground">
+                                            {blog.content ? `已输入 ${blog.content.length} 个字符` : '暂无内容'}
                                         </div>
-                                        
-                                        {mode === 'write' ? (
-                                            <Textarea
-                                                className="min-h-[300px] font-mono"
-                                                placeholder="# Markdown content here..."
-                                                value={blog.content || ''}
-                                                onChange={(e) => mutate({ ...blog, content: e.target.value }, false)}
-                                            />
-                                        ) : (
-                                            <div className="border-2 border-dashed rounded-lg p-8 text-center space-y-2">
-                                                <Input 
-                                                    type="file" 
-                                                    accept=".md,.markdown,.txt" 
-                                                    onChange={handleFileUpload}
-                                                    className="hidden"
-                                                    id="md-upload-edit"
-                                                />
-                                                <Label htmlFor="md-upload-edit" className="cursor-pointer block">
-                                                    <div className="flex flex-col items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                                                        <Upload className="w-8 h-8" />
-                                                        <span>点击选择 Markdown 文件</span>
-                                                        <span className="text-xs">支持 .md, .markdown, .txt</span>
-                                                    </div>
-                                                </Label>
-                                                <div className="text-xs text-muted-foreground mt-2">
-                                                    当前内容长度: {blog.content?.length || 0} 字符
-                                                </div>
-                                            </div>
-                                        )}
+                                        <Button 
+                                            size="sm" 
+                                            variant="outline" 
+                                            onClick={() => setEditorOpen(true)}
+                                            type="button"
+                                        >
+                                            <Edit3 className="w-4 h-4 mr-2" />
+                                            编辑内容
+                                        </Button>
                                     </div>
                                 </div>
 
@@ -281,5 +232,16 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
                 }
             </DialogContent>
         </Dialog>
+
+        {blog && (
+            <BlogContentEditor 
+                open={editorOpen} 
+                onOpenChange={setEditorOpen}
+                initialContent={blog.content || ''} 
+                onSave={(content) => mutate({...blog, content}, false)}
+                title={`编辑: ${blog.title}`}
+            />
+        )}
+        </>
     )
 }

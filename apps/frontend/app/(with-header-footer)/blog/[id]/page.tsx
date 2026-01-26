@@ -1,4 +1,4 @@
-import { BlogContent } from "./BlogContent";
+import { BlogContent } from "@/components/BlogContent";
 import { api, APIError, safeCall } from "@/lib/api";
 import { BlogComments } from "./components/BlogComments";
 
