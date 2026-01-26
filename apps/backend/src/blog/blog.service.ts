@@ -27,7 +27,6 @@ export class BlogService {
       'blog.slug',
       'blog.title',
       'blog.description',
-      'blog.cover',
       'blog.viewCount',
       'blog.permissions',
       'blog.createdAt',

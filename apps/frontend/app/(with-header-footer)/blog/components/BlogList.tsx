@@ -78,7 +78,7 @@ export function BlogList({ initialData }: BlogListProps) {
     };
 
     return (
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-2">
             {blogs.map((blog) => (
                 <article className="w-full px-5 cursor-default transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900/50 py-4 rounded-lg" key={blog.id}>
                     <h2 className="text-2xl font-medium">
