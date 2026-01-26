@@ -321,8 +321,13 @@ export const adminApi = {
 
   // ===== 博客管理 =====
   blog: {
-    getAll: () =>
-      request<Blog[]>('/api/admin/web/blog'),
+    getAll: (page: number = 1, pageSize: number = 20, query: string = '') => {
+      const queryString = new URLSearchParams();
+      queryString.set('page', String(page));
+      queryString.set('pageSize', String(pageSize));
+      if (query) queryString.set('query', query);
+      return request<{ items: Blog[], total: number }>(`/api/admin/web/blog?${queryString.toString()}`);
+    },
 
     get: (id: string) =>
       request<Blog>(`/api/admin/web/blog/${id}`),

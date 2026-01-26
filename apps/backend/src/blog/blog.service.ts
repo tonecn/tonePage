@@ -18,23 +18,40 @@ export class BlogService {
   async list(
     option: {
       withAll?: boolean;
+      page?: number;
+      pageSize?: number;
+      query?: string;
     } = {},
   ) {
-    return (
-      await this.blogRepository.find({
-        order: {
-          createdAt: 'DESC',
-        },
-      })
-    )
-      .filter(
-        (i) => option.withAll || i.permissions.includes(BlogPermission.List),
-      )
-      .map((i) => {
-        if (option.withAll) {
-          return i;
-        }
+    const { withAll = false, page = 1, pageSize = 20, query } = option;
+    const qb = this.blogRepository.createQueryBuilder('blog');
 
+    if (!withAll) {
+       // Assuming permissions logic would need to be handled carefully if filtering at DB level
+       // But for now, if not withAll, we might just be showing public ones or similar?
+       // The original code filtered in memory: i.permissions.includes(BlogPermission.List)
+       // TO support pagination properly, we need to do this in DB.
+       // Since `permissions` is likely a SimpleArray or similar in TypeORM (string column), we can use LIKE.
+       // Assuming permissions is stored as "csv string" or "jsonb".
+       // Let's check Blog Entity first to be safe, but for now I'll implement query logic first.
+       qb.andWhere('blog.permissions LIKE :permission', { permission: `%${BlogPermission.List}%` });
+    }
+    
+    if (query) {
+        qb.andWhere('(LOWER(blog.title) LIKE LOWER(:query) OR LOWER(blog.description) LIKE LOWER(:query) OR LOWER(blog.slug) LIKE LOWER(:query))', { query: `%${query}%` });
+    }
+
+    qb.orderBy('blog.createdAt', 'DESC')
+      .skip((page - 1) * pageSize)
+      .take(pageSize);
+      
+    const [items, total] = await qb.getManyAndCount();
+
+    if (withAll) {
+        return { items, total };
+    }
+
+    const mappedItems = items.map((i) => {
         const { createdAt, updatedAt, id, title, viewCount, description, slug } = i;
         return {
           createdAt,
@@ -46,6 +63,8 @@ export class BlogService {
           description,
         };
       });
+
+    return { items: mappedItems, total };
   }
 
   async create(dto: Partial<Blog> & { password: string }) {

@@ -5,10 +5,16 @@ import { useCallback } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
 
-export function useBlogList() {
+interface UseBlogListProps {
+    page: number;
+    pageSize: number;
+    query?: string;
+}
+
+export function useBlogList({ page, pageSize, query }: UseBlogListProps) {
     const { data, error, isLoading, mutate } = useSWR(
-        ['/admin/web/blog'],
-        () => api.admin.blog.getAll(),
+        ['/admin/web/blog', page, pageSize, query],
+        () => api.admin.blog.getAll(page, pageSize, query),
         {
             onError: handleAPIError(({ message }) => toast.error(message))
         }
@@ -19,7 +25,8 @@ export function useBlogList() {
     }, [mutate])
 
     return {
-        blogs: data,
+        blogs: data?.items || [],
+        total: data?.total || 0,
         error,
         isLoading,
         mutate,

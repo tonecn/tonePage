@@ -7,8 +7,10 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
+import { BlogListDto } from 'src/admin/dto/admin-web/blog-list.dto';
 import { CreateBlogDto } from 'src/admin/dto/admin-web/create-blog.dto';
 import { SetBlogPasswordDto } from 'src/admin/dto/admin-web/set-blog-password.dto';
 import { UpdateBlogDto } from 'src/admin/dto/admin-web/update-blog.dto';
@@ -25,9 +27,12 @@ export class AdminWebBlogController {
   constructor(private readonly adminWebBlogService: BlogService) { }
 
   @Get()
-  async list() {
+  async list(@Query() query: BlogListDto) {
     return this.adminWebBlogService.list({
       withAll: true,
+      page: query.page,
+      pageSize: query.pageSize,
+      query: query.query
     });
   }
 
