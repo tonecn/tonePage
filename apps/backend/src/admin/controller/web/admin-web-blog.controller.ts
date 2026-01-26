@@ -28,12 +28,11 @@ export class AdminWebBlogController {
 
   @Get()
   async list(@Query() query: BlogListDto) {
-    return this.adminWebBlogService.list({
-      withAll: true,
-      page: query.page,
-      pageSize: query.pageSize,
-      query: query.query
-    });
+    return this.adminWebBlogService.getAdminList(
+      query.page || 1,
+      query.pageSize || 10,
+      query.query,
+    );
   }
 
   @Post()

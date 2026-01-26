@@ -15,57 +15,87 @@ export class BlogService {
     private readonly blogCommentRepository: Repository<BlogComment>,
   ) { }
 
-  async list(
-    option: {
-      withAll?: boolean;
-      page?: number;
-      pageSize?: number;
-      query?: string;
-    } = {},
-  ) {
-    const { withAll = false, page = 1, pageSize = 20, query } = option;
+  async getAdminList(page: number, pageSize: number, query?: string) {
     const qb = this.blogRepository.createQueryBuilder('blog');
-
-    if (!withAll) {
-       // Assuming permissions logic would need to be handled carefully if filtering at DB level
-       // But for now, if not withAll, we might just be showing public ones or similar?
-       // The original code filtered in memory: i.permissions.includes(BlogPermission.List)
-       // TO support pagination properly, we need to do this in DB.
-       // Since `permissions` is likely a SimpleArray or similar in TypeORM (string column), we can use LIKE.
-       // Assuming permissions is stored as "csv string" or "jsonb".
-       // Let's check Blog Entity first to be safe, but for now I'll implement query logic first.
-       qb.andWhere('blog.permissions LIKE :permission', { permission: `%${BlogPermission.List}%` });
-    }
     
     if (query) {
         qb.andWhere('(LOWER(blog.title) LIKE LOWER(:query) OR LOWER(blog.description) LIKE LOWER(:query) OR LOWER(blog.slug) LIKE LOWER(:query))', { query: `%${query}%` });
     }
+
+    qb.select([
+      'blog.id',
+      'blog.slug',
+      'blog.title',
+      'blog.description',
+      'blog.cover',
+      'blog.viewCount',
+      'blog.permissions',
+      'blog.createdAt',
+      'blog.updatedAt',
+      // Explicitly excluding 'content' and 'password_hash' by not selecting them
+    ]);
 
     qb.orderBy('blog.createdAt', 'DESC')
       .skip((page - 1) * pageSize)
       .take(pageSize);
       
     const [items, total] = await qb.getManyAndCount();
-
-    if (withAll) {
-        return { items, total };
-    }
-
-    const mappedItems = items.map((i) => {
-        const { createdAt, updatedAt, id, title, viewCount, description, slug } = i;
-        return {
-          createdAt,
-          updatedAt,
-          id,
-          title,
-          slug,
-          viewCount,
-          description,
-        };
-      });
-
-    return { items: mappedItems, total };
+    return { items, total };
   }
+
+  async getPublicList(page: number, pageSize: number) {
+    const qb = this.blogRepository.createQueryBuilder('blog');
+
+    // Filter by permission: Must have 'Public' permission
+    // Assuming permissions is a stored string (SimpleArray) like "Public,List"
+    // Using LIKE for SimpleArray search in SQLite/Postgres if not using native array types
+    // Or if it's Postgres array, logic might differ. 
+    // Looking at existing code, it was using memory filter or assumed LIKE.
+    // Let's assume standard string match for now.
+    qb.where('blog.permissions LIKE :permission', { permission: `%${BlogPermission.List}%` });
+
+    qb.select([
+      'blog.id',
+      'blog.slug',
+      'blog.title',
+      'blog.description',
+      'blog.viewCount',
+      'blog.createdAt',
+    ]);
+
+    qb.orderBy('blog.createdAt', 'DESC')
+      .skip((page - 1) * pageSize)
+      .take(pageSize);
+
+    const [items, total] = await qb.getManyAndCount();
+    return { items, total };
+  }
+
+  async getSitemapList() {
+    const qb = this.blogRepository.createQueryBuilder('blog');
+    
+    qb.where('blog.permissions LIKE :permission', { permission: `%${BlogPermission.List}%` });
+
+    qb.select([
+      'blog.slug',
+      'blog.updatedAt',
+    ]);
+    
+    // No pagination
+    
+    const items = await qb.getMany();
+    // Return format compatible with existing expected response or just items? 
+    // Existing list returned { items, total } for withAll.
+    // Let's return the simplified list.
+    return { items, total: items.length };
+  }
+
+  // Deprecated usage mapping? No, we will update controllers.
+  /* 
+  async list(
+    option: {
+  ...
+  */
 
   async create(dto: Partial<Blog> & { password: string }) {
     const { password, ...blog } = dto;

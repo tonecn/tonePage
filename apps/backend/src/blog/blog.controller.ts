@@ -9,6 +9,8 @@ import {
   Query,
   Req,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { UserService } from 'src/user/user.service';
@@ -18,6 +20,7 @@ import { BlogPermission } from './blog.permission.enum';
 import { OptionalAuthGuard } from 'src/auth/guards/optional-auth.guard';
 import { AuthUser, CurrentUser } from 'src/auth/decorator/current-user.decorator';
 import { Request } from 'express';
+import { GetBlogsDto } from './dto/get-blogs.dto';
 
 @Controller('blog')
 export class BlogController {
@@ -27,8 +30,12 @@ export class BlogController {
   ) { }
 
   @Get()
-  getBlogs() {
-    return this.blogService.list();
+  @UsePipes(new ValidationPipe({ transform: true }))
+  getBlogs(@Query() query: GetBlogsDto) {
+    if (query.withAll) {
+      return this.blogService.getSitemapList();
+    }
+    return this.blogService.getPublicList(query.page || 1, query.pageSize || 10);
   }
 
   @Get(':id/slug')

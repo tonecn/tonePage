@@ -204,10 +204,16 @@ export const userApi = {
 
 export const blogApi = {
   /**
-   * 获取所有博客列表
+   * 获取所有博客列表 (仅用于 Sitemap)
    */
   getAll: () =>
-    request<{ items: BlogListItem[]; total: number; }>('/api/blog'),
+    request<{ items: BlogListItem[]; total: number; }>('/api/blog?withAll=true'),
+
+  /**
+   * 获取公开博客列表 (分页)
+   */
+  getPublicList: (page: number = 1, pageSize: number = 10) =>
+    request<{ items: BlogListItem[]; total: number; }>(`/api/blog?page=${page}&pageSize=${pageSize}`),
 
   /**
    * 通过 slug 获取博客详情

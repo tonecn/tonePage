@@ -6,19 +6,7 @@ import {
 import { AlertCircle } from "lucide-react";
 import { api, safeCall } from "@/lib/api";
 
-const formatNumber = (num: number): string => {
-    if (num >= 1_000_000) {
-        return (num / 1_000_000).toFixed(1) + 'M';
-    }
-    if (num >= 1_000) {
-        return (num / 1_000).toFixed(1) + 'K';
-    }
-    return num.toString();
-};
-
-const getBlogDetailUrl = (slug: string): string => {
-    return `/blog/${slug}`;
-};
+import { BlogList } from "./components/BlogList";
 
 export const metadata = {
     title: '日志 - 特恩的日志',
@@ -26,9 +14,11 @@ export const metadata = {
 };
 
 export default async function Blog() {
-    const { data: blogs, error } = await safeCall(() => api.blog.getAll());
+    // Initial fetch for the first page
+    const { data, error } = await safeCall(() => api.blog.getPublicList(1, 10));
+
     return (
-        <section className="max-w-120 w-auto mx-auto my-10 flex flex-col gap-8">
+        <section className="max-w-xl w-full mx-auto my-10 flex flex-col gap-8 px-4">
             {
                 error && (
                     <Alert variant="destructive" className="w-full">
@@ -41,27 +31,7 @@ export default async function Blog() {
                 )
             }
             {
-                blogs && blogs.items.map((blog) => (
-                    <article className="w-full px-5 cursor-default" key={blog.id}>
-                        <h2 className="text-2xl font-medium">
-                            <a
-                                className="hover:underline focus:outline-none focus:ring-2 focus:ring-zinc-400 rounded"
-                                href={getBlogDetailUrl(blog.slug)}
-                                rel="noopener noreferrer"
-                            >
-                                {blog.title}
-                            </a>
-                        </h2>
-                        <p className="text-sm font-medium text-zinc-600 dark:text-zinc-300">{blog.description}</p>
-                        <footer className="mt-3 text-sm text-zinc-500 flex items-center gap-2">
-                            <time dateTime={blog.createdAt}>
-                                {new Date(blog.createdAt).toLocaleString('zh-CN')}
-                            </time>
-                            <span>·</span>
-                            <span>{formatNumber(blog.viewCount)} 次访问</span>
-                        </footer>
-                    </article>
-                ))
+                data && <BlogList initialData={data} />
             }
         </section>
     )
