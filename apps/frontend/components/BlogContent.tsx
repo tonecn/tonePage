@@ -90,6 +90,7 @@ export function BlogContent({ content, className }: BlogContentProps) {
                     th: ({ ...props }) => <th className="text-left font-bold border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50 p-1.5" {...props} />,
                     td: ({ ...props }) => <td className="border border-zinc-200 dark:border-zinc-700 p-1.5" {...props} />,
                     table: ({ ...props }) => <div className="my-4 w-full overflow-x-auto border border-zinc-200 dark:border-zinc-700"><table className="w-full text-sm" {...props} /></div>,
+                    /** @ts-ignore */
                     pre: ({ ...props }) => <div className="my-4 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm text-left" {...props} />,
                     code: ({ className, children, ...props }) => {
                         const match = /language-(\w+)/.exec(className || '')

@@ -5,9 +5,9 @@ export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 获取所有博客
-    const blogs = await api.blog.getAll().catch(() => [])
+    const blogs = await api.blog.getAll();
 
-    const blogUrls = blogs.map(blog => {
+    const blogUrls = blogs.items.map(blog => {
         return {
             url: `https://www.tonesc.cn/blog/${blog.slug}`,
             lastModified: new Date(blog.updatedAt),
