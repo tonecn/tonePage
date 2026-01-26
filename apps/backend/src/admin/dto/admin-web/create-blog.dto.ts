@@ -1,4 +1,4 @@
-import { IsEnum, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { BlogPermission } from 'src/blog/blog.permission.enum';
 
 export class CreateBlogDto {
@@ -12,7 +12,8 @@ export class CreateBlogDto {
   description: string;
 
   @IsString()
-  contentUrl: string;
+  @IsOptional()
+  content?: string;
 
   @IsEnum(BlogPermission, { each: true, message: '请求类型错误' })
   permissions: BlogPermission[];

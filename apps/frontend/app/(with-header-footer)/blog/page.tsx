@@ -27,7 +27,6 @@ export const metadata = {
 
 export default async function Blog() {
     const { data: blogs, error } = await safeCall(() => api.blog.getAll());
-
     return (
         <section className="max-w-120 w-auto mx-auto my-10 flex flex-col gap-8">
             {
@@ -42,7 +41,7 @@ export default async function Blog() {
                 )
             }
             {
-                blogs && blogs.map((blog) => (
+                blogs && blogs.items.map((blog) => (
                     <article className="w-full px-5 cursor-default" key={blog.id}>
                         <h2 className="text-2xl font-medium">
                             <a

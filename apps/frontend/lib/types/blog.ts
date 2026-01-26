@@ -6,7 +6,7 @@ export interface Blog {
     slug: string;
     description: string;
     viewCount: number;
-    contentUrl: string;
+    content?: string;
     createdAt: string;
     updatedAt: string;
     deletedAt: string;

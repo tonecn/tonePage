@@ -182,7 +182,6 @@ export default function Page() {
                                 <TableHead className="w-32 whitespace-nowrap">Slug</TableHead>
                                 <TableHead className="w-20 whitespace-nowrap">浏览量</TableHead>
                                 <TableHead className="whitespace-nowrap">权限</TableHead>
-                                <TableHead className="w-37.5 whitespace-nowrap">内容链接</TableHead>
                                 <TableHead className="w-37.5 whitespace-nowrap">更新时间</TableHead>
                                 <TableHead className="text-right whitespace-nowrap">操作</TableHead>
                             </TableRow>
@@ -200,7 +199,6 @@ export default function Page() {
                                         </TableCell>
                                         <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                                         <TableCell><Skeleton className="h-4 w-10" /></TableCell>
-                                        <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                                         <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                                         <TableCell className="text-right"><Skeleton className="h-8 w-8 ml-auto" /></TableCell>
                                     </TableRow>
@@ -290,30 +288,6 @@ export default function Page() {
                                                     );
                                                 })}
                                             </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            {blog.contentUrl ? (
-                                                <TooltipProvider>
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <a
-                                                                href={blog.contentUrl}
-                                                                target="_blank"
-                                                                rel="noreferrer"
-                                                                className="flex items-center gap-1 text-xs text-blue-600 hover:underline max-w-32 truncate"
-                                                            >
-                                                                <ExternalLink className="h-3 w-3 shrink-0" />
-                                                                链接
-                                                            </a>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent>
-                                                            <p className="max-w-64 break-all">{blog.contentUrl}</p>
-                                                        </TooltipContent>
-                                                    </Tooltip>
-                                                </TooltipProvider>
-                                            ) : (
-                                                <span className="text-xs text-muted-foreground">-</span>
-                                            )}
                                         </TableCell>
                                         <TableCell className="text-xs text-muted-foreground">
                                             {blog.updatedAt ? new Date(blog.updatedAt).toLocaleDateString() : '-'}

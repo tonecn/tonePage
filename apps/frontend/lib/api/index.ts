@@ -207,7 +207,7 @@ export const blogApi = {
    * 获取所有博客列表
    */
   getAll: () =>
-    request<BlogListItem[]>('/api/blog'),
+    request<{ items: BlogListItem[]; total: number; }>('/api/blog'),
 
   /**
    * 通过 slug 获取博客详情
@@ -336,7 +336,7 @@ export const adminApi = {
       title: string;
       description: string;
       slug: string;
-      contentUrl: string;
+      content?: string;
       permissions: string[];
       password: string;
     }) =>
@@ -349,7 +349,7 @@ export const adminApi = {
       title: string;
       description: string;
       slug: string;
-      contentUrl: string;
+      content: string;
       permissions: string[];
       password: string;
     }>) =>

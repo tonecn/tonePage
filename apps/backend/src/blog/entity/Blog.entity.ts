@@ -25,8 +25,8 @@ export class Blog {
   @Column()
   description: string;
 
-  @Column()
-  contentUrl: string;
+  @Column({ type: 'text', nullable: true })
+  content: string;
 
   @Column({ default: 0 })
   viewCount: number;

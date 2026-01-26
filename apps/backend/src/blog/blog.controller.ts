@@ -39,7 +39,7 @@ export class BlogController {
     if (slug.trim().length === 0) {
       throw new BadRequestException('文章不存在');
     }
-    
+
     const blog = await this.blogService.findBySlug(slug);
     if (!blog) throw new BadRequestException('文章不存在或无权限访问');
 
@@ -48,7 +48,7 @@ export class BlogController {
       if (!blog.permissions.includes(BlogPermission.ByPassword)) {
         throw new BadRequestException('文章不存在或无权限访问');
       } else {
-        // 判断密码是否正确
+        // 受密码保护，判断密码是否正确
         if (
           typeof password !== 'string' ||
           this.blogService.hashPassword(password) !== blog.password_hash
@@ -57,9 +57,6 @@ export class BlogController {
         }
       }
     }
-
-    const blogDataRes = await fetch(`${blog.contentUrl}`);
-    const blogContent = await blogDataRes.text();
 
     this.blogService.incrementViewCount(blog.id).catch(() => null);
     return {
@@ -70,7 +67,7 @@ export class BlogController {
       viewCount: blog.viewCount,
       createdAt: blog.createdAt,
       updatedAt: blog.updatedAt,
-      content: blogContent,
+      content: blog.content,
     };
   }
 
