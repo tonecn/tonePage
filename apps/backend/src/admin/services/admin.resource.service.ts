@@ -12,12 +12,25 @@ export class AdminResourceService {
     ) { }
 
 
-    async findAll() {
-        return this.resourceRepository.find({
-            order: {
-                updatedAt: 'DESC',
-            }
-        });
+    async findAll(page: number, pageSize: number, query?: string) {
+        const qb = this.resourceRepository.createQueryBuilder('resource');
+
+        if (query) {
+            qb.where('LOWER(resource.title) LIKE LOWER(:query) OR LOWER(resource.description) LIKE LOWER(:query)', { query: `%${query}%` });
+        }
+
+        qb.orderBy('resource.updatedAt', 'DESC')
+          .skip((page - 1) * pageSize)
+          .take(pageSize);
+
+        const [items, total] = await qb.getManyAndCount();
+
+        return {
+            items,
+            total,
+            page,
+            pageSize
+        };
     }
 
     async findById(id: string): Promise<Resource> {

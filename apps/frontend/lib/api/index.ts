@@ -280,8 +280,13 @@ export const ossApi = {
 export const adminApi = {
   // ===== 资源管理 =====
   resource: {
-    getAll: () =>
-      request<Resource[]>('/api/admin/web/resource'),
+    getAll: (page: number = 1, pageSize: number = 20, query: string = '') => {
+      const queryString = new URLSearchParams();
+      queryString.set('page', String(page));
+      queryString.set('pageSize', String(pageSize));
+      if (query) queryString.set('query', query);
+      return request<{ items: Resource[], total: number }>(`/api/admin/web/resource?${queryString.toString()}`);
+    },
 
     get: (id: string) =>
       request<Resource>(`/api/admin/web/resource/${id}`),

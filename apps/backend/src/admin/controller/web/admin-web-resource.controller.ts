@@ -7,9 +7,11 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CreateResourceDto } from 'src/admin/dto/admin-web/create-resource.dto';
+import { ResourceListDto } from 'src/admin/dto/admin-web/resource-list.dto';
 import { AdminResourceService } from 'src/admin/services/admin.resource.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { Role } from 'src/auth/role.enum';
@@ -24,8 +26,8 @@ export class AdminWebResourceController {
   constructor(private readonly resourceService: AdminResourceService) { }
 
   @Get()
-  async list() {
-    return this.resourceService.findAll();
+  async list(@Query() query: ResourceListDto) {
+    return this.resourceService.findAll(query.page, query.pageSize, query.query);
   }
 
   @Get(':id')
