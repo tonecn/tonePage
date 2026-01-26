@@ -17,6 +17,7 @@ import {
 import {
     Pagination,
     PaginationContent,
+    PaginationEllipsis,
     PaginationItem,
     PaginationLink,
     PaginationNext,
@@ -146,23 +147,45 @@ export default function UserListPage() {
     const renderPaginationItems = () => {
         const items = [];
         const maxVisible = 5;
-        let startPage = Math.max(1, page - 2);
-        let endPage = Math.min(totalPages, startPage + maxVisible - 1);
 
-        if (endPage - startPage < maxVisible - 1) {
-            startPage = Math.max(1, endPage - maxVisible + 1);
-        }
-
-        for (let i = startPage; i <= endPage; i++) {
+        if (totalPages <= maxVisible) {
+            for (let i = 1; i <= totalPages; i++) {
+                items.push(
+                    <PaginationItem key={i}>
+                        <PaginationLink isActive={page === i} onClick={() => setPage(i)} className="cursor-pointer h-9 w-9">
+                            {i}
+                        </PaginationLink>
+                    </PaginationItem>
+                );
+            }
+        } else {
             items.push(
-                <PaginationItem key={i}>
-                    <PaginationLink
-                        isActive={page === i}
-                        onClick={() => setPage(i)}
-                        className="cursor-pointer"
-                    >
-                        {i}
-                    </PaginationLink>
+                <PaginationItem key={1}>
+                    <PaginationLink isActive={page === 1} onClick={() => setPage(1)} className="cursor-pointer h-9 w-9">1</PaginationLink>
+                </PaginationItem>
+            );
+
+            if (page > 3) items.push(<PaginationItem key="sep1"><PaginationEllipsis /></PaginationItem>);
+
+            const start = Math.max(2, page - 1);
+            const end = Math.min(totalPages - 1, page + 1);
+
+            for (let i = start; i <= end; i++) {
+                if (i === 1 || i === totalPages) continue;
+                items.push(
+                    <PaginationItem key={i}>
+                        <PaginationLink isActive={page === i} onClick={() => setPage(i)} className="cursor-pointer h-9 w-9">
+                            {i}
+                        </PaginationLink>
+                    </PaginationItem>
+                );
+            }
+
+            if (page < totalPages - 2) items.push(<PaginationItem key="sep2"><PaginationEllipsis /></PaginationItem>);
+
+            items.push(
+                <PaginationItem key={totalPages}>
+                    <PaginationLink isActive={page === totalPages} onClick={() => setPage(totalPages)} className="cursor-pointer h-9 w-9">{totalPages}</PaginationLink>
                 </PaginationItem>
             );
         }
@@ -198,142 +221,141 @@ export default function UserListPage() {
             </div>
 
             {/* Content */}
-            <div className="border rounded-lg shadow-sm bg-card flex-1">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-75">用户</TableHead>
-                            <TableHead>联系方式</TableHead>
-                            <TableHead>注册时间</TableHead>
-                            <TableHead>状态</TableHead>
-                            <TableHead className="text-right">操作</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {isLoading ? (
-                            Array.from({ length: 5 }).map((_, i) => (
-                                <TableRow key={i}>
-                                    <TableCell><div className="flex gap-3"><Skeleton className="h-10 w-10 rounded-full" /><div className="space-y-2"><Skeleton className="h-4 w-24" /><Skeleton className="h-3 w-16" /></div></div></TableCell>
-                                    <TableCell><div className="space-y-2"><Skeleton className="h-4 w-32" /><Skeleton className="h-3 w-24" /></div></TableCell>
-                                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                                    <TableCell><Skeleton className="h-5 w-12 rounded-full" /></TableCell>
-                                    <TableCell className="text-right"><Skeleton className="h-8 w-8 ml-auto" /></TableCell>
-                                </TableRow>
-                            ))
-                        ) : users.length === 0 ? (
+            <div className="border rounded-lg shadow-sm bg-card flex-1 flex flex-col overflow-hidden">
+                <div className="flex-1 overflow-y-auto">
+                    <Table>
+                        <TableHeader>
                             <TableRow>
-                                <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                                    暂无用户数据
-                                    {query && <Button variant="link" onClick={handleClearSearch} className="ml-2">清除搜索</Button>}
-                                </TableCell>
+                                <TableHead className="w-75">用户</TableHead>
+                                <TableHead>联系方式</TableHead>
+                                <TableHead>注册时间</TableHead>
+                                <TableHead>状态</TableHead>
+                                <TableHead className="text-right">操作</TableHead>
                             </TableRow>
-                        ) : (
-                            users.map((user) => (
-                                <TableRow key={user.userId}>
-                                    <TableCell>
-                                        <div className="flex items-center gap-3">
-                                            <Avatar>
-                                                <AvatarImage src={user.avatar ?? ''} />
-                                                <AvatarFallback>{user.nickname?.[0]?.toUpperCase() || user.username[0]?.toUpperCase()}</AvatarFallback>
-                                            </Avatar>
-                                            <div className="flex flex-col">
-                                                <span className="font-medium truncate max-w-37.5" title={user.nickname}>{user.nickname || user.username}</span>
-                                                <span className="text-xs text-muted-foreground truncate max-w-37.5" title={user.username}>@{user.username}</span>
-                                            </div>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex flex-col text-sm">
-                                            <span className="truncate max-w-45" title={user.email || ''}>{user.email || '-'}</span>
-                                            <span className="text-muted-foreground text-xs">{user.phone || '-'}</span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-muted-foreground text-sm">
-                                        {new Date(user.createdAt).toLocaleDateString()}
-                                    </TableCell>
-                                    <TableCell>
-                                        {user.deletedAt ? (
-                                            <Badge variant="destructive">已注销</Badge>
-                                        ) : (
-                                            <Badge variant="outline" className="bg-green-50 text-green-700 hover:bg-green-50 hover:text-green-700 border-green-200">
-                                                正常
-                                            </Badge>
-                                        )}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                                    <span className="sr-only">打开菜单</span>
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuLabel>操作</DropdownMenuLabel>
-                                                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(user.username)}>
-                                                    复制用户名
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem onClick={() => setEditorUserId(user.userId)} disabled={!!user.deletedAt}>
-                                                    <Pencil className="mr-2 h-4 w-4" /> 编辑资料
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => { setPasswordUserId(user.userId); setNewPassword(''); }} disabled={!!user.deletedAt}>
-                                                    <KeyRound className="mr-2 h-4 w-4" /> 修改密码
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => handlePermissionEdit(user.userId)} disabled={!!user.deletedAt}>
-                                                    <ShieldAlert className="mr-2 h-4 w-4" /> 权限管理
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                {user.deletedAt ? (
-                                                    <DropdownMenuItem onClick={() => { setDeleteUserId(user.userId); setIsSoftDelete(false); }} className="text-red-600 focus:text-red-600">
-                                                        <Trash2 className="mr-2 h-4 w-4" /> 彻底删除
-                                                    </DropdownMenuItem>
-                                                ) : (
-                                                    <DropdownMenuItem onClick={() => { setDeleteUserId(user.userId); setIsSoftDelete(true); }} className="text-red-600 focus:text-red-600">
-                                                        <Trash2 className="mr-2 h-4 w-4" /> 注销账号
-                                                    </DropdownMenuItem>
-                                                )}
-
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
+                        </TableHeader>
+                        <TableBody>
+                            {isLoading ? (
+                                Array.from({ length: 5 }).map((_, i) => (
+                                    <TableRow key={i}>
+                                        <TableCell><div className="flex gap-3"><Skeleton className="h-10 w-10 rounded-full" /><div className="space-y-2"><Skeleton className="h-4 w-24" /><Skeleton className="h-3 w-16" /></div></div></TableCell>
+                                        <TableCell><div className="space-y-2"><Skeleton className="h-4 w-32" /><Skeleton className="h-3 w-24" /></div></TableCell>
+                                        <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                                        <TableCell><Skeleton className="h-5 w-12 rounded-full" /></TableCell>
+                                        <TableCell className="text-right"><Skeleton className="h-8 w-8 ml-auto" /></TableCell>
+                                    </TableRow>
+                                ))
+                            ) : users.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
+                                        暂无用户数据
+                                        {query && <Button variant="link" onClick={handleClearSearch} className="ml-2">清除搜索</Button>}
                                     </TableCell>
                                 </TableRow>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
+                            ) : (
+                                users.map((user) => (
+                                    <TableRow key={user.userId}>
+                                        <TableCell>
+                                            <div className="flex items-center gap-3">
+                                                <Avatar>
+                                                    <AvatarImage src={user.avatar ?? ''} />
+                                                    <AvatarFallback>{user.nickname?.[0]?.toUpperCase() || user.username[0]?.toUpperCase()}</AvatarFallback>
+                                                </Avatar>
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium truncate max-w-37.5" title={user.nickname}>{user.nickname || user.username}</span>
+                                                    <span className="text-xs text-muted-foreground truncate max-w-37.5" title={user.username}>@{user.username}</span>
+                                                </div>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="flex flex-col text-sm">
+                                                <span className="truncate max-w-45" title={user.email || ''}>{user.email || '-'}</span>
+                                                <span className="text-muted-foreground text-xs">{user.phone || '-'}</span>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-muted-foreground text-sm">
+                                            {new Date(user.createdAt).toLocaleDateString()}
+                                        </TableCell>
+                                        <TableCell>
+                                            {user.deletedAt ? (
+                                                <Badge variant="destructive">已注销</Badge>
+                                            ) : (
+                                                <Badge variant="outline" className="bg-green-50 text-green-700 hover:bg-green-50 hover:text-green-700 border-green-200">
+                                                    正常
+                                                </Badge>
+                                            )}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                                        <span className="sr-only">打开菜单</span>
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuLabel>操作</DropdownMenuLabel>
+                                                    <DropdownMenuItem onClick={() => navigator.clipboard.writeText(user.username)}>
+                                                        复制用户名
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem onClick={() => setEditorUserId(user.userId)} disabled={!!user.deletedAt}>
+                                                        <Pencil className="mr-2 h-4 w-4" /> 编辑资料
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => { setPasswordUserId(user.userId); setNewPassword(''); }} disabled={!!user.deletedAt}>
+                                                        <KeyRound className="mr-2 h-4 w-4" /> 修改密码
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handlePermissionEdit(user.userId)} disabled={!!user.deletedAt}>
+                                                        <ShieldAlert className="mr-2 h-4 w-4" /> 权限管理
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    {user.deletedAt ? (
+                                                        <DropdownMenuItem onClick={() => { setDeleteUserId(user.userId); setIsSoftDelete(false); }} className="text-red-600 focus:text-red-600">
+                                                            <Trash2 className="mr-2 h-4 w-4" /> 彻底删除
+                                                        </DropdownMenuItem>
+                                                    ) : (
+                                                        <DropdownMenuItem onClick={() => { setDeleteUserId(user.userId); setIsSoftDelete(true); }} className="text-red-600 focus:text-red-600">
+                                                            <Trash2 className="mr-2 h-4 w-4" /> 注销账号
+                                                        </DropdownMenuItem>
+                                                    )}
+
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+
+                {/* Pagination footer */}
+                {totalPages > 0 && (
+                    <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/20">
+                        <div className="text-sm text-muted-foreground">
+                            共 <span className="font-medium text-foreground">{total}</span> 条数据
+                        </div>
+                        <Pagination className="w-auto mx-0">
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        onClick={() => page > 1 && setPage(page - 1)}
+                                        className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                    />
+                                </PaginationItem>
+
+                                {renderPaginationItems()}
+
+                                <PaginationItem>
+                                    <PaginationNext
+                                        onClick={() => page < totalPages && setPage(page + 1)}
+                                        className={page === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    </div>
+                )}
             </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <Pagination>
-                    <PaginationContent>
-                        <PaginationItem>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => setPage(p => Math.max(1, p - 1))}
-                                disabled={page === 1}
-                            >
-                                <PaginationPrevious className="pl-0" />
-                            </Button>
-                        </PaginationItem>
-
-                        {renderPaginationItems()}
-
-                        <PaginationItem>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                                disabled={page === totalPages}
-                            >
-                                <PaginationNext className="pr-0" />
-                            </Button>
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            )}
 
             {/* Editors */}
             <UserInfoEditor
