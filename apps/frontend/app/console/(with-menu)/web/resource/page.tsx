@@ -21,6 +21,8 @@ import {
     PaginationEllipsis,
     PaginationItem,
     PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
 } from "@/components/ui/pagination";
 import {
     DropdownMenu,
@@ -55,7 +57,7 @@ import { ApiError } from "next/dist/server/api-utils";
 export default function Page() {
     // State
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(2);
+    const [pageSize, setPageSize] = useState(10);
     const [searchInput, setSearchInput] = useState('');
     const [query, setQuery] = useState('');
     const [deleteResourceId, setDeleteResourceId] = useState<string>('');
@@ -295,19 +297,33 @@ export default function Page() {
                     </Table>
                 </div>
 
-                {/* Pagination */}
-                <div className="border-t p-4 flex items-center justify-between bg-muted/20">
-                    <div className="text-sm text-muted-foreground">
-                        共 {total} 条数据
-                    </div>
-                    <div>
-                        <Pagination className="justify-end w-auto">
+                {/* Pagination footer */}
+                {totalPages > 0 && (
+                    <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/20">
+                        <div className="text-sm text-muted-foreground">
+                            共 <span className="font-medium text-foreground">{total}</span> 条数据
+                        </div>
+                        <Pagination className="w-auto mx-0">
                             <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        onClick={() => page > 1 && setPage(page - 1)}
+                                        className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                    />
+                                </PaginationItem>
+
                                 {renderPaginationItems()}
+
+                                <PaginationItem>
+                                    <PaginationNext
+                                        onClick={() => page < totalPages && setPage(page + 1)}
+                                        className={page === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                    />
+                                </PaginationItem>
                             </PaginationContent>
                         </Pagination>
                     </div>
-                </div>
+                )}
             </div>
 
             <AlertDialog open={!!deleteResourceId} onOpenChange={(open) => !open && setDeleteResourceId('')}>
