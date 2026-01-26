@@ -33,8 +33,8 @@ export default function ConsoleMenuLayout({
     return (
         <SidebarProvider>
             <AppSidebar user={userStore.user} />
-            <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+            <SidebarInset className="flex flex-col h-screen overflow-hidden">
+                <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 border-b">
                     <div className="flex items-center gap-2 px-4">
                         <SidebarTrigger className="-ml-1" />
                         <div className="w-[1px] h-4 mr-2 bg-zinc-300"></div>
@@ -52,7 +52,7 @@ export default function ConsoleMenuLayout({
                         </Breadcrumb>
                     </div>
                 </header>
-                <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+                <div className="flex flex-1 flex-col gap-4 p-4 pt-0 min-h-0 overflow-hidden">
                     {children}
                 </div>
             </SidebarInset>

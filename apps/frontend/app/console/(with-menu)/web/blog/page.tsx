@@ -144,7 +144,7 @@ export default function Page() {
     };
 
     return (
-        <div className="space-y-6 h-full flex flex-col">
+        <div className="space-y-6 h-full flex flex-col min-h-0">
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
@@ -177,14 +177,14 @@ export default function Page() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-20">ID</TableHead>
-                                <TableHead className="w-64">标题 & 描述</TableHead>
-                                <TableHead className="w-32">Slug</TableHead>
-                                <TableHead className="w-20">浏览量</TableHead>
-                                <TableHead>权限</TableHead>
-                                <TableHead className="w-37.5">内容链接</TableHead>
-                                <TableHead className="w-37.5">更新时间</TableHead>
-                                <TableHead className="text-right">操作</TableHead>
+                                <TableHead className="w-20 whitespace-nowrap">ID</TableHead>
+                                <TableHead className="w-64 whitespace-nowrap">标题 & 描述</TableHead>
+                                <TableHead className="w-32 whitespace-nowrap">Slug</TableHead>
+                                <TableHead className="w-20 whitespace-nowrap">浏览量</TableHead>
+                                <TableHead className="whitespace-nowrap">权限</TableHead>
+                                <TableHead className="w-37.5 whitespace-nowrap">内容链接</TableHead>
+                                <TableHead className="w-37.5 whitespace-nowrap">更新时间</TableHead>
+                                <TableHead className="text-right whitespace-nowrap">操作</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>

@@ -193,7 +193,7 @@ export default function UserListPage() {
     };
 
     return (
-        <div className="space-y-6 h-full flex flex-col">
+        <div className="space-y-6 h-full flex flex-col min-h-0">
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
@@ -226,11 +226,11 @@ export default function UserListPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-75">用户</TableHead>
-                                <TableHead>联系方式</TableHead>
-                                <TableHead>注册时间</TableHead>
-                                <TableHead>状态</TableHead>
-                                <TableHead className="text-right">操作</TableHead>
+                                <TableHead className="w-75 whitespace-nowrap">用户</TableHead>
+                                <TableHead className="whitespace-nowrap">联系方式</TableHead>
+                                <TableHead className="whitespace-nowrap">注册时间</TableHead>
+                                <TableHead className="whitespace-nowrap">状态</TableHead>
+                                <TableHead className="text-right whitespace-nowrap">操作</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
