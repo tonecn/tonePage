@@ -157,7 +157,7 @@ export class UserService {
 
     if (query) {
       queryBuilder.andWhere(
-        '(user.username LIKE :query OR user.nickname LIKE :query OR user.email LIKE :query OR user.phone LIKE :query)',
+        '(LOWER(user.username) LIKE LOWER(:query) OR LOWER(user.nickname) LIKE LOWER(:query) OR LOWER(user.email) LIKE LOWER(:query) OR LOWER(user.phone) LIKE LOWER(:query))',
         { query: `%${query}%` },
       );
     }
