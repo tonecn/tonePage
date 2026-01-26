@@ -125,12 +125,24 @@ export default function AddBlog({ children, onRefresh }: AddBlogProps) {
                             {
                                 <BlogPermissionCheckBoxs
                                     permissions={blog.permissions}
-                                    onCheckedChange={(p, n) => setBlog({
-                                        ...blog,
-                                        permissions: n ?
+                                    onCheckedChange={(p, n) => {
+                                        let nextPermissions = n ?
                                             [...blog.permissions, p] :
-                                            [...blog.permissions].filter(p => p !== p),
-                                    })}
+                                            blog.permissions.filter(item => item !== p);
+
+                                        if (n) {
+                                            if (p === BlogPermission.Public) {
+                                                nextPermissions = nextPermissions.filter(item => item !== BlogPermission.ByPassword);
+                                            } else if (p === BlogPermission.ByPassword) {
+                                                nextPermissions = nextPermissions.filter(item => item !== BlogPermission.Public);
+                                            }
+                                        }
+
+                                        setBlog({
+                                            ...blog,
+                                            permissions: Array.from(new Set(nextPermissions)),
+                                        });
+                                    }}
                                 />
                             }
                         </div>

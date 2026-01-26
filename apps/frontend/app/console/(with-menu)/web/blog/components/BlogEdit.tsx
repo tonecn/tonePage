@@ -149,11 +149,21 @@ export default function BlogEdit({ id, children, onRefresh }: BlogEditProps) {
                                         <BlogPermissionCheckBoxs
                                             permissions={blog.permissions}
                                             onCheckedChange={(permission, newState) => {
+                                                let nextPermissions = newState ?
+                                                    [...blog.permissions, permission] :
+                                                    blog.permissions.filter(p => p !== permission);
+
+                                                if (newState) {
+                                                    if (permission === BlogPermission.Public) {
+                                                        nextPermissions = nextPermissions.filter(p => p !== BlogPermission.ByPassword);
+                                                    } else if (permission === BlogPermission.ByPassword) {
+                                                        nextPermissions = nextPermissions.filter(p => p !== BlogPermission.Public);
+                                                    }
+                                                }
+
                                                 mutate({
                                                     ...blog,
-                                                    permissions: newState ?
-                                                        [...blog.permissions, permission] :
-                                                        blog.permissions.filter(p => p !== permission)
+                                                    permissions: Array.from(new Set(nextPermissions))
                                                 }, false)
                                             }}
                                         />

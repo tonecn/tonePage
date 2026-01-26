@@ -294,9 +294,9 @@ export default function Page() {
                                                 <TooltipProvider>
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
-                                                            <a 
-                                                                href={blog.contentUrl} 
-                                                                target="_blank" 
+                                                            <a
+                                                                href={blog.contentUrl}
+                                                                target="_blank"
                                                                 rel="noreferrer"
                                                                 className="flex items-center gap-1 text-xs text-blue-600 hover:underline max-w-32 truncate"
                                                             >
@@ -338,7 +338,7 @@ export default function Page() {
                                                             </DropdownMenuItem>
                                                         </SetPasswordDialog>
                                                     )}
-                                                    <DropdownMenuItem 
+                                                    <DropdownMenuItem
                                                         className="text-red-600 focus:text-red-600 focus:bg-red-50"
                                                         onClick={() => setDeleteBlogId(blog.id)}
                                                     >
@@ -359,15 +359,17 @@ export default function Page() {
                     <div className="text-sm text-muted-foreground">
                         共 {total} 条数据
                     </div>
-                    <Pagination className="justify-end w-auto">
-                        <PaginationContent>
-                            {renderPaginationItems()}
-                        </PaginationContent>
-                    </Pagination>
+                    <div>
+                        <Pagination className="justify-end w-auto">
+                            <PaginationContent>
+                                {renderPaginationItems()}
+                            </PaginationContent>
+                        </Pagination>
+                    </div>
                 </div>
             </div>
 
-             <AlertDialog open={!!deleteBlogId} onOpenChange={(open) => !open && setDeleteBlogId('')}>
+            <AlertDialog open={!!deleteBlogId} onOpenChange={(open) => !open && setDeleteBlogId('')}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>确认删除该博客？</AlertDialogTitle>
