@@ -6,7 +6,7 @@ import AddBlog from "./components/AddBlog";
 import BlogEdit from "./components/BlogEdit";
 import { SetPasswordDialog } from "./components/SetPasswordDialog";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, ExternalLink, MoreHorizontal, Eye, Globe, Lock, List, MessageSquare } from "lucide-react";
+import { Search, Plus, MoreHorizontal, Eye, Globe, Lock, List, MessageSquare } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { BlogPermission } from "@/lib/types/Blog.Permission.enum";
 import {
@@ -182,7 +182,7 @@ export default function Page() {
                                 <TableHead className="w-32 whitespace-nowrap">Slug</TableHead>
                                 <TableHead className="w-20 whitespace-nowrap">浏览量</TableHead>
                                 <TableHead className="whitespace-nowrap">权限</TableHead>
-                                <TableHead className="w-37.5 whitespace-nowrap">更新时间</TableHead>
+                                <TableHead className="w-37.5 whitespace-nowrap">发布时间</TableHead>
                                 <TableHead className="text-right whitespace-nowrap">操作</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -290,7 +290,7 @@ export default function Page() {
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-xs text-muted-foreground">
-                                            {blog.updatedAt ? new Date(blog.updatedAt).toLocaleDateString() : '-'}
+                                            {blog.createdAt ? new Date(blog.createdAt).toLocaleString() : '-'}
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <DropdownMenu>
