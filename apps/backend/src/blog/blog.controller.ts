@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  Logger,
   Param,
   ParseUUIDPipe,
   Post,
@@ -24,6 +25,9 @@ import { GetBlogsDto } from './dto/get-blogs.dto';
 
 @Controller('blog')
 export class BlogController {
+
+  private logger = new Logger(BlogController.name)
+
   constructor(
     private readonly blogService: BlogService,
     private readonly userService: UserService,
@@ -121,21 +125,17 @@ export class BlogController {
     // 获取IP归属地
     let address = '未知';
     if (!['::1'].includes(ip)) {
-      const addressRes = await (
-        await fetch(
-          `https://mesh.if.iqiyi.com/aid/ip/info?version=1.1.1&ip=${ip}`,
-        )
-      ).json();
-      if (addressRes?.code == 0) {
-        const country: string = addressRes?.data?.countryCN || '未知';
-        const province: string = addressRes?.data?.provinceCN || '中国';
-        if (country !== '中国') {
-          // 非中国，显示国家
-          address = country;
-        } else {
-          // 中国，显示省份
-          address = province;
+      try {
+        const addressRes = await (
+          await fetch(
+            `https://api.vore.top/api/IPdata?ip=${ip}`,
+          )
+        ).json();
+        if (addressRes?.code == 200) {
+          address = addressRes.adcode.p;
         }
+      } catch (error) {
+        this.logger.warn(`Failed to get address for IP: ${ip}`);
       }
     }
 
