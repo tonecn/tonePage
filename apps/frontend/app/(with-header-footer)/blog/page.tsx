@@ -18,7 +18,7 @@ export default async function Blog() {
     const { data, error } = await safeCall(() => api.blog.getPublicList(1, 10));
 
     return (
-        <section className="max-w-xl w-full mx-auto my-10 flex flex-col gap-8 px-4">
+        <section className="max-w-md w-full mx-auto my-5 flex flex-col gap-8 px-4">
             {
                 error && (
                     <Alert variant="destructive" className="w-full">

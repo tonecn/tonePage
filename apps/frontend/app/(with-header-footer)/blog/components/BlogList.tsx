@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { api } from '@/lib/api';
 import type { BlogListItem } from '@/lib/api';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Calendar, Eye } from 'lucide-react';
 import Link from 'next/link';
 
 interface BlogListProps {
@@ -78,25 +78,39 @@ export function BlogList({ initialData }: BlogListProps) {
     };
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4">
             {blogs.map((blog) => (
-                <article className="w-full px-5 cursor-default transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900/50 py-4 rounded-lg" key={blog.id}>
-                    <h2 className="text-2xl font-medium">
-                        <Link
-                            className="hover:text-primary transition-colors focus:outline-none"
-                            href={`/blog/${blog.slug}`}
-                        >
-                            {blog.title}
-                        </Link>
-                    </h2>
-                    <p className="text-sm font-medium text-zinc-600 dark:text-zinc-300 mt-2 line-clamp-3">{blog.description}</p>
-                    <footer className="mt-3 text-sm text-zinc-500 flex items-center gap-2">
-                        <time dateTime={blog.createdAt}>
-                            {new Date(blog.createdAt).toLocaleString('zh-CN')}
-                        </time>
-                        <span>·</span>
-                        <span>{formatNumber(blog.viewCount)} 次访问</span>
-                    </footer>
+                <article 
+                    key={blog.id} 
+                    className="group relative flex flex-col gap-3 p-5 rounded-xl border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-all duration-300"
+                >
+                    <div className="space-y-2">
+                        <h2 className="text-2xl font-bold tracking-tight">
+                            <Link
+                                className="text-zinc-900 dark:text-zinc-100 group-hover:text-primary transition-colors focus:outline-none"
+                                href={`/blog/${blog.slug}`}
+                            >
+                                <span className="absolute inset-0 z-0"></span>
+                                {blog.title}
+                            </Link>
+                        </h2>
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2 line-clamp-2 leading-relaxed">
+                            {blog.description}
+                        </p>
+                    </div>
+                    
+                    <div className="flex items-center gap-4 text-xs text-zinc-500 font-medium pt-1">
+                        <div className="flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5" />
+                            <time dateTime={blog.createdAt}>
+                                {new Date(blog.createdAt).toLocaleDateString('zh-CN')}
+                            </time>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>{formatNumber(blog.viewCount)}</span>
+                        </div>
+                    </div>
                 </article>
             ))}
             
@@ -106,7 +120,7 @@ export function BlogList({ initialData }: BlogListProps) {
             </div>
             
             {!hasMore && blogs.length > 0 && (
-                <div className="w-full py-8 text-center text-sm text-zinc-400">
+                <div className="w-full py-2 text-center text-sm text-zinc-400">
                     没有更多内容了
                 </div>
             )}
